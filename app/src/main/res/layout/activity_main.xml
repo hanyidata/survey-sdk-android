@@ -87,21 +87,40 @@
                 android:text="1" />
         </LinearLayout>
 
-        <Button
-            android:id="@+id/button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="100dp"
-            android:gravity="center|right|end"
-            android:onClick="handleClick"
-            android:text="ShowMe" />
-
         <LinearLayout
-            android:id="@+id/container"
             android:layout_width="match_parent"
-            android:layout_height="515dp"
+            android:layout_height="match_parent"
             android:orientation="vertical">
 
+            <Button
+                android:id="@+id/button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="100dp"
+                android:gravity="center|right|end"
+                android:onClick="handleClick"
+                android:text="ShowMe" />
+
+            <TextView
+                android:id="@+id/version"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="10dp" />
+
+            <LinearLayout
+                android:id="@+id/container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/version2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="10dp"
+                android:text="tailing part##" />
         </LinearLayout>
 
     </LinearLayout>

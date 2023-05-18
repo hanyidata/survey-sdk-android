@@ -1,12 +1,12 @@
 package cn.xmplus.sdk;
 
-import static android.content.ContentValues.TAG;
-
 import android.content.Context;
 import android.util.Log;
 import android.view.ViewGroup;
+import android.webkit.ConsoleMessage;
 import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
+import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.LinearLayout;
@@ -14,9 +14,15 @@ import android.widget.LinearLayout;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Survey extends LinearLayout {
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.stream.Collectors;
 
-
+/**
+ * Survey View
+ */
+public class HYSurveyView extends LinearLayout {
     private WebView webView;
     private Long surveyId;
     private Long channelId;
@@ -27,8 +33,17 @@ public class Survey extends LinearLayout {
     private Boolean debug = false;
     private Integer delay = 3000;
 
-    public Survey(Context context, Long surveyId, Long channelId, JSONObject parameters, JSONObject options) throws JSONException {
+    private String version = "";
+    private String build = "";
+    public String ua = "";
+
+    private SurveyFunction onSubmit = null;
+    private SurveyFunction onCancel = null;
+
+    public HYSurveyView(Context context, Long surveyId, Long channelId, JSONObject parameters, JSONObject options) throws JSONException {
         super(context);
+        this.loadVersion(context);
+
         this.surveyId = surveyId;
         this.channelId = channelId;
         this.parameters = parameters;
@@ -38,16 +53,22 @@ public class Survey extends LinearLayout {
         this.delay = this.options.has("delay") ? this.options.getInt("delay") : 3000;
 
         setOrientation(LinearLayout.VERTICAL);
-        setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+        setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
-//        Integer padding = 10;
-//        ShapeDrawable shapedrawable = new ShapeDrawable();
-//        shapedrawable.setShape(new RectShape());
-//        shapedrawable.getPaint().setColor(Color.RED);
-//        shapedrawable.getPaint().setStrokeWidth(10f);
-//        shapedrawable.setPadding(padding, padding, padding, padding);
-//        shapedrawable.getPaint().setStyle(Paint.Style.STROKE);
+        this.setup();
+    }
 
+    public void setOnSubmit(SurveyFunction callback) {
+        this.onSubmit = callback;
+    }
+    public void setOnCancel(SurveyFunction callback) {
+        this.onCancel = callback;
+    }
+
+    /**
+     * setup webview
+     */
+    private void setup() {
         webView = new WebView(this.getContext());
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
@@ -55,11 +76,47 @@ public class Survey extends LinearLayout {
         webView.getSettings().setMediaPlaybackRequiresUserGesture(false);
         webView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
         webView.addJavascriptInterface(this, "surveyProxy");
+        webView.getSettings().setUserAgentString(ua);
+        webView.setWebChromeClient(new WebChromeClient()
+        {
+            @Override
+            public boolean onConsoleMessage(ConsoleMessage cm) {
+                if (debug) {
+                    Log.d("surveySDK", cm.message());
+                }
+                return true;
+            }
+        });
 
         webView.loadUrl("file:///android_asset/index.html");
         this.addView(webView);
 
-//        this.setBackground(shapedrawable);
+        Log.v("surveySDK", "init with version: " + version);
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public String getBuild() {
+        return build;
+    }
+
+    /**
+     * load version info
+     */
+    private void loadVersion(Context context) {
+        try {
+            InputStream io = context.getResources().getAssets().open("version.json");
+            BufferedReader br = new BufferedReader(new InputStreamReader(io));
+            String versionStr = br.lines().map(line -> line + "\n").collect(Collectors.joining());
+            JSONObject object = new JSONObject(versionStr);
+            this.version = object.getString("version");
+            this.build = object.getString("build");
+            this.ua = String.format("surveySDK/%s (Android) %s", version, build);
+        } catch (Exception ex) {
+            Log.e("surveySDK", "loadVersion: " + ex.getMessage());
+        }
     }
 
     public void show() {
@@ -86,7 +143,7 @@ public class Survey extends LinearLayout {
     public void postMessage(String message) {
         try {
             JSONObject event = new JSONObject(message);
-            Log.v(TAG, event.toString());
+            Log.v("surveySDK", event.toString());
 
             String type = event.getString("type");
             JSONObject value = event.has("value") ? event.getJSONObject("value") : null;
@@ -103,13 +160,14 @@ public class Survey extends LinearLayout {
                                 data.put("channelId", channelId);
                                 data.put("delay", delay);
                                 data.put("parameters", parameters);
-                                Log.v(TAG, data.toString());
-                                String script = String.format("document.dispatchEvent(new CustomEvent('command', { detail: %s}))", data);
+                                Log.v("surveySDK", data.toString());
+                                String script = String.format("document.dispatchEvent(new CustomEvent('init', { detail: %s}))", data);
                                 webView.evaluateJavascript(script, new ValueCallback<String>() {
                                     @Override
                                     public void onReceiveValue(String value) {
                                     }
                                 });
+
                             } catch (JSONException e) {
                                 throw new RuntimeException(e);
                             }
@@ -118,11 +176,16 @@ public class Survey extends LinearLayout {
                             try {
                                 int height = value.getInt("height");
                                 int dp = pxFromDp(getContext(), height);
-                                LayoutParams layoutParams = (LayoutParams) container.getLayoutParams();
-                                Log.v(TAG, "change height to " + dp);
+                                ViewGroup.LayoutParams layoutParams = container.getLayoutParams();
+                                Log.v("surveySDK", "change height to " + dp);
                                 container.setLayoutParams(new LayoutParams(layoutParams.width, dp));
                             } catch (JSONException e) {
                                 throw new RuntimeException(e);
+                            }
+                            break;
+                        case "cancel":
+                            if (onCancel != null) {
+                                onCancel.accept(null);
                             }
                             break;
                         case "close":
@@ -131,6 +194,9 @@ public class Survey extends LinearLayout {
                             break;
                         case "submit":
                             finished = true;
+                            if (onSubmit != null) {
+                                onSubmit.accept(null);
+                            }
                             break;
                         default:
                             break;
@@ -138,7 +204,7 @@ public class Survey extends LinearLayout {
                 }
             });
         } catch (Throwable t) {
-            Log.e(TAG, "Could not parse malformed JSON: \"" + message + "\"" + t.getMessage());
+            Log.e("surveySDK", "Could not parse malformed JSON: \"" + message + "\"" + t.getMessage());
         }
     }
 

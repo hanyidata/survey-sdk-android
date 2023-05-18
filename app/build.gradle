@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace 'cn.xmplus.myapplication'
+    namespace 'cn.xmplus.demo'
     compileSdk 33
 
     defaultConfig {
-        applicationId 'cn.xmplus.myapplication'
+        applicationId 'cn.xmplus.demo'
         minSdk 24
         targetSdk 33
         versionCode 1
