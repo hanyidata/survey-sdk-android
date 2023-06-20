@@ -4,7 +4,7 @@ plugins {
     id 'maven-publish'
 }
 
-version '0.1'
+version '0.1.4'
 
 task generateSourcesJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
@@ -13,11 +13,13 @@ task generateSourcesJar(type: Jar) {
 
 android {
     namespace 'cn.xmplus.sdk'
-    compileSdk 33
+    compileSdk 28
 
     defaultConfig {
-        minSdk 24
-        targetSdk 33
+        minSdk 22
+
+        //noinspection ExpiredTargetSdkVersion
+        targetSdk 28
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -40,13 +42,10 @@ android {
     }
 }
 
-
-
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0:"
-    implementation 'androidx.core:core-ktx:1.7.0'
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.8.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.32:"
+    implementation 'androidx.core:core-ktx:1.2.0'
+    implementation 'androidx.appcompat:appcompat:1.1.0'
 }
 
 def getReleaseRepositoryUrl() {

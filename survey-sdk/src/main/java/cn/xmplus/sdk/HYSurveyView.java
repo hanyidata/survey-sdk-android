@@ -14,43 +14,38 @@ import android.widget.LinearLayout;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.stream.Collectors;
 
 /**
  * Survey View
  */
 public class HYSurveyView extends LinearLayout {
     private WebView webView;
-    private Long surveyId;
-    private Long channelId;
-    private JSONObject options;
-    private JSONObject parameters;
+    private final String surveyId;
+    private final String channelId;
+    private final JSONObject parameters;
 
     private Boolean finished = false;
-    private Boolean debug = false;
-    private Integer delay = 3000;
+    private final Boolean debug;
+    private final Integer delay;
 
-    private String version = "";
-    private String build = "";
-    public String ua = "";
+    private final String version = "";
+    public final String ua = "";
 
     private SurveyFunction onSubmit = null;
     private SurveyFunction onCancel = null;
 
-    public HYSurveyView(Context context, Long surveyId, Long channelId, JSONObject parameters, JSONObject options) throws JSONException {
+    private SurveyFunction onSize = null;
+    private SurveyFunction onClose = null;
+
+    public HYSurveyView(Context context, String surveyId, String channelId, JSONObject parameters, JSONObject options) throws JSONException {
         super(context);
-        this.loadVersion(context);
 
         this.surveyId = surveyId;
         this.channelId = channelId;
         this.parameters = parameters;
-        this.options = options;
 
-        this.debug = this.options.has("debug") && this.options.getBoolean("debug");
-        this.delay = this.options.has("delay") ? this.options.getInt("delay") : 3000;
+        this.debug = options.has("debug") && options.getBoolean("debug");
+        this.delay = options.has("delay") ? options.getInt("delay") : 3000;
 
         setOrientation(LinearLayout.VERTICAL);
         setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
@@ -63,6 +58,13 @@ public class HYSurveyView extends LinearLayout {
     }
     public void setOnCancel(SurveyFunction callback) {
         this.onCancel = callback;
+    }
+
+    public void setOnClose(SurveyFunction callback) {
+        this.onClose = callback;
+    }
+    public void setOnSize(SurveyFunction callback) {
+        this.onSize = callback;
     }
 
     /**
@@ -88,7 +90,7 @@ public class HYSurveyView extends LinearLayout {
             }
         });
 
-        webView.loadUrl("file:///android_asset/index.html");
+        webView.loadUrl("file:///android_asset/index.html#pages/bridge");
         this.addView(webView);
 
         Log.v("surveySDK", "init with version: " + version);
@@ -99,24 +101,8 @@ public class HYSurveyView extends LinearLayout {
     }
 
     public String getBuild() {
+        String build = "";
         return build;
-    }
-
-    /**
-     * load version info
-     */
-    private void loadVersion(Context context) {
-        try {
-            InputStream io = context.getResources().getAssets().open("version.json");
-            BufferedReader br = new BufferedReader(new InputStreamReader(io));
-            String versionStr = br.lines().map(line -> line + "\n").collect(Collectors.joining());
-            JSONObject object = new JSONObject(versionStr);
-            this.version = object.getString("version");
-            this.build = object.getString("build");
-            this.ua = String.format("surveySDK/%s (Android) %s", version, build);
-        } catch (Exception ex) {
-            Log.e("surveySDK", "loadVersion: " + ex.getMessage());
-        }
     }
 
     public void show() {
@@ -174,11 +160,14 @@ public class HYSurveyView extends LinearLayout {
                             break;
                         case "size":
                             try {
-                                int height = value.getInt("height");
-                                int dp = pxFromDp(getContext(), height);
+                                int dp = value.getInt("height");
+                                int px = pxFromDp(getContext(), dp);
                                 ViewGroup.LayoutParams layoutParams = container.getLayoutParams();
-                                Log.v("surveySDK", "change height to " + dp);
-                                container.setLayoutParams(new LayoutParams(layoutParams.width, dp));
+                                Log.v("surveySDK", "change height to " + px);
+                                container.setLayoutParams(new LayoutParams(layoutParams.width, px));
+                                if (onSize != null) {
+                                    onSize.accept(px);
+                                }
                             } catch (JSONException e) {
                                 throw new RuntimeException(e);
                             }
@@ -191,6 +180,9 @@ public class HYSurveyView extends LinearLayout {
                         case "close":
                             LayoutParams layoutParams = (LayoutParams) container.getLayoutParams();
                             container.setLayoutParams(new LayoutParams(layoutParams.width, 0));
+                            if (onClose != null) {
+                                onClose.accept(null);
+                            }
                             break;
                         case "submit":
                             finished = true;

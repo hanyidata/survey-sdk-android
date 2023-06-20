@@ -20,27 +20,33 @@ class MainActivity : AppCompatActivity() {
     fun handleClick(view: View) {
         this.setup()
     }
+    override fun onPostCreate(savedInstanceState: Bundle?) {
+        super.onPostCreate(savedInstanceState)
+        getWindow().getDecorView().setBackgroundColor(getResources().getColor(androidx.appcompat.R.color.material_blue_grey_800));
+    }
 
     fun setup() {
+
         if (this.survey == null) {
-            var sidInput: EditText =  findViewById(R.id.sid);
-            var cidInput: EditText =  findViewById(R.id.cid);
             var euidInput: EditText =  findViewById(R.id.euid);
             var container:LinearLayout = findViewById(R.id.container)
 
 //            container.
-            var sid = sidInput.text.toString().toLong();
-            var cid = cidInput.text.toString().toLong();
+            var sid = "3478834285002752"
+            var cid = "4418880725796864";
             var parameters = JSONObject();
             parameters.put("externalUserId", euidInput.text.toString());
             var options = JSONObject();
             options.put("debug", true);
+            options.put("server", "test");
             this.survey =
                 HYSurveyView(this, sid, cid, parameters, options);
 
             container.addView(this.survey)
             this.survey?.setOnSubmit(::onSubmit);
             this.survey?.setOnCancel(::onCancel);
+            this.survey?.setOnClose(::onClose);
+            this.survey?.setOnSize(::onSize);
             var versionText: TextView = findViewById(R.id.version)
             versionText.text = String.format("v:%s (%s)", survey?.version, survey?.build)
         } else {
@@ -54,6 +60,15 @@ class MainActivity : AppCompatActivity() {
 
     fun onCancel(param: Any?) {
         alert("取消了作答")
+    }
+
+    fun onSize(param: Any?) {
+//        alert("高度变化");
+        println(param);
+    }
+
+    fun onClose(param: Any?) {
+        alert("关闭")
     }
 
     fun alert(message: String) {
