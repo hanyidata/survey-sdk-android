@@ -79,6 +79,7 @@ public class HYSurveyView extends LinearLayout {
         webView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
         webView.addJavascriptInterface(this, "surveyProxy");
         webView.getSettings().setUserAgentString(ua);
+        webView.setVerticalScrollBarEnabled(true);
         webView.setWebChromeClient(new WebChromeClient()
         {
             @Override
