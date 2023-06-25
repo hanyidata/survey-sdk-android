@@ -32,13 +32,22 @@ class MainActivity : AppCompatActivity() {
             var container:LinearLayout = findViewById(R.id.container)
 
 //            container.
-            var sid = "4445329530320896"
-            var cid = "4445518341496832";
+//            var sid = "4445329530320896"
+//            var cid = "4445518341496832";
+//            var parameters = JSONObject();
+//            parameters.put("externalUserId", euidInput.text.toString());
+//            var options = JSONObject();
+//            options.put("debug", true);
+//            options.put("server", "https://jltest.xmplus.cn/api/survey");
+
+            var sid = "4412572911846400"
+            var cid = "4412960960594944";
             var parameters = JSONObject();
             parameters.put("externalUserId", euidInput.text.toString());
             var options = JSONObject();
             options.put("debug", true);
-            options.put("server", "https://jltest.xmplus.cn/api/survey");
+            options.put("server", "https://www.xmplus.cn/api/survey");
+
             this.survey =
                 HYSurveyView(this, sid, cid, parameters, options);
 

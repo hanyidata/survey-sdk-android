@@ -27,6 +27,7 @@ public class HYSurveyView extends LinearLayout {
     private Boolean finished = false;
     private final Boolean debug;
     private final Integer delay;
+    private final String server;
 
     private final String version = "";
     public final String ua = "";
@@ -46,6 +47,7 @@ public class HYSurveyView extends LinearLayout {
 
         this.debug = options.has("debug") && options.getBoolean("debug");
         this.delay = options.has("delay") ? options.getInt("delay") : 3000;
+        this.server = options.has("server") ? options.getString("server") : "production";
 
         setOrientation(LinearLayout.VERTICAL);
         setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
@@ -146,6 +148,7 @@ public class HYSurveyView extends LinearLayout {
                                 data.put("surveyId", surveyId);
                                 data.put("channelId", channelId);
                                 data.put("delay", delay);
+                                data.put("server", server);
                                 data.put("parameters", parameters);
                                 Log.v("surveySDK", data.toString());
                                 String script = String.format("document.dispatchEvent(new CustomEvent('init', { detail: %s}))", data);
