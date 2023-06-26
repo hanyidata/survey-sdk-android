@@ -200,10 +200,6 @@ public class HYSurveyView extends LinearLayout {
                             break;
                         case "cancel":
                             Log.v("surveySDK", "survey canceled");
-                            container.removeAllViews();
-                            container.setLayoutParams(new LayoutParams(0, 0));
-                            container.setVisibility(INVISIBLE);
-                            ((ViewGroup)container.getParent()).removeView(container);
                             if (onCancel != null) {
                                 onCancel.accept(null);
                             }

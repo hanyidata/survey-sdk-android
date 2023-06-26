@@ -121,7 +121,6 @@ public class HYPopupDialog extends Dialog {
 
             this.survey.setLayoutParams((new LinearLayout.LayoutParams(screenWidth - appPaddingWidth * 2, -1)));
             this.survey.setOnCancel((Object param) -> {
-                this.dismiss();
                 if (this.onCancel != null) {
                     this.onCancel.accept(null);
                 }
@@ -130,7 +129,6 @@ public class HYPopupDialog extends Dialog {
                 this.dismiss();
             });
             this.survey.setOnSubmit((Object param) -> {
-                this.dismiss();
                 if (this.onSubmit != null) {
                     this.onSubmit.accept(null);
                 }
