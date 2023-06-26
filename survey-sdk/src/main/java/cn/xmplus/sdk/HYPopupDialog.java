@@ -82,6 +82,7 @@ public class HYPopupDialog extends Dialog {
         int appBorderRadiusPx = Util.parsePx(config.optString("appBorderRadius", "0px"), screenWidth);
         int appPaddingWidth = Util.parsePx(config.optString("appPaddingWidth", "0px"), screenWidth);
 
+        appBorderRadiusPx = Util.pxFromDp(context, appBorderRadiusPx);
         GradientDrawable gradientDrawable = new GradientDrawable();
         if (embedBackGround) {
             gradientDrawable.setAlpha(150);
@@ -118,12 +119,12 @@ public class HYPopupDialog extends Dialog {
         // survey
         try {
             this.survey = new HYSurveyView(context, this.surveyId, this.channelId, this.parameters, this.options);
-
-            this.survey.setLayoutParams((new LinearLayout.LayoutParams(screenWidth - appPaddingWidth * 2, -1)));
+            this.survey.setLayoutParams((new LinearLayout.LayoutParams(screenWidth - Util.pxFromDp(context, appPaddingWidth) * 2, -1)));
             this.survey.setOnCancel((Object param) -> {
                 if (this.onCancel != null) {
                     this.onCancel.accept(null);
                 }
+                this.dismiss();
             });
             this.survey.setOnClose((Object param) -> {
                 this.dismiss();
