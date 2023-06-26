@@ -35,7 +35,7 @@ class MainActivity : AppCompatActivity() {
     fun handleClickPopup(view: View) {
 //        this.setup()
         var root = findViewById<View>(android.R.id.content)
-        HYPopupDialog.buildDialog(root.context, sid, cid, parameters, options,  {
+        HYPopupDialog.makeDialog(root.context, sid, cid, parameters, options,  {
             alert("取消");
         }, {
             alert("提交");

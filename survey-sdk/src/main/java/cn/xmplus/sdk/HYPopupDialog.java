@@ -51,7 +51,7 @@ public class HYPopupDialog extends Dialog {
      * @param parameters
      * @param options
      */
-    public static void buildDialog(Context context, String surveyId, String channelId, JSONObject parameters, JSONObject options, SurveyFunction onCancel, SurveyFunction onSubmit, SurveyFunction onError) {
+    public static void makeDialog(Context context, String surveyId, String channelId, JSONObject parameters, JSONObject options, SurveyFunction onCancel, SurveyFunction onSubmit, SurveyFunction onError) {
         String server = options.optString("server", "https://www.xmplus.cn/api/survey");
         new HYSurveyService((JSONObject config, String error) -> {
             if (config != null) {
