@@ -5,10 +5,10 @@ import android.app.AlertDialog
 import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
-import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import cn.xmplus.sdk.HYPopupDialog
 import cn.xmplus.sdk.HYSurveyView
 import org.json.JSONObject
 
@@ -16,37 +16,40 @@ import org.json.JSONObject
 class MainActivity : AppCompatActivity() {
 
     private var survey: HYSurveyView? = null;
+    var sid = "4445329530320896"
+    var cid = "4446931357162496";
+    var parameters = JSONObject();
+    var options = JSONObject();
 
-    fun handleClick(view: View) {
+    init {
+//        parameters.put("externalUserId", euidInput.text.toString());
+        options.put("debug", true);
+        options.put("server", "https://jltest.xmplus.cn/api/survey");
+//        options.put("server", "https://test.xmplus.cn/api/survey");
+    }
+
+    fun handleClickEmbed(view: View) {
         this.setup()
     }
-    override fun onPostCreate(savedInstanceState: Bundle?) {
-        super.onPostCreate(savedInstanceState)
-        getWindow().getDecorView().setBackgroundColor(getResources().getColor(androidx.appcompat.R.color.material_blue_grey_800));
+
+    fun handleClickPopup(view: View) {
+//        this.setup()
+        var root = findViewById<View>(android.R.id.content)
+        HYPopupDialog.buildDialog(root.context, sid, cid, parameters, options,  {
+            alert("取消");
+        }, {
+            alert("提交");
+        }, {
+            alert(it.toString());
+        },
+        );
     }
+
 
     fun setup() {
 
         if (this.survey == null) {
-            var euidInput: EditText =  findViewById(R.id.euid);
             var container:LinearLayout = findViewById(R.id.container)
-
-//            container.
-//            var sid = "4445329530320896"
-//            var cid = "4445518341496832";
-//            var parameters = JSONObject();
-//            parameters.put("externalUserId", euidInput.text.toString());
-//            var options = JSONObject();
-//            options.put("debug", true);
-//            options.put("server", "https://jltest.xmplus.cn/api/survey");
-
-            var sid = "4412572911846400"
-            var cid = "4412960960594944";
-            var parameters = JSONObject();
-            parameters.put("externalUserId", euidInput.text.toString());
-            var options = JSONObject();
-            options.put("debug", true);
-            options.put("server", "https://www.xmplus.cn/api/survey");
 
             this.survey =
                 HYSurveyView(this, sid, cid, parameters, options);

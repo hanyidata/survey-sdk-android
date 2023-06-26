@@ -14,6 +14,10 @@ import android.widget.LinearLayout;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Iterator;
+
+import cn.xmplus.sdk.callback.SurveyFunction;
+
 
 /**
  * Survey View
@@ -23,6 +27,7 @@ public class HYSurveyView extends LinearLayout {
     private final String surveyId;
     private final String channelId;
     private final JSONObject parameters;
+    private final JSONObject options;
 
     private Boolean finished = false;
     private final Boolean debug;
@@ -37,6 +42,9 @@ public class HYSurveyView extends LinearLayout {
 
     private SurveyFunction onSize = null;
     private SurveyFunction onClose = null;
+    private SurveyFunction onLoad = null;
+
+    private JSONObject mergedConfig = new JSONObject();
 
     public HYSurveyView(Context context, String surveyId, String channelId, JSONObject parameters, JSONObject options) throws JSONException {
         super(context);
@@ -44,13 +52,14 @@ public class HYSurveyView extends LinearLayout {
         this.surveyId = surveyId;
         this.channelId = channelId;
         this.parameters = parameters;
+        this.options = options;
 
         this.debug = options.has("debug") && options.getBoolean("debug");
         this.delay = options.has("delay") ? options.getInt("delay") : 3000;
         this.server = options.has("server") ? options.getString("server") : "production";
 
         setOrientation(LinearLayout.VERTICAL);
-        setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 
         this.setup();
     }
@@ -67,6 +76,9 @@ public class HYSurveyView extends LinearLayout {
     }
     public void setOnSize(SurveyFunction callback) {
         this.onSize = callback;
+    }
+    public void setOnLoad(SurveyFunction callback) {
+        this.onLoad = callback;
     }
 
     /**
@@ -120,13 +132,6 @@ public class HYSurveyView extends LinearLayout {
         }
     }
 
-    public static int dpFromPx(final Context context, final double px) {
-        return (int) Math.round(px / context.getResources().getDisplayMetrics().density);
-    }
-
-    public static int pxFromDp(final Context context, final float dp) {
-        return Math.round(dp * context.getResources().getDisplayMetrics().density);
-    }
 
     @JavascriptInterface
     public void postMessage(String message) {
@@ -136,7 +141,20 @@ public class HYSurveyView extends LinearLayout {
 
             String type = event.getString("type");
             JSONObject value = event.has("value") ? event.getJSONObject("value") : null;
+            JSONObject configure = event.has("configure") ? event.getJSONObject("configure") : new JSONObject();
             ViewGroup container = this;
+
+            if (type.equals("load")) {
+                mergedConfig = new JSONObject();
+                for (Iterator<String> it = configure.keys(); it.hasNext(); ) {
+                    String key = it.next();
+                    mergedConfig.putOpt(key, configure.get(key));
+                }
+                for (Iterator<String> it = options.keys(); it.hasNext(); ) {
+                    String key = it.next();
+                    mergedConfig.putOpt(key, options.get(key));
+                }
+            }
 
             webView.post(new Runnable() {
                 @Override
@@ -162,13 +180,17 @@ public class HYSurveyView extends LinearLayout {
                                 throw new RuntimeException(e);
                             }
                             break;
+                        case "load":
+                            if (onLoad != null) {
+                                onLoad.accept(mergedConfig);
+                            }
+                            break;
                         case "size":
                             try {
                                 int dp = value.getInt("height");
-                                int px = pxFromDp(getContext(), dp);
-                                ViewGroup.LayoutParams layoutParams = container.getLayoutParams();
+                                int px = Util.pxFromDp(getContext(), dp);
                                 Log.v("surveySDK", "change height to " + px);
-                                container.setLayoutParams(new LayoutParams(layoutParams.width, px));
+                                container.setLayoutParams(new LayoutParams(container.getLayoutParams().width, px));
                                 if (onSize != null) {
                                     onSize.accept(px);
                                 }
@@ -177,13 +199,18 @@ public class HYSurveyView extends LinearLayout {
                             }
                             break;
                         case "cancel":
+                            Log.v("surveySDK", "survey canceled");
+                            container.removeAllViews();
+                            container.setLayoutParams(new LayoutParams(0, 0));
+                            container.setVisibility(INVISIBLE);
+                            ((ViewGroup)container.getParent()).removeView(container);
                             if (onCancel != null) {
                                 onCancel.accept(null);
                             }
                             break;
                         case "close":
-                            LayoutParams layoutParams = (LayoutParams) container.getLayoutParams();
-                            container.setLayoutParams(new LayoutParams(layoutParams.width, 0));
+                            container.setLayoutParams(new LayoutParams(0, 0));
+                            Log.v("surveySDK", "survey closed");
                             if (onClose != null) {
                                 onClose.accept(null);
                             }

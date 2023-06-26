@@ -1,4 +1,4 @@
-package cn.xmplus.sdk;
+package cn.xmplus.sdk.callback;
 
 @FunctionalInterface
 public interface SurveyFunction {

@@ -50,14 +50,6 @@
                 android:paddingRight="10dp"
                 android:text="euid" />
 
-            <EditText
-                android:id="@+id/euid"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ems="10"
-                android:inputType="textPersonName"
-                android:text="1" />
         </LinearLayout>
 
         <LinearLayout
@@ -66,13 +58,21 @@
             android:orientation="vertical">
 
             <Button
-                android:id="@+id/button"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="100dp"
                 android:gravity="center|right|end"
-                android:onClick="handleClick"
-                android:text="ShowMe" />
+                android:onClick="handleClickEmbed"
+                android:text="内置"
+                android:textAlignment="center" />
+
+            <Button
+                android:id="@+id/button_popup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center|right|end"
+                android:onClick="handleClickPopup"
+                android:text="弹出"
+                android:textAlignment="center" />
 
             <TextView
                 android:id="@+id/version"
