@@ -1,3 +1,5 @@
+# Version 0.1.6
+- 新增弹窗支持 具体参考：HYPopupDialog.makeDialog
 
 # Version 0.1.4
 - 低版本版本兼容

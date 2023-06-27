@@ -5,48 +5,29 @@ import android.app.AlertDialog
 import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
+import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import cn.xmplus.sdk.HYPopupDialog
 import cn.xmplus.sdk.HYSurveyView
+import com.google.android.material.textfield.TextInputEditText
 import org.json.JSONObject
 
 
 class MainActivity : AppCompatActivity() {
 
     private var survey: HYSurveyView? = null;
-    var sid = "4445329530320896"
-    var cid = "4446931357162496";
-    var parameters = JSONObject();
-    var options = JSONObject();
 
-    init {
-//        parameters.put("externalUserId", euidInput.text.toString());
-        options.put("debug", true);
-        options.put("server", "https://jltest.xmplus.cn/api/survey");
-//        options.put("server", "https://test.xmplus.cn/api/survey");
-    }
 
     fun handleClickEmbed(view: View) {
-        this.setup()
-    }
 
-    fun handleClickPopup(view: View) {
-//        this.setup()
-        var root = findViewById<View>(android.R.id.content)
-        HYPopupDialog.makeDialog(root.context, sid, cid, parameters, options,  {
-            alert("取消");
-        }, {
-            alert("提交");
-        }, {
-            alert(it.toString());
-        },
-        );
-    }
-
-
-    fun setup() {
+        var sid: String = findViewById<EditText>(R.id.editTextSurveyId).text.toString();
+        var cid: String = findViewById<EditText>(R.id.editTextChannelId).text.toString();
+        var parameters = JSONObject();
+        var options = JSONObject();
+        options.put("debug", true);
+        options.put("server", findViewById<EditText>(R.id.editTextServer).text.toString());
 
         if (this.survey == null) {
             var container:LinearLayout = findViewById(R.id.container)
@@ -59,11 +40,27 @@ class MainActivity : AppCompatActivity() {
             this.survey?.setOnCancel(::onCancel);
             this.survey?.setOnClose(::onClose);
             this.survey?.setOnSize(::onSize);
-            var versionText: TextView = findViewById(R.id.version)
-            versionText.text = String.format("v:%s (%s)", survey?.version, survey?.build)
         } else {
             this.survey?.show();
         }
+    }
+
+    fun handleClickPopup(view: View) {
+        var sid: String = findViewById<EditText>(R.id.editTextSurveyId).text.toString();
+        var cid: String = findViewById<EditText>(R.id.editTextChannelId).text.toString();
+        var parameters = JSONObject();
+        var options = JSONObject();
+        options.put("debug", true);
+        options.put("server", findViewById<EditText>(R.id.editTextServer).text.toString());
+        var root = findViewById<View>(android.R.id.content)
+        HYPopupDialog.makeDialog(root.context, sid, cid, parameters, options,  {
+                alert("取消");
+            }, {
+                alert("提交");
+            }, {
+                alert(it.toString());
+            },
+        );
     }
 
     fun onSubmit(param: Any?) {
