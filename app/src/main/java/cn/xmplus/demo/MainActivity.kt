@@ -7,18 +7,17 @@ import android.os.Bundle
 import android.view.View
 import android.widget.EditText
 import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import cn.xmplus.sdk.HYPopupDialog
 import cn.xmplus.sdk.HYSurveyView
-import com.google.android.material.textfield.TextInputEditText
 import org.json.JSONObject
-
 
 class MainActivity : AppCompatActivity() {
 
     private var survey: HYSurveyView? = null;
-
+    private var padding: Int = 0;
+    private var bord: Boolean = false;
+    private var debug: Boolean = false;
 
     fun handleClickEmbed(view: View) {
 
@@ -26,23 +25,21 @@ class MainActivity : AppCompatActivity() {
         var cid: String = findViewById<EditText>(R.id.editTextChannelId).text.toString();
         var parameters = JSONObject();
         var options = JSONObject();
-        options.put("debug", true);
+        options.put("debug", debug);
+        options.put("bord", bord);
+        options.put("padding", padding);
         options.put("server", findViewById<EditText>(R.id.editTextServer).text.toString());
 
-        if (this.survey == null) {
-            var container:LinearLayout = findViewById(R.id.container)
+        var container:LinearLayout = findViewById(R.id.container)
 
-            this.survey =
-                HYSurveyView(this, sid, cid, parameters, options);
+        this.survey =
+            HYSurveyView(this, sid, cid, parameters, options);
 
-            container.addView(this.survey)
-            this.survey?.setOnSubmit(::onSubmit);
-            this.survey?.setOnCancel(::onCancel);
-            this.survey?.setOnClose(::onClose);
-            this.survey?.setOnSize(::onSize);
-        } else {
-            this.survey?.show();
-        }
+        container.addView(this.survey)
+        this.survey?.setOnSubmit(::onSubmit);
+        this.survey?.setOnCancel(::onCancel);
+        this.survey?.setOnClose(::onClose);
+        this.survey?.setOnSize(::onSize);
     }
 
     fun handleClickPopup(view: View) {
@@ -50,7 +47,9 @@ class MainActivity : AppCompatActivity() {
         var cid: String = findViewById<EditText>(R.id.editTextChannelId).text.toString();
         var parameters = JSONObject();
         var options = JSONObject();
-        options.put("debug", true);
+        options.put("debug", debug);
+        options.put("bord", bord);
+        options.put("padding", padding);
         options.put("server", findViewById<EditText>(R.id.editTextServer).text.toString());
         var root = findViewById<View>(android.R.id.content)
         HYPopupDialog.makeDialog(root.context, sid, cid, parameters, options,  {

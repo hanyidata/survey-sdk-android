@@ -1,7 +1,11 @@
 package cn.xmplus.sdk;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.ViewGroup;
 import android.webkit.ConsoleMessage;
 import android.webkit.JavascriptInterface;
@@ -31,7 +35,12 @@ public class HYSurveyView extends LinearLayout {
 
     private Boolean finished = false;
     private final Boolean debug;
+    private final Boolean bord;
+    public final Boolean ignorePadding;
+
     private final Integer delay;
+    private Integer appBorderRadiusPx = 0;
+    private Integer appPaddingWidth = 0;
     private final String server;
 
     private final String version = "";
@@ -55,11 +64,20 @@ public class HYSurveyView extends LinearLayout {
         this.options = options;
 
         this.debug = options.has("debug") && options.getBoolean("debug");
+        this.bord = options.has("bord") && options.getBoolean("bord");
+        this.ignorePadding = options.has("ignorePadding") && options.getBoolean("ignorePadding");
         this.delay = options.has("delay") ? options.getInt("delay") : 3000;
         this.server = options.has("server") ? options.getString("server") : "production";
 
-        setOrientation(LinearLayout.VERTICAL);
-        setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+        setClipToOutline(true);
+        setGravity(Gravity.CENTER);
+        setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+
+        if (bord) {
+            GradientDrawable border = new GradientDrawable();
+            border.setStroke(5, Color.GREEN);
+            setBackground(border);
+        }
 
         this.setup();
     }
@@ -94,6 +112,7 @@ public class HYSurveyView extends LinearLayout {
         webView.addJavascriptInterface(this, "surveyProxy");
         webView.getSettings().setUserAgentString(ua);
         webView.setVerticalScrollBarEnabled(true);
+        webView.setClipToOutline(true);
         webView.setWebChromeClient(new WebChromeClient()
         {
             @Override
@@ -177,10 +196,25 @@ public class HYSurveyView extends LinearLayout {
                                 });
 
                             } catch (JSONException e) {
+                                Log.e("surveySDK", "init error \"" + message + "\"" + e.getMessage());
                                 throw new RuntimeException(e);
                             }
                             break;
                         case "load":
+                            // check should render corner radius
+                            if (!ignorePadding) {
+                                DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
+                                int screenWidth = displayMetrics.widthPixels;
+                                appBorderRadiusPx = Util.parsePx(mergedConfig.optString("appBorderRadius", "0px"), screenWidth);
+                                appPaddingWidth = Util.parsePx(mergedConfig.optString("appPaddingWidth", "0px"), screenWidth);
+
+                                appBorderRadiusPx = Util.pxFromDp(getContext(), appBorderRadiusPx);
+                                appPaddingWidth = Util.pxFromDp(getContext(), appPaddingWidth);
+                                GradientDrawable drawable = new GradientDrawable();
+                                drawable.setCornerRadius(appBorderRadiusPx);
+                                webView.setBackground(drawable);
+                                setPadding(appPaddingWidth, 0, appPaddingWidth, 0);
+                            }
                             if (onLoad != null) {
                                 onLoad.accept(mergedConfig);
                             }
@@ -190,7 +224,7 @@ public class HYSurveyView extends LinearLayout {
                                 int dp = value.getInt("height");
                                 int px = Util.pxFromDp(getContext(), dp);
                                 Log.v("surveySDK", "change height to " + px);
-                                container.setLayoutParams(new LayoutParams(container.getLayoutParams().width, px));
+                                setLayoutParams(new LayoutParams(getLayoutParams().width, px));
                                 if (onSize != null) {
                                     onSize.accept(px);
                                 }

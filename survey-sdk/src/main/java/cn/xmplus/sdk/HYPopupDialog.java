@@ -10,7 +10,10 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.LinearLayout;
+
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import cn.xmplus.sdk.callback.SurveyFunction;
@@ -51,11 +54,16 @@ public class HYPopupDialog extends Dialog {
      * @param parameters
      * @param options
      */
-    public static void makeDialog(Context context, String surveyId, String channelId, JSONObject parameters, JSONObject options, SurveyFunction onCancel, SurveyFunction onSubmit, SurveyFunction onError) {
+    public static void makeDialog(Context context, String surveyId, String channelId, JSONObject parameters, JSONObject options, SurveyFunction onCancel, SurveyFunction onSubmit, SurveyFunction onError)  {
         String server = options.optString("server", "https://www.xmplus.cn/api/survey");
+        JSONObject mergeOption = options;
+        try {
+            mergeOption.put("ignorePadding", true);
+        } catch (JSONException e) {
+        }
         new HYSurveyService((JSONObject config, String error) -> {
             if (config != null) {
-                HYPopupDialog dialog = new HYPopupDialog(context, surveyId, channelId, parameters, options, config, onCancel, onSubmit);
+                HYPopupDialog dialog = new HYPopupDialog(context, surveyId, channelId, parameters, mergeOption, config, onCancel, onSubmit);
                 dialog.show();
             } else {
                 Log.e("surveySDK", String.format("survey popup failed %s", error));
@@ -69,20 +77,25 @@ public class HYPopupDialog extends Dialog {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // global config
-        getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-        setCanceledOnTouchOutside(false);
 
         // survey channel config apply here
         DisplayMetrics displayMetrics = this.getContext().getResources().getDisplayMetrics();
         int screenWidth = displayMetrics.widthPixels;
         int screenHeight = displayMetrics.heightPixels;
+
+        // global config
+        getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+
+        setCanceledOnTouchOutside(false);
+
         String embedVerticalAlign = config.optString("embedVerticalAlign", "CENTER");
         boolean embedBackGround = config.optBoolean("embedBackGround", false);
         int appBorderRadiusPx = Util.parsePx(config.optString("appBorderRadius", "0px"), screenWidth);
         int appPaddingWidth = Util.parsePx(config.optString("appPaddingWidth", "0px"), screenWidth);
 
         appBorderRadiusPx = Util.pxFromDp(context, appBorderRadiusPx);
+        appPaddingWidth = Util.pxFromDp(context, appPaddingWidth);
         GradientDrawable gradientDrawable = new GradientDrawable();
         if (embedBackGround) {
             gradientDrawable.setAlpha(150);
@@ -109,17 +122,15 @@ public class HYPopupDialog extends Dialog {
 
         // content view
         contentView = new LinearLayout(context);
+
+        contentView.setGravity(Gravity.CENTER);
         contentView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-//        GradientDrawable border = new GradientDrawable();
-//        border.setColor(Color.RED); //white background
-//        border.setStroke(5, Color.RED); //black border with full opacity
-//        contentView.setBackground(border);
-//        contentView.setPadding(10,10,10,10);
 
         // survey
         try {
             this.survey = new HYSurveyView(context, this.surveyId, this.channelId, this.parameters, this.options);
-            this.survey.setLayoutParams((new LinearLayout.LayoutParams(screenWidth - Util.pxFromDp(context, appPaddingWidth) * 2, -1)));
+            this.survey.setGravity(Gravity.CENTER);
+            this.survey.setLayoutParams(new LinearLayout.LayoutParams(screenWidth - appPaddingWidth * 2, ViewGroup.LayoutParams.MATCH_PARENT));
             this.survey.setOnCancel((Object param) -> {
                 if (this.onCancel != null) {
                     this.onCancel.accept(null);
