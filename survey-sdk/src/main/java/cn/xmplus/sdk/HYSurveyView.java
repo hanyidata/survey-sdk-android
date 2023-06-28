@@ -69,9 +69,8 @@ public class HYSurveyView extends LinearLayout {
         this.delay = options.has("delay") ? options.getInt("delay") : 3000;
         this.server = options.has("server") ? options.getString("server") : "production";
 
-        setClipToOutline(true);
-        setGravity(Gravity.CENTER);
-        setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+        setGravity(Gravity.TOP);
+        setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
         if (bord) {
             GradientDrawable border = new GradientDrawable();
@@ -113,6 +112,7 @@ public class HYSurveyView extends LinearLayout {
         webView.getSettings().setUserAgentString(ua);
         webView.setVerticalScrollBarEnabled(true);
         webView.setClipToOutline(true);
+        webView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         webView.setWebChromeClient(new WebChromeClient()
         {
             @Override
@@ -156,7 +156,9 @@ public class HYSurveyView extends LinearLayout {
     public void postMessage(String message) {
         try {
             JSONObject event = new JSONObject(message);
-            Log.v("surveySDK", event.toString());
+            if (debug) {
+                Log.v("surveySDK", event.toString());
+            }
 
             String type = event.getString("type");
             JSONObject value = event.has("value") ? event.getJSONObject("value") : null;
@@ -222,9 +224,11 @@ public class HYSurveyView extends LinearLayout {
                         case "size":
                             try {
                                 int dp = value.getInt("height");
+                                if (dp <= 10 && dp > 0) {
+                                    return;
+                                }
                                 int px = Util.pxFromDp(getContext(), dp);
                                 Log.v("surveySDK", "change height to " + px);
-                                setLayoutParams(new LayoutParams(getLayoutParams().width, px));
                                 if (onSize != null) {
                                     onSize.accept(px);
                                 }
@@ -234,6 +238,7 @@ public class HYSurveyView extends LinearLayout {
                             break;
                         case "cancel":
                             Log.v("surveySDK", "survey canceled");
+                            container.setLayoutParams(new LayoutParams(0, 0));
                             if (onCancel != null) {
                                 onCancel.accept(null);
                             }

@@ -17,7 +17,8 @@ class MainActivity : AppCompatActivity() {
     private var survey: HYSurveyView? = null;
     private var padding: Int = 0;
     private var bord: Boolean = false;
-    private var debug: Boolean = false;
+    private var debug: Boolean = true;
+    private var delay: Int = 3000;
 
     fun handleClickEmbed(view: View) {
 
@@ -27,6 +28,7 @@ class MainActivity : AppCompatActivity() {
         var options = JSONObject();
         options.put("debug", debug);
         options.put("bord", bord);
+        options.put("delay", delay);
         options.put("padding", padding);
         options.put("server", findViewById<EditText>(R.id.editTextServer).text.toString());
 
@@ -49,25 +51,26 @@ class MainActivity : AppCompatActivity() {
         var options = JSONObject();
         options.put("debug", debug);
         options.put("bord", bord);
+        options.put("delay", delay);
         options.put("padding", padding);
         options.put("server", findViewById<EditText>(R.id.editTextServer).text.toString());
         var root = findViewById<View>(android.R.id.content)
         HYPopupDialog.makeDialog(root.context, sid, cid, parameters, options,  {
-                alert("取消");
+//                alert("取消");
             }, {
-                alert("提交");
+//                alert("提交");
             }, {
-                alert(it.toString());
+//                alert(it.toString());
             },
         );
     }
 
     fun onSubmit(param: Any?) {
-        alert("已经提交")
+//        alert("已经提交")
     }
 
     fun onCancel(param: Any?) {
-        alert("取消了作答")
+//        alert("取消了作答")
     }
 
     fun onSize(param: Any?) {
@@ -76,7 +79,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun onClose(param: Any?) {
-        alert("关闭")
+//        alert("关闭")
     }
 
     fun alert(message: String) {
@@ -94,5 +97,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+//        handleClickPopup(window.decorView);
     }
 }

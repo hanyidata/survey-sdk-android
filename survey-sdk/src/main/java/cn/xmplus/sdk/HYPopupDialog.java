@@ -3,15 +3,21 @@ package cn.xmplus.sdk;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.AnimationUtils;
+import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,10 +35,17 @@ public class HYPopupDialog extends Dialog {
     private JSONObject config;
 
     private LinearLayout contentView;
-    private int contentHeight = 1;
+    private int contentHeight = 0;
     private Context context;
     private SurveyFunction onCancel = null;
     private SurveyFunction onSubmit = null;
+
+    private int appPaddingWidth = 0;
+    private int appBorderRadiusPx = 0;
+    private int embedHeight = 0;
+    private String embedVerticalAlign = "CENTER";
+    private String embedHeightMode = "AUTO";
+    private Boolean embedBackGround = false;
 
     public HYPopupDialog(Context context, String surveyId, String channelId, JSONObject parameters, JSONObject options, JSONObject config, SurveyFunction onCancel, SurveyFunction onSubmit)  {
         super(context);
@@ -44,6 +57,12 @@ public class HYPopupDialog extends Dialog {
         this.config = config;
         this.onCancel = onCancel;
         this.onSubmit = onSubmit;
+
+        // global config
+        getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        setCanceledOnTouchOutside(false);
     }
 
     /**
@@ -83,19 +102,16 @@ public class HYPopupDialog extends Dialog {
         int screenWidth = displayMetrics.widthPixels;
         int screenHeight = displayMetrics.heightPixels;
 
-        // global config
-        getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
-
-        setCanceledOnTouchOutside(false);
-
-        String embedVerticalAlign = config.optString("embedVerticalAlign", "CENTER");
-        boolean embedBackGround = config.optBoolean("embedBackGround", false);
-        int appBorderRadiusPx = Util.parsePx(config.optString("appBorderRadius", "0px"), screenWidth);
-        int appPaddingWidth = Util.parsePx(config.optString("appPaddingWidth", "0px"), screenWidth);
+        embedVerticalAlign = config.optString("embedVerticalAlign", "CENTER");
+        embedHeightMode = config.optString("embedHeightMode", "AUTO");
+        embedBackGround = config.optBoolean("embedBackGround", false);
+        appBorderRadiusPx = Util.parsePx(config.optString("appBorderRadius", "0px"), screenWidth);
+        appPaddingWidth = Util.parsePx(config.optString("appPaddingWidth", "0px"), screenWidth);
+        embedHeight = Util.parsePx(config.optString("embedHeight", "0px"), screenHeight);
 
         appBorderRadiusPx = Util.pxFromDp(context, appBorderRadiusPx);
         appPaddingWidth = Util.pxFromDp(context, appPaddingWidth);
+        embedHeight = Util.pxFromDp(context, embedHeight);
         GradientDrawable gradientDrawable = new GradientDrawable();
         if (embedBackGround) {
             gradientDrawable.setAlpha(150);
@@ -104,33 +120,38 @@ public class HYPopupDialog extends Dialog {
             getWindow().setDimAmount(0f);
             gradientDrawable.setColor(Color.TRANSPARENT);
         }
+
+        // content view
+        contentView = new LinearLayout(context);
+        if (options.optBoolean("bord", false)) {
+            gradientDrawable.setStroke(5, Color.RED);
+            contentView.setPadding(10, 10, 10, 10);
+        }
+
         switch (embedVerticalAlign) {
             case "CENTER":
                 gradientDrawable.setCornerRadius(appBorderRadiusPx);
                 getWindow().setGravity(Gravity.CENTER);
+                contentView.setGravity(Gravity.CENTER);
                 break;
             case "TOP":
                 getWindow().setGravity(Gravity.TOP);
+                contentView.setGravity(Gravity.TOP);
                 gradientDrawable.setCornerRadii(new float[] {0,0,0,0, appBorderRadiusPx, appBorderRadiusPx, appBorderRadiusPx, appBorderRadiusPx});
                 break;
             case "BOTTOM":
                 getWindow().setGravity(Gravity.BOTTOM);
+                contentView.setGravity(Gravity.BOTTOM);
                 gradientDrawable.setCornerRadii(new float[] {appBorderRadiusPx, appBorderRadiusPx, appBorderRadiusPx, appBorderRadiusPx, 0,0,0,0});
                 break;
         }
-        getWindow().setBackgroundDrawable(gradientDrawable);
 
-        // content view
-        contentView = new LinearLayout(context);
-
-        contentView.setGravity(Gravity.CENTER);
-        contentView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        contentView.setClipToOutline(true);
+        contentView.setBackground(gradientDrawable);
 
         // survey
         try {
             this.survey = new HYSurveyView(context, this.surveyId, this.channelId, this.parameters, this.options);
-            this.survey.setGravity(Gravity.CENTER);
-            this.survey.setLayoutParams(new LinearLayout.LayoutParams(screenWidth - appPaddingWidth * 2, ViewGroup.LayoutParams.MATCH_PARENT));
             this.survey.setOnCancel((Object param) -> {
                 if (this.onCancel != null) {
                     this.onCancel.accept(null);
@@ -147,12 +168,28 @@ public class HYPopupDialog extends Dialog {
             });
             this.survey.setOnSize((Object param) -> {
                 this.contentHeight = (int)param;
-//                this.updateLayout();
+                this.updateLayout();
             });
             contentView.addView(this.survey);
-            setContentView(contentView);
+            setContentView(contentView, new FrameLayout.LayoutParams(screenWidth - appPaddingWidth * 2, 1));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void updateLayout() {
+        DisplayMetrics displayMetrics = this.getContext().getResources().getDisplayMetrics();
+        int screenWidth = displayMetrics.widthPixels;
+        int newWidth = screenWidth - appPaddingWidth * 2;
+        int newHeight = 0;
+        switch (embedHeightMode) {
+            case "AUTO":
+                newHeight = Math.min(this.contentHeight, embedHeight);
+                break;
+            case "FIX":
+                newHeight = embedHeight;
+                break;
+        }
+        contentView.setLayoutParams(new FrameLayout.LayoutParams(newWidth, newHeight));
     }
 }
