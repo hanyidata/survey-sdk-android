@@ -34,6 +34,7 @@ public class HYSurveyView extends LinearLayout {
     private final String channelId;
     private final JSONObject parameters;
     private final JSONObject options;
+    private JSONObject config = new JSONObject();
 
     private Boolean finished = false;
     private final Boolean debug;
@@ -58,12 +59,16 @@ public class HYSurveyView extends LinearLayout {
     private JSONObject mergedConfig = new JSONObject();
 
     public HYSurveyView(Context context, String surveyId, String channelId, JSONObject parameters, JSONObject options) throws JSONException {
+        this(context, surveyId, channelId, parameters, options, new JSONObject());
+    }
+    public HYSurveyView(Context context, String surveyId, String channelId, JSONObject parameters, JSONObject options, JSONObject config) throws JSONException {
         super(context);
 
         this.surveyId = surveyId;
         this.channelId = channelId;
         this.parameters = parameters;
         this.options = options;
+        this.config = config;
 
         this.debug = options.has("debug") && options.getBoolean("debug");
         this.bord = options.has("bord") && options.getBoolean("bord");
@@ -120,10 +125,41 @@ public class HYSurveyView extends LinearLayout {
             }
         });
 
+        if (config.length() > 0) {
+            applyConfig();
+        }
+
         webView.loadUrl("file:///android_asset/index.html#pages/bridge");
         this.addView(webView);
 
         Log.v("surveySDK", "init with version: " + version);
+    }
+
+    /**
+     *
+     */
+    private void  applyConfig() {
+        DisplayMetrics displayMetrics = this.getContext().getResources().getDisplayMetrics();
+        int screenWidth = displayMetrics.widthPixels;
+
+        String embedVerticalAlign = config.optString("embedVerticalAlign", "CENTER");
+        int appBorderRadiusPx = Util.parsePx(getContext(), config.optString("appBorderRadius", "0px"), screenWidth);
+
+        GradientDrawable gradientDrawable = new GradientDrawable();
+        gradientDrawable.setColor(Color.WHITE);
+        switch (embedVerticalAlign) {
+            case "CENTER":
+                gradientDrawable.setCornerRadius(appBorderRadiusPx);
+                break;
+            case "TOP":
+                gradientDrawable.setCornerRadii(new float[] {0,0,0,0, appBorderRadiusPx, appBorderRadiusPx, appBorderRadiusPx, appBorderRadiusPx});
+                break;
+            case "BOTTOM":
+                gradientDrawable.setCornerRadii(new float[] {appBorderRadiusPx, appBorderRadiusPx, appBorderRadiusPx, appBorderRadiusPx, 0,0,0,0});
+                break;
+        }
+        webView.setBackgroundColor(Color.TRANSPARENT);
+        webView.setBackground(gradientDrawable);
     }
 
     public String getVersion() {

@@ -110,12 +110,8 @@ public class HYPopupDialog extends Dialog {
         embedHeight = Util.parsePx(context, config.optString("embedHeight", "0px"), screenHeight);
 
         GradientDrawable gradientDrawable = new GradientDrawable();
-        if (embedBackGround) {
-            gradientDrawable.setAlpha(150);
-            gradientDrawable.setColor(Color.BLACK);
-        } else {
+        if (!embedBackGround) {
             getWindow().setDimAmount(0f);
-            gradientDrawable.setColor(Color.TRANSPARENT);
         }
 
         // content view
@@ -127,30 +123,22 @@ public class HYPopupDialog extends Dialog {
 
         switch (embedVerticalAlign) {
             case "CENTER":
-                gradientDrawable.setCornerRadius(appBorderRadiusPx);
                 getWindow().setGravity(Gravity.CENTER);
                 contentView.setGravity(Gravity.CENTER);
                 break;
             case "TOP":
                 getWindow().setGravity(Gravity.TOP);
                 contentView.setGravity(Gravity.TOP);
-                gradientDrawable.setCornerRadius(appBorderRadiusPx);
-                //gradientDrawable.setCornerRadii(new float[] {0,0,0,0, appBorderRadiusPx, appBorderRadiusPx, appBorderRadiusPx, appBorderRadiusPx});
                 break;
             case "BOTTOM":
                 getWindow().setGravity(Gravity.BOTTOM);
                 contentView.setGravity(Gravity.BOTTOM);
-                gradientDrawable.setCornerRadius(appBorderRadiusPx);
-                //gradientDrawable.setCornerRadii(new float[] {appBorderRadiusPx, appBorderRadiusPx, appBorderRadiusPx, appBorderRadiusPx, 0,0,0,0});
                 break;
         }
 
-        contentView.setClipToOutline(true);
-        contentView.setBackground(gradientDrawable);
-
         // survey
         try {
-            this.survey = new HYSurveyView(context, this.surveyId, this.channelId, this.parameters, this.options);
+            this.survey = new HYSurveyView(context, this.surveyId, this.channelId, this.parameters, this.options, this.config);
             this.survey.setOnCancel((Object param) -> {
                 if (this.onCancel != null) {
                     this.onCancel.accept(null);
