@@ -42,6 +42,8 @@ public class HYSurveyView extends LinearLayout {
     public final Boolean ignorePadding;
 
     private final Integer delay;
+    private String borderRadiusMode = "CENTER";
+
     private Integer appBorderRadiusPx = 0;
     private Integer appPaddingWidth = 0;
     private final String server;
@@ -75,6 +77,7 @@ public class HYSurveyView extends LinearLayout {
         this.ignorePadding = options.has("ignorePadding") && options.getBoolean("ignorePadding");
         this.delay = options.has("delay") ? options.getInt("delay") : 3000;
         this.server = options.has("server") ? options.getString("server") : "production";
+        this.borderRadiusMode = options.has("borderRadiusMode") ? options.getString("borderRadiusMode") : "CENTER";
 
         setGravity(Gravity.TOP);
         setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
@@ -146,20 +149,20 @@ public class HYSurveyView extends LinearLayout {
         int appBorderRadiusPx = Util.parsePx(getContext(), config.optString("appBorderRadius", "0px"), screenWidth);
 
         GradientDrawable gradientDrawable = new GradientDrawable();
-        gradientDrawable.setColor(Color.WHITE);
+        gradientDrawable.setColor(Color.TRANSPARENT);
         switch (embedVerticalAlign) {
             case "CENTER":
-                gradientDrawable.setCornerRadius(appBorderRadiusPx);
+//                gradientDrawable.setCornerRadius(appBorderRadiusPx);
                 break;
             case "TOP":
-                gradientDrawable.setCornerRadii(new float[] {0,0,0,0, appBorderRadiusPx, appBorderRadiusPx, appBorderRadiusPx, appBorderRadiusPx});
+//                gradientDrawable.setCornerRadii(new float[] {0,0,0,0, appBorderRadiusPx, appBorderRadiusPx, appBorderRadiusPx, appBorderRadiusPx});
                 break;
             case "BOTTOM":
-                gradientDrawable.setCornerRadii(new float[] {appBorderRadiusPx, appBorderRadiusPx, appBorderRadiusPx, appBorderRadiusPx, 0,0,0,0});
+//                gradientDrawable.setCornerRadii(new float[] {appBorderRadiusPx, appBorderRadiusPx, appBorderRadiusPx, appBorderRadiusPx, 0,0,0,0});
                 break;
         }
         webView.setBackgroundColor(Color.TRANSPARENT);
-        webView.setBackground(gradientDrawable);
+//        webView.setBackground(gradientDrawable);
     }
 
     public String getVersion() {
@@ -221,6 +224,7 @@ public class HYSurveyView extends LinearLayout {
                                 data.put("delay", delay);
                                 data.put("server", server);
                                 data.put("parameters", parameters);
+                                data.put("borderRadiusMode", borderRadiusMode);
                                 Log.v("surveySDK", data.toString());
                                 String script = String.format("document.dispatchEvent(new CustomEvent('init', { detail: %s}))", data);
                                 webView.evaluateJavascript(script, new ValueCallback<String>() {
@@ -254,7 +258,7 @@ public class HYSurveyView extends LinearLayout {
                         case "size":
                             try {
                                 int dp = value.getInt("height");
-                                if (dp <= 10 && dp > 0) {
+                                if (dp <= 10) {
                                     return;
                                 }
                                 int px = Util.pxFromDp(getContext(), dp);
@@ -263,7 +267,6 @@ public class HYSurveyView extends LinearLayout {
                                     onSize.accept(px);
                                 }
                             } catch (JSONException e) {
-                                throw new RuntimeException(e);
                             }
                             break;
                         case "cancel":

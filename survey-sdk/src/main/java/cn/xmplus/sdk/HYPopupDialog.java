@@ -29,7 +29,7 @@ public class HYPopupDialog extends Dialog {
     private final String surveyId;
     private final String channelId;
     private final JSONObject parameters;
-    private final JSONObject options;
+    private JSONObject options;
 
     private HYSurveyView survey;
     private JSONObject config;
@@ -62,6 +62,12 @@ public class HYPopupDialog extends Dialog {
         getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
+        // 弹窗场景下，圆角根据垂直对齐方式设置
+        embedVerticalAlign = config.optString("embedVerticalAlign", "CENTER");
+        try {
+            this.options.put("borderRadiusMode", embedVerticalAlign);
+        } catch (JSONException e) {
+        }
         setCanceledOnTouchOutside(false);
     }
 
