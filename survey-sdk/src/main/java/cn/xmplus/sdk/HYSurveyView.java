@@ -6,6 +6,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.ConsoleMessage;
 import android.webkit.JavascriptInterface;
@@ -13,6 +14,7 @@ import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.Button;
 import android.widget.LinearLayout;
 
 import org.json.JSONException;
@@ -71,12 +73,6 @@ public class HYSurveyView extends LinearLayout {
 
         setGravity(Gravity.TOP);
         setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-
-        if (bord) {
-            GradientDrawable border = new GradientDrawable();
-            border.setStroke(5, Color.GREEN);
-            setBackground(border);
-        }
 
         this.setup();
     }
@@ -207,11 +203,9 @@ public class HYSurveyView extends LinearLayout {
                             if (!ignorePadding) {
                                 DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
                                 int screenWidth = displayMetrics.widthPixels;
-                                appBorderRadiusPx = Util.parsePx(mergedConfig.optString("appBorderRadius", "0px"), screenWidth);
-                                appPaddingWidth = Util.parsePx(mergedConfig.optString("appPaddingWidth", "0px"), screenWidth);
+                                appBorderRadiusPx = Util.parsePx(getContext(), mergedConfig.optString("appBorderRadius", "0px"), screenWidth);
+                                appPaddingWidth = Util.parsePx(getContext(), mergedConfig.optString("appPaddingWidth", "0px"), screenWidth);
 
-                                appBorderRadiusPx = Util.pxFromDp(getContext(), appBorderRadiusPx);
-                                appPaddingWidth = Util.pxFromDp(getContext(), appPaddingWidth);
                                 GradientDrawable drawable = new GradientDrawable();
                                 drawable.setCornerRadius(appBorderRadiusPx);
                                 webView.setBackground(drawable);

@@ -105,13 +105,10 @@ public class HYPopupDialog extends Dialog {
         embedVerticalAlign = config.optString("embedVerticalAlign", "CENTER");
         embedHeightMode = config.optString("embedHeightMode", "AUTO");
         embedBackGround = config.optBoolean("embedBackGround", false);
-        appBorderRadiusPx = Util.parsePx(config.optString("appBorderRadius", "0px"), screenWidth);
-        appPaddingWidth = Util.parsePx(config.optString("appPaddingWidth", "0px"), screenWidth);
-        embedHeight = Util.parsePx(config.optString("embedHeight", "0px"), screenHeight);
+        appBorderRadiusPx = Util.parsePx(context, config.optString("appBorderRadius", "0px"), screenWidth);
+        appPaddingWidth = Util.parsePx(context, config.optString("appPaddingWidth", "0px"), screenWidth);
+        embedHeight = Util.parsePx(context, config.optString("embedHeight", "0px"), screenHeight);
 
-        appBorderRadiusPx = Util.pxFromDp(context, appBorderRadiusPx);
-        appPaddingWidth = Util.pxFromDp(context, appPaddingWidth);
-        embedHeight = Util.pxFromDp(context, embedHeight);
         GradientDrawable gradientDrawable = new GradientDrawable();
         if (embedBackGround) {
             gradientDrawable.setAlpha(150);
@@ -137,12 +134,14 @@ public class HYPopupDialog extends Dialog {
             case "TOP":
                 getWindow().setGravity(Gravity.TOP);
                 contentView.setGravity(Gravity.TOP);
-                gradientDrawable.setCornerRadii(new float[] {0,0,0,0, appBorderRadiusPx, appBorderRadiusPx, appBorderRadiusPx, appBorderRadiusPx});
+                gradientDrawable.setCornerRadius(appBorderRadiusPx);
+                //gradientDrawable.setCornerRadii(new float[] {0,0,0,0, appBorderRadiusPx, appBorderRadiusPx, appBorderRadiusPx, appBorderRadiusPx});
                 break;
             case "BOTTOM":
                 getWindow().setGravity(Gravity.BOTTOM);
                 contentView.setGravity(Gravity.BOTTOM);
-                gradientDrawable.setCornerRadii(new float[] {appBorderRadiusPx, appBorderRadiusPx, appBorderRadiusPx, appBorderRadiusPx, 0,0,0,0});
+                gradientDrawable.setCornerRadius(appBorderRadiusPx);
+                //gradientDrawable.setCornerRadii(new float[] {appBorderRadiusPx, appBorderRadiusPx, appBorderRadiusPx, appBorderRadiusPx, 0,0,0,0});
                 break;
         }
 

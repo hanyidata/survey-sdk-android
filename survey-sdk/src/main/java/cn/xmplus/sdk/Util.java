@@ -18,10 +18,16 @@ public class Util {
         return Math.round(dp * context.getResources().getDisplayMetrics().density);
     }
 
-    public static int parsePx(String value, int max) {
+    /**
+     * 解析px或者%， 注意这里的px是指产品页面的设置像素，在app端其实是dp
+     * @param value
+     * @param max
+     * @return
+     */
+    public static int parsePx(final Context context, String value, int max) {
         try {
             if (PATTERN_PX.matcher(value).matches()) {
-                return new DecimalFormat("0px").parse(value).intValue();
+                return pxFromDp(context, new DecimalFormat("0px").parse(value).intValue());
             } else if (PATTERN_PERC.matcher(value).matches()) {
                 Float hp = new DecimalFormat("0%").parse(value).floatValue();
                 return (int) (hp * max);

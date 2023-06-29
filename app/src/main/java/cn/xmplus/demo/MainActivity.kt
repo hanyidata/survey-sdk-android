@@ -98,6 +98,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-//        handleClickPopup(window.decorView);
+        handleClickPopup(window.decorView);
     }
 }
