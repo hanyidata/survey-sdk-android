@@ -19,12 +19,18 @@ class MainActivity : AppCompatActivity() {
     private var bord: Boolean = false;
     private var debug: Boolean = true;
     private var delay: Int = 3000;
-    private var accessCode: String = "";
+    private var accessCode: String = "1125859680937918464";
 
-    private var overrideOps: Boolean = false;
-    private var surveyId: String = "4445329530320896";
-    private var channelId: String = "4446931357162496";
-    private var server: String = "https://jltest.xmplus.cn/api/survey";
+    private var overrideOps: Boolean = true;
+    // JLTEST
+//    private var surveyId: String = "4445329530320896";
+//    private var channelId: String = "4446931357162496";
+//    private var server: String = "https://jltest.xmplus.cn/api/survey";
+
+    // UAT
+    private var surveyId: String = "4475002070663168";
+    private var channelId: String = "4475389028433920";
+    private var server: String = "https://mktcs-uat.lynkco-test.com/api/survey";
 
     fun handleClickEmbed(view: View) {
 
@@ -32,6 +38,8 @@ class MainActivity : AppCompatActivity() {
         var cid: String = if (!overrideOps) findViewById<EditText>(R.id.editTextChannelId).text.toString() else channelId;
         var server: String = if (!overrideOps) findViewById<EditText>(R.id.editTextServer).text.toString() else server;
         var parameters = JSONObject();
+        parameters.put("accessCode", accessCode);
+
         var options = JSONObject();
         options.put("debug", debug);
         options.put("bord", bord);
@@ -41,7 +49,7 @@ class MainActivity : AppCompatActivity() {
 
         var container:LinearLayout = findViewById(R.id.container)
 
-        HYSurveyView.makeViewAsync(this, sid, cid, accessCode, parameters, options, {
+        HYSurveyView.makeViewAsync(this, sid, cid, parameters, options, {
             this.survey = it as HYSurveyView?;
             container.addView(this.survey)
             this.survey?.setOnSubmit(::onSubmit);
@@ -58,6 +66,8 @@ class MainActivity : AppCompatActivity() {
         var cid: String = if (!overrideOps) findViewById<EditText>(R.id.editTextChannelId).text.toString() else channelId;
         var server: String = if (!overrideOps) findViewById<EditText>(R.id.editTextServer).text.toString() else server;
         var parameters = JSONObject();
+        parameters.put("accessCode", accessCode);
+
         var options = JSONObject();
         options.put("debug", debug);
         options.put("bord", bord);
@@ -65,7 +75,7 @@ class MainActivity : AppCompatActivity() {
         options.put("padding", padding);
         options.put("server", server);
         var root = findViewById<View>(android.R.id.content)
-        HYPopupDialog.makeDialog(root.context, sid, cid, accessCode, parameters, options,  {
+        HYPopupDialog.makeDialog(root.context, sid, cid, parameters, options,  {
 //                alert("取消");
             }, {
 //                alert("提交");

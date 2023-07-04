@@ -76,12 +76,12 @@ public class HYPopupDialog extends Dialog {
      * @param context
      * @param surveyId
      * @param channelId
-     * @param accessCode
      * @param parameters
      * @param options
      */
-    public static void makeDialog(Context context, String surveyId, String channelId, String accessCode, JSONObject parameters, JSONObject options, SurveyFunction onCancel, SurveyFunction onSubmit, SurveyFunction onError)  {
+    public static void makeDialog(Context context, String surveyId, String channelId, JSONObject parameters, JSONObject options, SurveyFunction onCancel, SurveyFunction onSubmit, SurveyFunction onError)  {
         String server = options.optString("server", "https://www.xmplus.cn/api/survey");
+        String accessCode = parameters.optString("accessCode", "");
         JSONObject mergeOption = options;
         try {
             mergeOption.put("ignorePadding", true);

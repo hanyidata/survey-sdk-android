@@ -89,17 +89,17 @@ public class HYSurveyView extends LinearLayout {
      * @param context
      * @param surveyId
      * @param channelId
-     * @param accessCode
      * @param parameters
      * @param options
      * @param onError
      */
-    public static void makeViewAsync(Context context, String surveyId, String channelId, String accessCode, JSONObject parameters, JSONObject options, SurveyFunction onReady, SurveyFunction onError)  {
+    public static void makeViewAsync(Context context, String surveyId, String channelId, JSONObject parameters, JSONObject options, SurveyFunction onReady, SurveyFunction onError)  {
         if (onReady == null) {
             Log.e("surveySDK", "onReady not setup");
             return;
         }
         String server = options.optString("server", "https://www.xmplus.cn/api/survey");
+        String accessCode = parameters.optString("accessCode", "");
         new HYSurveyService((JSONObject config, String error) -> {
             if (config != null) {
                 HYSurveyView view = new HYSurveyView(context, surveyId, channelId, parameters, options);
