@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity() {
     private var delay: Int = 3000;
     private var accessCode: String = "";
 
-    private var overrideOps: Boolean = true;
+    private var overrideOps: Boolean = false;
     private var surveyId: String = "4445329530320896";
     private var channelId: String = "4446931357162496";
     private var server: String = "https://jltest.xmplus.cn/api/survey";
@@ -41,14 +41,16 @@ class MainActivity : AppCompatActivity() {
 
         var container:LinearLayout = findViewById(R.id.container)
 
-        this.survey =
-            HYSurveyView(this, sid, cid, parameters, options);
-
-        container.addView(this.survey)
-        this.survey?.setOnSubmit(::onSubmit);
-        this.survey?.setOnCancel(::onCancel);
-        this.survey?.setOnClose(::onClose);
-        this.survey?.setOnSize(::onSize);
+        HYSurveyView.makeViewAsync(this, sid, cid, accessCode, parameters, options, {
+            this.survey = it as HYSurveyView?;
+            container.addView(this.survey)
+            this.survey?.setOnSubmit(::onSubmit);
+            this.survey?.setOnCancel(::onCancel);
+            this.survey?.setOnClose(::onClose);
+            this.survey?.setOnSize(::onSize);
+        }, {
+            alert(it.toString());
+        })
     }
 
     fun handleClickPopup(view: View) {

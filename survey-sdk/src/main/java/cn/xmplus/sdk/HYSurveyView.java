@@ -6,7 +6,6 @@ import android.graphics.drawable.GradientDrawable;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.ConsoleMessage;
 import android.webkit.JavascriptInterface;
@@ -14,7 +13,6 @@ import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.widget.Button;
 import android.widget.LinearLayout;
 
 import org.json.JSONException;
@@ -23,6 +21,7 @@ import org.json.JSONObject;
 import java.util.Iterator;
 
 import cn.xmplus.sdk.callback.SurveyFunction;
+import cn.xmplus.sdk.service.HYSurveyService;
 
 
 /**
@@ -60,10 +59,10 @@ public class HYSurveyView extends LinearLayout {
 
     private JSONObject mergedConfig = new JSONObject();
 
-    public HYSurveyView(Context context, String surveyId, String channelId, JSONObject parameters, JSONObject options) throws JSONException {
+    public HYSurveyView(Context context, String surveyId, String channelId, JSONObject parameters, JSONObject options) {
         this(context, surveyId, channelId, parameters, options, new JSONObject());
     }
-    public HYSurveyView(Context context, String surveyId, String channelId, JSONObject parameters, JSONObject options, JSONObject config) throws JSONException {
+    public HYSurveyView(Context context, String surveyId, String channelId, JSONObject parameters, JSONObject options, JSONObject config) {
         super(context);
 
         this.surveyId = surveyId;
@@ -72,17 +71,46 @@ public class HYSurveyView extends LinearLayout {
         this.options = options;
         this.config = config;
 
-        this.debug = options.has("debug") && options.getBoolean("debug");
-        this.bord = options.has("bord") && options.getBoolean("bord");
-        this.ignorePadding = options.has("ignorePadding") && options.getBoolean("ignorePadding");
-        this.delay = options.has("delay") ? options.getInt("delay") : 3000;
-        this.server = options.has("server") ? options.getString("server") : "production";
-        this.borderRadiusMode = options.has("borderRadiusMode") ? options.getString("borderRadiusMode") : "CENTER";
+        this.debug = options.optBoolean("debug", false);
+        this.bord = options.optBoolean("bord", false);
+        this.ignorePadding = options.optBoolean("ignorePadding", false);
+        this.delay = options.optInt("delay", 3000);
+        this.server = options.optString("server", "production");
+        this.borderRadiusMode = options.optString("borderRadiusMode", "CENTER");
 
         setGravity(Gravity.TOP);
-        setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, 0));
 
         this.setup();
+    }
+
+    /**
+     * Async version make view
+     * @param context
+     * @param surveyId
+     * @param channelId
+     * @param accessCode
+     * @param parameters
+     * @param options
+     * @param onError
+     */
+    public static void makeViewAsync(Context context, String surveyId, String channelId, String accessCode, JSONObject parameters, JSONObject options, SurveyFunction onReady, SurveyFunction onError)  {
+        if (onReady == null) {
+            Log.e("surveySDK", "onReady not setup");
+            return;
+        }
+        String server = options.optString("server", "https://www.xmplus.cn/api/survey");
+        new HYSurveyService((JSONObject config, String error) -> {
+            if (config != null) {
+                HYSurveyView view = new HYSurveyView(context, surveyId, channelId, parameters, options);
+                onReady.accept(view);
+            } else {
+                Log.e("surveySDK", String.format("survey popup failed %s", error));
+                if (onError != null) {
+                    onError.accept(error);
+                }
+            }
+        }).execute(server, surveyId, channelId, accessCode);
     }
 
     public void setOnSubmit(SurveyFunction callback) {
@@ -263,6 +291,7 @@ public class HYSurveyView extends LinearLayout {
                                 }
                                 int px = Util.pxFromDp(getContext(), dp);
                                 Log.v("surveySDK", "change height to " + px);
+                                container.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, px));
                                 if (onSize != null) {
                                     onSize.accept(px);
                                 }
