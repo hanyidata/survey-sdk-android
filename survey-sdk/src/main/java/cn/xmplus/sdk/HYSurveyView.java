@@ -197,7 +197,7 @@ public class HYSurveyView extends LinearLayout {
 
             String type = event.getString("type");
             JSONObject value = event.has("value") ? event.getJSONObject("value") : null;
-            JSONObject configure = event.has("configure") ? event.getJSONObject("configure") : new JSONObject();
+            JSONObject configure = event.has("configure") && !event.get("configure").equals(null) ? event.getJSONObject("configure") : new JSONObject();
             ViewGroup container = this;
 
             if (type.equals("load")) {

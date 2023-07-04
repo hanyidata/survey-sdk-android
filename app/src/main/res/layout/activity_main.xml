@@ -19,7 +19,7 @@
             android:layout_weight="1"
             android:ems="10"
             android:inputType="textPersonName"
-            android:text="4445329530320896" />
+            android:text="4467958136180736" />
 
         <EditText
             android:id="@+id/editTextChannelId"
@@ -28,7 +28,7 @@
             android:layout_weight="1"
             android:ems="10"
             android:inputType="textPersonName"
-            android:text="4446931357162496" />
+            android:text="4467991412740096" />
 
         <EditText
             android:id="@+id/editTextServer"
