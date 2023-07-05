@@ -155,6 +155,7 @@ public class HYSurveyView extends LinearLayout {
                 return true;
             }
         });
+        webView.setBackgroundColor(Color.TRANSPARENT);
 
         if (config.length() > 0) {
             applyConfig();

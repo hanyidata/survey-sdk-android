@@ -27,10 +27,15 @@ class MainActivity : AppCompatActivity() {
 //    private var channelId: String = "4446931357162496";
 //    private var server: String = "https://jltest.xmplus.cn/api/survey";
 
-    // UAT
+//    // UAT
     private var surveyId: String = "4475002070663168";
     private var channelId: String = "4475389028433920";
     private var server: String = "https://mktcs-uat.lynkco-test.com/api/survey";
+
+    // TEST
+//    private var surveyId: String = "3937853687522304";
+//    private var channelId: String = "3937854297465856";
+//    private var server: String = "https://test.xmplus.cn/api/survey";
 
     fun handleClickEmbed(view: View) {
 
