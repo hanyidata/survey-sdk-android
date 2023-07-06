@@ -19,20 +19,22 @@ class MainActivity : AppCompatActivity() {
     private var bord: Boolean = false;
     private var debug: Boolean = true;
     private var delay: Int = 3000;
-    private var accessCode: String = "1125859680937918464";
+    private var accessCode: String = "";
+//    private var accessCode: String = "1126224225836916736";
+    private var externalUserId: String = "";
 
-    private var overrideOps: Boolean = true;
+    private var overrideOps: Boolean = false;
     // JLTEST
-//    private var surveyId: String = "4445329530320896";
-//    private var channelId: String = "4446931357162496";
-//    private var server: String = "https://jltest.xmplus.cn/api/survey";
+    private var surveyId: String = "4445329530320896";
+    private var channelId: String = "4446931357162496";
+    private var server: String = "https://jltest.xmplus.cn/api/survey";
 
 //    // UAT
-    private var surveyId: String = "4475002070663168";
-    private var channelId: String = "4475389028433920";
-    private var server: String = "https://mktcs-uat.lynkco-test.com/api/survey";
-
-    // TEST
+//    private var surveyId: String = "4475002070663168";
+//    private var channelId: String = "4475389028433920";
+//    private var server: String = "https://mktcs-uat.lynkco-test.com/api/survey";
+//
+//    // TEST
 //    private var surveyId: String = "3937853687522304";
 //    private var channelId: String = "3937854297465856";
 //    private var server: String = "https://test.xmplus.cn/api/survey";
@@ -44,6 +46,7 @@ class MainActivity : AppCompatActivity() {
         var server: String = if (!overrideOps) findViewById<EditText>(R.id.editTextServer).text.toString() else server;
         var parameters = JSONObject();
         parameters.put("accessCode", accessCode);
+        parameters.put("externalUserId", externalUserId);
 
         var options = JSONObject();
         options.put("debug", debug);
@@ -72,6 +75,7 @@ class MainActivity : AppCompatActivity() {
         var server: String = if (!overrideOps) findViewById<EditText>(R.id.editTextServer).text.toString() else server;
         var parameters = JSONObject();
         parameters.put("accessCode", accessCode);
+        parameters.put("externalUserId", externalUserId);
 
         var options = JSONObject();
         options.put("debug", debug);

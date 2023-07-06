@@ -35,7 +35,6 @@ public class HYSurveyService extends AsyncTask<String, Void, List<Object>> {
         String surveyId = strings[1];
         String channelId = strings[2];
         String accessCode = strings[3];
-        List<Object> result = null;
         try {
             URL url = new URL(String.format("%s/surveys/%s/embed?channelId=%s&accessCode=%s", server, surveyId, channelId, accessCode));
             Log.d("surveySDK", String.format("download config from %s", server));
@@ -80,22 +79,23 @@ public class HYSurveyService extends AsyncTask<String, Void, List<Object>> {
     @Override
     protected void onPostExecute(List<Object> result) {
         if (result == null || result.size() != 2) {
-            if (taskCallback != null) {
-                taskCallback.onConfigReady(null, "系统错误");
-            }
+            taskCallback.onConfigReady(null, "系统错误");
             return;
         }
         JSONObject config = (JSONObject) result.get(0);
         String error = (String) result.get(1);
-        if (config != null && (config.optString("channelStatus").equals("STOPPED") || config.optString("surveyStatus").equals("STOPPED"))) {
-            Log.w("surveySDK", "survey stop or system issue");
-            if (taskCallback != null) {
+        if (config != null) {
+            if (config.optString("channelStatus").equals("PAUSE") || config.optString("surveyStatus").equals("STOPPED")) {
+                Log.w("surveySDK", "survey stop or system issue");
                 taskCallback.onConfigReady(null,"问卷停用");
+            } else if (config.optBoolean("doNotDisturb")) {
+                Log.w("surveySDK", "survey 免打扰屏蔽");
+                taskCallback.onConfigReady(null,"免打扰屏蔽");
+            } else {
+                taskCallback.onConfigReady(config, null);
             }
-            return;
-        }
-        if (taskCallback != null) {
-            taskCallback.onConfigReady(config, error);
+        } else {
+            taskCallback.onConfigReady(null, error);
         }
     }
 }
