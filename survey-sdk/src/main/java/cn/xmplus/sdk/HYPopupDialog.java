@@ -84,7 +84,7 @@ public class HYPopupDialog extends Dialog {
         String accessCode = parameters.optString("accessCode", "");
         JSONObject mergeOption = options;
         try {
-            mergeOption.put("ignorePadding", true);
+            mergeOption.put("isDialogMode", true);
         } catch (JSONException e) {
         }
         new HYSurveyService((JSONObject config, String error) -> {
@@ -175,10 +175,10 @@ public class HYPopupDialog extends Dialog {
         DisplayMetrics displayMetrics = this.getContext().getResources().getDisplayMetrics();
         int screenWidth = displayMetrics.widthPixels;
         int newWidth = screenWidth - appPaddingWidth * 2;
-        int newHeight = 0;
+        int newHeight = this.contentHeight;
         switch (embedHeightMode) {
             case "AUTO":
-                newHeight = Math.min(this.contentHeight, embedHeight);
+//                newHeight = Math.min(this.contentHeight, embedHeight);
                 break;
             case "FIX":
                 newHeight = embedHeight;

@@ -36,9 +36,11 @@ public class HYSurveyView extends LinearLayout {
     private JSONObject config = new JSONObject();
 
     private Boolean finished = false;
+    private Integer previousHeight = 0;
+
     private final Boolean debug;
     private final Boolean bord;
-    public final Boolean ignorePadding;
+    public Boolean isDialogMode = false;
 
     private final Integer delay;
     private String borderRadiusMode = "CENTER";
@@ -73,7 +75,7 @@ public class HYSurveyView extends LinearLayout {
 
         this.debug = options.optBoolean("debug", false);
         this.bord = options.optBoolean("bord", false);
-        this.ignorePadding = options.optBoolean("ignorePadding", false);
+        this.isDialogMode = options.optBoolean("isDialogMode", false);
         this.delay = options.optInt("delay", 3000);
         this.server = options.optString("server", "production");
         this.borderRadiusMode = options.optString("borderRadiusMode", "CENTER");
@@ -244,6 +246,8 @@ public class HYSurveyView extends LinearLayout {
             webView.post(new Runnable() {
                 @Override
                 public void run() {
+                    DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
+
                     switch (type) {
                         case "init":
                             JSONObject data = new JSONObject();
@@ -268,13 +272,12 @@ public class HYSurveyView extends LinearLayout {
                             }
                             break;
                         case "load":
-                            // check should render corner radius
-                            if (!ignorePadding) {
-                                DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
-                                int screenWidth = displayMetrics.widthPixels;
-                                appBorderRadiusPx = Util.parsePx(getContext(), mergedConfig.optString("appBorderRadius", "0px"), screenWidth);
-                                appPaddingWidth = Util.parsePx(getContext(), mergedConfig.optString("appPaddingWidth", "0px"), screenWidth);
+                            int screenWidth = displayMetrics.widthPixels;
+                            appBorderRadiusPx = Util.parsePx(getContext(), mergedConfig.optString("appBorderRadius", "0px"), screenWidth);
+                            appPaddingWidth = Util.parsePx(getContext(), mergedConfig.optString("appPaddingWidth", "0px"), screenWidth);
 
+                            // check should render corner radius
+                            if (!isDialogMode) {
                                 GradientDrawable drawable = new GradientDrawable();
                                 drawable.setCornerRadius(appBorderRadiusPx);
                                 webView.setBackground(drawable);
@@ -291,10 +294,14 @@ public class HYSurveyView extends LinearLayout {
                                     return;
                                 }
                                 int px = Util.pxFromDp(getContext(), dp);
-                                Log.v("surveySDK", "change height to " + px);
-                                container.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, px));
-                                if (onSize != null) {
-                                    onSize.accept(px);
+                                int height = px;
+                                if (previousHeight != height) {
+                                    Log.v("surveySDK", "change height to " + height);
+                                    container.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height));
+                                    if (onSize != null) {
+                                        onSize.accept(px);
+                                    }
+                                    previousHeight = height;
                                 }
                             } catch (JSONException e) {
                             }

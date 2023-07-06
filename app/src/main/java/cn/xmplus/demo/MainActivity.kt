@@ -23,17 +23,17 @@ class MainActivity : AppCompatActivity() {
 //    private var accessCode: String = "1126224225836916736";
     private var externalUserId: String = "";
 
-    private var overrideOps: Boolean = false;
+    private var overrideOps: Boolean = true;
     // JLTEST
-    private var surveyId: String = "4445329530320896";
-    private var channelId: String = "4446931357162496";
+    private var surveyId: String = "4467958136180736";
+    private var channelId: String = "4508090776587264";
     private var server: String = "https://jltest.xmplus.cn/api/survey";
 
 //    // UAT
-//    private var surveyId: String = "4475002070663168";
-//    private var channelId: String = "4475389028433920";
+//    private var surveyId: String = "4475020361170944";
+//    private var channelId: String = "4496490408345600";
 //    private var server: String = "https://mktcs-uat.lynkco-test.com/api/survey";
-//
+
 //    // TEST
 //    private var surveyId: String = "3937853687522304";
 //    private var channelId: String = "3937854297465856";
