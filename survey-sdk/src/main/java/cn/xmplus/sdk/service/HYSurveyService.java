@@ -69,10 +69,9 @@ public class HYSurveyService extends AsyncTask<String, Void, List<Object>> {
                 return Arrays.asList(null, response.optString("message", "系统错误"));
             }
 
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            Log.e("surveySDK", String.format("survey check request got error %s", e.getMessage()));
+            return Arrays.asList(null, "系统错误");
         }
     }
 

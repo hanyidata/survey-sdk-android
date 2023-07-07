@@ -22,10 +22,10 @@ class MainActivity : AppCompatActivity() {
     private var debug: Boolean = false;
     private var delay: Int = 3000;
     private var accessCode: String = "";
-//    private var accessCode: String = "1126224225836916736";
+//    private var accessCode: String = "1126912050111393792";
     private var externalUserId: String = "";
 
-    private var overrideOps: Boolean = false;
+    private var overrideOps: Boolean = true;
     // JLTEST
 //    private var surveyId: String = "4467958136180736";
 //    private var channelId: String = "4508090776587264";
