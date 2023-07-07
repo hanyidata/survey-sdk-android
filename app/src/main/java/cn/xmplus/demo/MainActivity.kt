@@ -5,9 +5,11 @@ import android.app.AlertDialog
 import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.setPadding
 import cn.xmplus.sdk.HYPopupDialog
 import cn.xmplus.sdk.HYSurveyView
 import org.json.JSONObject
@@ -17,22 +19,22 @@ class MainActivity : AppCompatActivity() {
     private var survey: HYSurveyView? = null;
     private var padding: Int = 0;
     private var bord: Boolean = false;
-    private var debug: Boolean = true;
+    private var debug: Boolean = false;
     private var delay: Int = 3000;
     private var accessCode: String = "";
 //    private var accessCode: String = "1126224225836916736";
     private var externalUserId: String = "";
 
-    private var overrideOps: Boolean = true;
+    private var overrideOps: Boolean = false;
     // JLTEST
-    private var surveyId: String = "4467958136180736";
-    private var channelId: String = "4508090776587264";
-    private var server: String = "https://jltest.xmplus.cn/api/survey";
+//    private var surveyId: String = "4467958136180736";
+//    private var channelId: String = "4508090776587264";
+//    private var server: String = "https://jltest.xmplus.cn/api/survey";
 
 //    // UAT
-//    private var surveyId: String = "4475020361170944";
-//    private var channelId: String = "4496490408345600";
-//    private var server: String = "https://mktcs-uat.lynkco-test.com/api/survey";
+    private var surveyId: String = "4475002070663168";
+    private var channelId: String = "4475389028433920";
+    private var server: String = "https://mktcs-uat.lynkco-test.com/api/survey";
 
 //    // TEST
 //    private var surveyId: String = "3937853687522304";
@@ -56,6 +58,7 @@ class MainActivity : AppCompatActivity() {
         options.put("server", server);
 
         var container:LinearLayout = findViewById(R.id.container)
+//        container.setPadding(10);
 
         HYSurveyView.makeViewAsync(this, sid, cid, parameters, options, {
             this.survey = it as HYSurveyView?;
@@ -104,6 +107,8 @@ class MainActivity : AppCompatActivity() {
 
     fun onSize(param: Any?) {
 //        alert("高度变化");
+        var container:LinearLayout = findViewById(R.id.container)
+        container.layoutParams.height = (param as Int);
         println(param);
     }
 
