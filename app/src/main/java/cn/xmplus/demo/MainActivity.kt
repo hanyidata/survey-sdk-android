@@ -4,12 +4,12 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.DialogInterface
 import android.os.Bundle
+import android.util.Log
 import android.view.View
-import android.view.ViewGroup
+import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.setPadding
 import cn.xmplus.sdk.HYPopupDialog
 import cn.xmplus.sdk.HYSurveyView
 import org.json.JSONObject
@@ -19,13 +19,12 @@ class MainActivity : AppCompatActivity() {
     private var survey: HYSurveyView? = null;
     private var padding: Int = 0;
     private var bord: Boolean = false;
-    private var debug: Boolean = false;
+    private var debug: Boolean = true;
     private var delay: Int = 3000;
     private var accessCode: String = "";
 //    private var accessCode: String = "1126912050111393792";
-    private var externalUserId: String = "";
 
-    private var overrideOps: Boolean = true;
+    private var overrideOps: Boolean = false;
     // JLTEST
 //    private var surveyId: String = "4467958136180736";
 //    private var channelId: String = "4508090776587264";
@@ -45,17 +44,18 @@ class MainActivity : AppCompatActivity() {
 
         var sid: String = if (!overrideOps) findViewById<EditText>(R.id.editTextSurveyId).text.toString() else surveyId;
         var cid: String = if (!overrideOps) findViewById<EditText>(R.id.editTextChannelId).text.toString() else channelId;
-        var server: String = if (!overrideOps) findViewById<EditText>(R.id.editTextServer).text.toString() else server;
+        var ser: String = if (!overrideOps) getServer() else server;
+        var code: String = if (!overrideOps) findViewById<EditText>(R.id.editTextAccessCode).text.toString() else accessCode;
+
         var parameters = JSONObject();
-        parameters.put("accessCode", accessCode);
-        parameters.put("externalUserId", externalUserId);
+        parameters.put("accessCode", code);
 
         var options = JSONObject();
         options.put("debug", debug);
         options.put("bord", bord);
         options.put("delay", delay);
         options.put("padding", padding);
-        options.put("server", server);
+        options.put("server", ser);
 
         var container:LinearLayout = findViewById(R.id.container)
 //        container.setPadding(10);
@@ -75,23 +75,28 @@ class MainActivity : AppCompatActivity() {
     fun handleClickPopup(view: View) {
         var sid: String = if (!overrideOps) findViewById<EditText>(R.id.editTextSurveyId).text.toString() else surveyId;
         var cid: String = if (!overrideOps) findViewById<EditText>(R.id.editTextChannelId).text.toString() else channelId;
-        var server: String = if (!overrideOps) findViewById<EditText>(R.id.editTextServer).text.toString() else server;
+        var ser: String = if (!overrideOps) getServer() else server;
+        var code: String = if (!overrideOps) findViewById<EditText>(R.id.editTextAccessCode).text.toString() else accessCode;
+
         var parameters = JSONObject();
-        parameters.put("accessCode", accessCode);
-        parameters.put("externalUserId", externalUserId);
+        parameters.put("accessCode", code);
 
         var options = JSONObject();
         options.put("debug", debug);
         options.put("bord", bord);
         options.put("delay", delay);
         options.put("padding", padding);
-        options.put("server", server);
+        options.put("server", ser);
         var root = findViewById<View>(android.R.id.content)
-        HYPopupDialog.makeDialog(root.context, sid, cid, parameters, options,  {
+        HYPopupDialog.makeDialog(
+            root.context, sid, cid, parameters, options,
+            {
 //                alert("取消");
-            }, {
+            },
+            {
 //                alert("提交");
-            }, {
+            },
+            {
                 alert(it.toString());
             },
         );
@@ -103,6 +108,8 @@ class MainActivity : AppCompatActivity() {
 
     fun onCancel(param: Any?) {
 //        alert("取消了作答")
+//        var container:LinearLayout = findViewById(R.id.container)
+//        container.layoutParams.height = 0;
     }
 
     fun onSize(param: Any?) {
@@ -114,6 +121,8 @@ class MainActivity : AppCompatActivity() {
 
     fun onClose(param: Any?) {
 //        alert("关闭")
+//        var container:LinearLayout = findViewById(R.id.container)
+//        container.layoutParams.height = 0;
     }
 
     fun alert(message: String) {
@@ -133,5 +142,34 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
 //        handleClickPopup(window.decorView);
+        findViewById<CheckBox>(R.id.checkBoxJLTEST).setOnClickListener { onCheckboxClick(it) };
+        findViewById<CheckBox>(R.id.checkBoxUAT).setOnClickListener { onCheckboxClick(it) };
+        findViewById<CheckBox>(R.id.checkBoxPROD).setOnClickListener { onCheckboxClick(it) };
     }
+
+    private fun getServer(): String {
+        if (findViewById<CheckBox>(R.id.checkBoxJLTEST).isChecked) {
+            return "https://jltest.xmplus.cn/api/survey"
+        } else if (findViewById<CheckBox>(R.id.checkBoxUAT).isChecked) {
+            return "https://mktcs-uat.lynkco-test.com/api/survey"
+        }
+        return "";
+    }
+
+    private fun onCheckboxClick(view: View?) {
+        Log.d("example", "checkbox");
+        if (view!!.id == R.id.checkBoxJLTEST) {
+            findViewById<CheckBox>(R.id.checkBoxUAT).isChecked = false;
+            findViewById<CheckBox>(R.id.checkBoxPROD).isChecked = false;
+        } else if (view!!.id == R.id.checkBoxUAT) {
+            findViewById<CheckBox>(R.id.checkBoxJLTEST).isChecked = false;
+            findViewById<CheckBox>(R.id.checkBoxPROD).isChecked = false;
+        } else if (view!!.id == R.id.checkBoxPROD) {
+            findViewById<CheckBox>(R.id.checkBoxUAT).isChecked = false;
+            findViewById<CheckBox>(R.id.checkBoxJLTEST).isChecked = false;
+        }
+
+    }
+
+
 }

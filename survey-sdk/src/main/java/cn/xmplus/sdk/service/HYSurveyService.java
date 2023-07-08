@@ -37,7 +37,7 @@ public class HYSurveyService extends AsyncTask<String, Void, List<Object>> {
         String accessCode = strings[3];
         try {
             URL url = new URL(String.format("%s/surveys/%s/embed?channelId=%s&accessCode=%s", server, surveyId, channelId, accessCode));
-            Log.d("surveySDK", String.format("download config from %s", server));
+            Log.d("surveySDK", String.format("download config from %s %s %s", server, surveyId, channelId));
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
             int status = urlConnection.getResponseCode();
             if (status >= 500) {

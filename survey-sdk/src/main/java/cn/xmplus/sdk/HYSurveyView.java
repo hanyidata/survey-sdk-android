@@ -290,9 +290,6 @@ public class HYSurveyView extends LinearLayout {
                         case "size":
                             try {
                                 int dp = value.getInt("height");
-                                if (dp <= 10) {
-                                    return;
-                                }
                                 int px = Util.pxFromDp(getContext(), dp);
                                 int height = px;
                                 if (previousHeight != height) {
