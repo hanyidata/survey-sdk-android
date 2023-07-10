@@ -20,9 +20,9 @@ class MainActivity : AppCompatActivity() {
     private var padding: Int = 0;
     private var bord: Boolean = false;
     private var debug: Boolean = true;
-    private var delay: Int = 3000;
+//    private var delay: Int = 3000;
+//    private var accessCode: String = "";
     private var accessCode: String = "";
-//    private var accessCode: String = "1126912050111393792";
 
     private var overrideOps: Boolean = false;
     // JLTEST
@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity() {
         var options = JSONObject();
         options.put("debug", debug);
         options.put("bord", bord);
-        options.put("delay", delay);
+//        options.put("delay", delay);
         options.put("padding", padding);
         options.put("server", ser);
 
@@ -84,7 +84,7 @@ class MainActivity : AppCompatActivity() {
         var options = JSONObject();
         options.put("debug", debug);
         options.put("bord", bord);
-        options.put("delay", delay);
+//        options.put("delay", delay);
         options.put("padding", padding);
         options.put("server", ser);
         var root = findViewById<View>(android.R.id.content)

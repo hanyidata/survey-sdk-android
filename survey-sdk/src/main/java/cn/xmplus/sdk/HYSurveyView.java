@@ -76,7 +76,7 @@ public class HYSurveyView extends LinearLayout {
         this.debug = options.optBoolean("debug", false);
         this.bord = options.optBoolean("bord", false);
         this.isDialogMode = options.optBoolean("isDialogMode", false);
-        this.delay = options.optInt("delay", 3000);
+        this.delay = options.optInt("delay", 1000);
         this.server = options.optString("server", "production");
         this.borderRadiusMode = options.optString("borderRadiusMode", "CENTER");
 
