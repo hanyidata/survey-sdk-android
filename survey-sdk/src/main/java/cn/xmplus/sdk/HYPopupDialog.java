@@ -144,31 +144,27 @@ public class HYPopupDialog extends Dialog {
         }
 
         // survey
-        try {
-            this.survey = new HYSurveyView(context, this.surveyId, this.channelId, this.parameters, this.options, this.config);
-            this.survey.setOnCancel((Object param) -> {
-                if (this.onCancel != null) {
-                    this.onCancel.accept(null);
-                }
-                this.dismiss();
-            });
-            this.survey.setOnClose((Object param) -> {
-                this.dismiss();
-            });
-            this.survey.setOnSubmit((Object param) -> {
-                if (this.onSubmit != null) {
-                    this.onSubmit.accept(null);
-                }
-            });
-            this.survey.setOnSize((Object param) -> {
-                this.contentHeight = (int)param;
-                this.updateLayout();
-            });
-            contentView.addView(this.survey);
-            setContentView(contentView, new FrameLayout.LayoutParams(screenWidth - appPaddingWidth * 2, 1));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        this.survey = new HYSurveyView(context, this.surveyId, this.channelId, this.parameters, this.options, this.config);
+        this.survey.setOnCancel((Object param) -> {
+            if (this.onCancel != null) {
+                this.onCancel.accept(null);
+            }
+            this.dismiss();
+        });
+        this.survey.setOnClose((Object param) -> {
+            this.dismiss();
+        });
+        this.survey.setOnSubmit((Object param) -> {
+            if (this.onSubmit != null) {
+                this.onSubmit.accept(null);
+            }
+        });
+        this.survey.setOnSize((Object param) -> {
+            this.contentHeight = (int)param;
+            this.updateLayout();
+        });
+        contentView.addView(this.survey);
+        setContentView(contentView, new FrameLayout.LayoutParams(screenWidth - appPaddingWidth * 2, 1));
     }
 
     private void updateLayout() {

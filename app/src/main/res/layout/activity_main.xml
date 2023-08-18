@@ -38,7 +38,7 @@
                     android:layout_weight="1"
                     android:ems="10"
                     android:inputType="textPersonName"
-                    android:text="4475002070663168" />
+                    android:text="4445329530320896" />
             </LinearLayout>
 
             <LinearLayout
@@ -63,7 +63,7 @@
                     android:layout_weight="1"
                     android:ems="10"
                     android:inputType="textPersonName"
-                    android:text="4475389028433920" />
+                    android:text="4446931357162496" />
 
             </LinearLayout>
 
@@ -101,7 +101,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:checked="true"
+                        android:checked="false"
                         android:text="UAT" />
 
                     <CheckBox
@@ -109,8 +109,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:editable="false"
-                        android:enabled="false"
+                        android:checked="true"
+                        android:editable="true"
+                        android:enabled="true"
                         android:text="PROD" />
                 </LinearLayout>
 

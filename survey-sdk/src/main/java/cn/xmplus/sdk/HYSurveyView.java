@@ -268,7 +268,6 @@ public class HYSurveyView extends LinearLayout {
 
                             } catch (JSONException e) {
                                 Log.e("surveySDK", "init error \"" + message + "\"" + e.getMessage());
-                                throw new RuntimeException(e);
                             }
                             break;
                         case "load":
@@ -332,6 +331,5 @@ public class HYSurveyView extends LinearLayout {
             Log.e("surveySDK", "Could not parse malformed JSON: \"" + message + "\"" + t.getMessage());
         }
     }
-
 }
 
