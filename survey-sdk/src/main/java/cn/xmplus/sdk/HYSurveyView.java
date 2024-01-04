@@ -37,6 +37,7 @@ public class HYSurveyView extends LinearLayout {
 
     private Boolean finished = false;
     private Integer previousHeight = 0;
+    private Boolean halfscreen = false;
 
     private final Boolean debug;
     private final Boolean bord;
@@ -77,6 +78,7 @@ public class HYSurveyView extends LinearLayout {
         this.bord = options.optBoolean("bord", false);
         this.isDialogMode = options.optBoolean("isDialogMode", false);
         this.delay = options.optInt("delay", 1000);
+        this.halfscreen = options.optBoolean("halfscreen", false);
         this.server = options.optString("server", "production");
         this.borderRadiusMode = options.optString("borderRadiusMode", "CENTER");
 
@@ -255,6 +257,7 @@ public class HYSurveyView extends LinearLayout {
                                 data.put("surveyId", surveyId);
                                 data.put("channelId", channelId);
                                 data.put("delay", delay);
+                                data.put("halfscreen", halfscreen);
                                 data.put("server", server);
                                 data.put("parameters", parameters);
                                 data.put("borderRadiusMode", borderRadiusMode);
