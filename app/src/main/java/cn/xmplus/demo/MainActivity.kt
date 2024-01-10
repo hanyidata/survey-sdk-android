@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
     private var bord: Boolean = false;
     private var debug: Boolean = true;
     private var halfscreen: Boolean = true;
-//    private var delay: Int = 3000;
+    private var delay: Int = 1000;
     private var accessCode: String = "";
 //    private var accessCode: String = "1128430492441440256";
 
@@ -62,6 +62,7 @@ class MainActivity : AppCompatActivity() {
 //        options.put("delay", delay);
         options.put("padding", padding);
         options.put("server", ser);
+        options.put("delay", delay);
         options.put("halfscreen", findViewById<CheckBox>(R.id.checkBoxHalfScreen).isChecked);
         options.put("project", getProject());
 
@@ -80,6 +81,7 @@ class MainActivity : AppCompatActivity() {
             this.survey?.setOnSubmit(::onSubmit);
             this.survey?.setOnCancel(::onCancel);
             this.survey?.setOnClose(::onClose);
+            this.survey?.setOnLoad(::onLoad);
             this.survey?.setOnSize(::onSize);
         }, {
             alert(it.toString());
@@ -101,7 +103,8 @@ class MainActivity : AppCompatActivity() {
 //        options.put("delay", delay);
         options.put("padding", padding);
         options.put("server", ser);
-        options.put("halfscreen", findViewById<CheckBox>(R.id.checkBoxHalfScreen).isChecked);
+        options.put("delay", delay);
+//        options.put("halfscreen", findViewById<CheckBox>(R.id.checkBoxHalfScreen).isChecked);
         options.put("project", getProject());
 
         var root = findViewById<View>(android.R.id.content)
@@ -109,28 +112,37 @@ class MainActivity : AppCompatActivity() {
             root.context, sid, cid, parameters, options,
             {
 //                alert("取消");
+                onCancel(null);
             },
             {
 //                alert("提交");
+                onSubmit(null);
             },
             {
                 alert(it.toString());
-            },
+            }, {
+                onLoad(it);
+            }
         );
     }
 
     fun onSubmit(param: Any?) {
-//        alert("已经提交")
+        alert("已经提交")
+    }
+
+    fun onLoad(param: Any?) {
+        Log.d("surveyExample", "onLoad")
     }
 
     fun onCancel(param: Any?) {
-//        alert("取消了作答")
         var container:LinearLayout = findViewById(R.id.container)
         container.layoutParams.height = 0;
+        alert("取消了作答")
     }
 
     fun onSize(param: Any?) {
 //        alert("高度变化");
+        Log.d("surveyExample", "onSize")
         var container:LinearLayout = findViewById(R.id.container)
         container.layoutParams.height = (param as Int);
         println(param);

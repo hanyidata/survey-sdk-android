@@ -34,11 +34,13 @@ public class HYPopupDialog extends Dialog {
     private HYSurveyView survey;
     private JSONObject config;
 
+    private ScrollView scrollView;
     private LinearLayout contentView;
     private int contentHeight = 0;
     private Context context;
     private SurveyFunction onCancel = null;
     private SurveyFunction onSubmit = null;
+    private SurveyFunction onLoad = null;
 
     private int appPaddingWidth = 0;
     private int appBorderRadiusPx = 0;
@@ -47,7 +49,7 @@ public class HYPopupDialog extends Dialog {
     private String embedHeightMode = "AUTO";
     private Boolean embedBackGround = false;
 
-    public HYPopupDialog(Context context, String surveyId, String channelId, JSONObject parameters, JSONObject options, JSONObject config, SurveyFunction onCancel, SurveyFunction onSubmit)  {
+    public HYPopupDialog(Context context, String surveyId, String channelId, JSONObject parameters, JSONObject options, JSONObject config, SurveyFunction onCancel, SurveyFunction onSubmit, SurveyFunction onLoad)  {
         super(context);
         this.context = context;
         this.surveyId = surveyId;
@@ -57,6 +59,7 @@ public class HYPopupDialog extends Dialog {
         this.config = config;
         this.onCancel = onCancel;
         this.onSubmit = onSubmit;
+        this.onLoad = onLoad;
 
         // global config
         getWindow().requestFeature(Window.FEATURE_NO_TITLE);
@@ -79,17 +82,18 @@ public class HYPopupDialog extends Dialog {
      * @param parameters
      * @param options
      */
-    public static void makeDialog(Context context, String surveyId, String channelId, JSONObject parameters, JSONObject options, SurveyFunction onCancel, SurveyFunction onSubmit, SurveyFunction onError)  {
+    public static void makeDialog(Context context, String surveyId, String channelId, JSONObject parameters, JSONObject options, SurveyFunction onCancel, SurveyFunction onSubmit, SurveyFunction onError, SurveyFunction onLoad)  {
         String server = options.optString("server", "https://www.xmplus.cn/api/survey");
         String accessCode = parameters.optString("accessCode", "");
         JSONObject mergeOption = options;
         try {
             mergeOption.put("isDialogMode", true);
         } catch (JSONException e) {
+            Log.d("surveySDK", e.getMessage());
         }
         new HYSurveyService((JSONObject config, String error) -> {
             if (config != null) {
-                HYPopupDialog dialog = new HYPopupDialog(context, surveyId, channelId, parameters, mergeOption, config, onCancel, onSubmit);
+                HYPopupDialog dialog = new HYPopupDialog(context, surveyId, channelId, parameters, mergeOption, config, onCancel, onSubmit, onLoad);
                 dialog.show();
             } else {
                 Log.e("surveySDK", String.format("survey popup failed %s", error));
@@ -122,11 +126,15 @@ public class HYPopupDialog extends Dialog {
         }
 
         // content view
+        scrollView = new ScrollView(context);
+        scrollView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
         contentView = new LinearLayout(context);
         if (options.optBoolean("bord", false)) {
             gradientDrawable.setStroke(5, Color.RED);
             contentView.setPadding(10, 10, 10, 10);
         }
+        scrollView.addView(contentView);
 
         switch (embedVerticalAlign) {
             case "CENTER":
@@ -163,15 +171,23 @@ public class HYPopupDialog extends Dialog {
             this.contentHeight = (int)param;
             this.updateLayout();
         });
+        this.survey.setOnLoad((Object param) -> {
+            if (this.onLoad != null) {
+                this.onLoad.accept(param);
+            }
+        });
         contentView.addView(this.survey);
-        setContentView(contentView, new FrameLayout.LayoutParams(screenWidth - appPaddingWidth * 2, 1));
+        setContentView(scrollView, new FrameLayout.LayoutParams(screenWidth - appPaddingWidth * 2, ViewGroup.LayoutParams.WRAP_CONTENT));
+
     }
 
     private void updateLayout() {
         DisplayMetrics displayMetrics = this.getContext().getResources().getDisplayMetrics();
         int screenWidth = displayMetrics.widthPixels;
         int newWidth = screenWidth - appPaddingWidth * 2;
-        int newHeight = this.contentHeight;
+        int newHeight = (int) Math.min(this.contentHeight, displayMetrics.heightPixels);
+//        int newHeight = this.contentHeight;
+        Log.d("surveySDK", "update height " + newHeight);
         switch (embedHeightMode) {
             case "AUTO":
 //                newHeight = Math.min(this.contentHeight, embedHeight);
@@ -180,6 +196,11 @@ public class HYPopupDialog extends Dialog {
                 newHeight = embedHeight;
                 break;
         }
-        contentView.setLayoutParams(new FrameLayout.LayoutParams(newWidth, newHeight));
+        scrollView.setLayoutParams(new FrameLayout.LayoutParams(newWidth, newHeight));
+        WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
+        layoutParams.copyFrom(getWindow().getAttributes());
+        layoutParams.width = newWidth;
+        layoutParams.height = newHeight;
+        getWindow().setAttributes(layoutParams);
     }
 }

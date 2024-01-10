@@ -3,11 +3,13 @@ package cn.xmplus.sdk;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
+import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.webkit.ConsoleMessage;
 import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
@@ -64,6 +66,8 @@ public class HYSurveyView extends LinearLayout {
     private SurveyFunction onLoad = null;
 
     private JSONObject mergedConfig = new JSONObject();
+    private Boolean inputFocused = false;
+    private long lastClickTime = 0;
 
     public HYSurveyView(Context context, String surveyId, String channelId, JSONObject parameters, JSONObject options) {
         this(context, surveyId, channelId, parameters, options, new JSONObject());
@@ -154,6 +158,7 @@ public class HYSurveyView extends LinearLayout {
         webView.setClipToOutline(true);
         webView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         webView.setFocusableInTouchMode(false);
+        webView.getSettings().setNeedInitialFocus(false);
         webView.setWebChromeClient(new WebChromeClient()
         {
             @Override
@@ -165,6 +170,7 @@ public class HYSurveyView extends LinearLayout {
             }
         });
         webView.setBackgroundColor(Color.TRANSPARENT);
+
 
         if (config.length() > 0) {
             applyConfig();
@@ -292,6 +298,28 @@ public class HYSurveyView extends LinearLayout {
                                 Log.e("surveySDK", "init error \"" + message + "\"" + e.getMessage());
                             }
                             break;
+                        case "input-focus":
+                            Log.v("surveySDK", "input focus gain");
+                            if (System.currentTimeMillis() - lastClickTime < 100) {
+                                // 忽略这次点击，因为距离上次点击不足一秒
+                                return;
+                            }
+                            lastClickTime = System.currentTimeMillis();
+                            if (!inputFocused) {
+                                webView.setFocusableInTouchMode(true);
+                            }
+                            webView.requestFocus();
+                            InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                            if (imm != null) {
+                                Boolean res = imm.showSoftInput(webView, InputMethodManager.SHOW_IMPLICIT);
+                                Log.v("surveySDK", "show soft input " + res);
+                            }
+                            break;
+                        case "input-blur":
+                            Log.v("surveySDK", "input focus lost");
+//                            webView.clearFocus();
+//                            webView.setFocusableInTouchMode(false);
+                            break;
                         case "load":
                             int screenWidth = displayMetrics.widthPixels;
                             appBorderRadiusPx = Util.parsePx(getContext(), mergedConfig.optString("appBorderRadius", "0px"), screenWidth);
@@ -315,11 +343,8 @@ public class HYSurveyView extends LinearLayout {
                                 int height = px;
                                 if (previousHeight != height) {
                                     Log.v("surveySDK", "change height to " + height);
-                                    if (height == 0) {
-                                        close();
-                                    } else {
-                                        container.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height));
-                                    }
+                                    webView.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height));
+                                    container.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height));
                                     if (onSize != null) {
                                         onSize.accept(px);
                                     }
