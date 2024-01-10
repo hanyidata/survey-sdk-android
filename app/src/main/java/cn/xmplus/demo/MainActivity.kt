@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity() {
     private var padding: Int = 0;
     private var bord: Boolean = false;
     private var debug: Boolean = true;
-    private var halfscreen: Boolean = false;
+    private var halfscreen: Boolean = true;
 //    private var delay: Int = 3000;
     private var accessCode: String = "";
 //    private var accessCode: String = "1128430492441440256";
@@ -44,6 +44,7 @@ class MainActivity : AppCompatActivity() {
     private var surveyId: String = "5538281361811456";
     private var channelId: String = "5538283231225856";
     private var server: String = "https://test.xmplus.cn/api/survey";
+    private var lynkco: Boolean = true;
 
     fun handleClickEmbed(view: View) {
 
@@ -62,6 +63,7 @@ class MainActivity : AppCompatActivity() {
         options.put("padding", padding);
         options.put("server", ser);
         options.put("halfscreen", findViewById<CheckBox>(R.id.checkBoxHalfScreen).isChecked);
+        options.put("project", getProject());
 
         var container:LinearLayout = findViewById(R.id.container)
         val displayMetrics: DisplayMetrics = this.getResources().getDisplayMetrics()
@@ -100,6 +102,8 @@ class MainActivity : AppCompatActivity() {
         options.put("padding", padding);
         options.put("server", ser);
         options.put("halfscreen", findViewById<CheckBox>(R.id.checkBoxHalfScreen).isChecked);
+        options.put("project", getProject());
+
         var root = findViewById<View>(android.R.id.content)
         HYPopupDialog.makeDialog(
             root.context, sid, cid, parameters, options,
@@ -121,8 +125,8 @@ class MainActivity : AppCompatActivity() {
 
     fun onCancel(param: Any?) {
 //        alert("取消了作答")
-//        var container:LinearLayout = findViewById(R.id.container)
-//        container.layoutParams.height = 0;
+        var container:LinearLayout = findViewById(R.id.container)
+        container.layoutParams.height = 0;
     }
 
     fun onSize(param: Any?) {
@@ -134,8 +138,8 @@ class MainActivity : AppCompatActivity() {
 
     fun onClose(param: Any?) {
 //        alert("关闭")
-//        var container:LinearLayout = findViewById(R.id.container)
-//        container.layoutParams.height = 0;
+        var container:LinearLayout = findViewById(R.id.container)
+        container.layoutParams.height = 0;
     }
 
     fun alert(message: String) {
@@ -156,11 +160,19 @@ class MainActivity : AppCompatActivity() {
 
         if (server == "https://test.xmplus.cn/api/survey") {
             findViewById<CheckBox>(R.id.checkBoxTEST).isChecked = true;
+            findViewById<CheckBox>(R.id.checkBoxUAT).isChecked = false;
+            findViewById<CheckBox>(R.id.checkBoxPROD).isChecked = false;
         } else if (server == "https://mktcs-uat.lynkco-test.com/api/survey") {
             findViewById<CheckBox>(R.id.checkBoxUAT).isChecked = true;
+            findViewById<CheckBox>(R.id.checkBoxTEST).isChecked = false;
+            findViewById<CheckBox>(R.id.checkBoxPROD).isChecked = false;
         } else if (server == "https://mktcs.lynkco.com/api/survey") {
             findViewById<CheckBox>(R.id.checkBoxPROD).isChecked = true;
+            findViewById<CheckBox>(R.id.checkBoxUAT).isChecked = false;
+            findViewById<CheckBox>(R.id.checkBoxTEST).isChecked = false;
         }
+
+        findViewById<CheckBox>(R.id.checkBoxLynkLogo).isChecked = lynkco;
 
         findViewById<EditText>(R.id.editTextSurveyId).setText(surveyId);
         findViewById<EditText>(R.id.editTextChannelId).setText(channelId);
@@ -182,6 +194,13 @@ class MainActivity : AppCompatActivity() {
             return "https://mktcs.lynkco.com/api/survey"
         }
         return "";
+    }
+
+    private fun getProject(): String? {
+        if (findViewById<CheckBox>(R.id.checkBoxLynkLogo).isChecked) {
+            return "lynkco";
+        }
+        return null;
     }
 
     private fun onCheckboxClick(view: View?) {
