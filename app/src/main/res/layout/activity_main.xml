@@ -97,14 +97,6 @@
                         android:text="TEST" />
 
                     <CheckBox
-                        android:id="@+id/checkBoxUAT"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:checked="false"
-                        android:text="JLUAT" />
-
-                    <CheckBox
                         android:id="@+id/checkBoxPROD"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -113,6 +105,24 @@
                         android:editable="true"
                         android:enabled="true"
                         android:text="PROD" />
+
+                    <CheckBox
+                        android:id="@+id/checkBoxUAT"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:checked="false"
+                        android:text="JLUAT" />
+
+                    <CheckBox
+                        android:id="@+id/checkBoxJPROD"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:checked="true"
+                        android:editable="true"
+                        android:enabled="true"
+                        android:text="JPROD" />
 
                 </LinearLayout>
 
