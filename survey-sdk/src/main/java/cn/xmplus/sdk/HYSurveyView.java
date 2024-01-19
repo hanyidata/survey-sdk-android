@@ -3,10 +3,13 @@ package cn.xmplus.sdk;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
+import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.webkit.ConsoleMessage;
 import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
@@ -37,6 +40,9 @@ public class HYSurveyView extends LinearLayout {
 
     private Boolean finished = false;
     private Integer previousHeight = 0;
+    private Boolean halfscreen = false;
+    private String project = null;
+    private Boolean closed = false;
 
     private final Boolean debug;
     private final Boolean bord;
@@ -60,6 +66,8 @@ public class HYSurveyView extends LinearLayout {
     private SurveyFunction onLoad = null;
 
     private JSONObject mergedConfig = new JSONObject();
+    private Boolean inputFocused = false;
+    private long lastClickTime = 0;
 
     public HYSurveyView(Context context, String surveyId, String channelId, JSONObject parameters, JSONObject options) {
         this(context, surveyId, channelId, parameters, options, new JSONObject());
@@ -77,6 +85,8 @@ public class HYSurveyView extends LinearLayout {
         this.bord = options.optBoolean("bord", false);
         this.isDialogMode = options.optBoolean("isDialogMode", false);
         this.delay = options.optInt("delay", 1000);
+        this.halfscreen = options.optBoolean("halfscreen", false);
+        this.project = options.optString("project", null);
         this.server = options.optString("server", "production");
         this.borderRadiusMode = options.optString("borderRadiusMode", "CENTER");
 
@@ -147,6 +157,8 @@ public class HYSurveyView extends LinearLayout {
         webView.setVerticalScrollBarEnabled(true);
         webView.setClipToOutline(true);
         webView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        webView.setFocusableInTouchMode(false);
+        webView.getSettings().setNeedInitialFocus(false);
         webView.setWebChromeClient(new WebChromeClient()
         {
             @Override
@@ -158,6 +170,7 @@ public class HYSurveyView extends LinearLayout {
             }
         });
         webView.setBackgroundColor(Color.TRANSPARENT);
+
 
         if (config.length() > 0) {
             applyConfig();
@@ -217,6 +230,19 @@ public class HYSurveyView extends LinearLayout {
         }
     }
 
+    private void close() {
+        if (this.closed) {
+            Log.v("surveySDK", "already close");
+            return;
+        }
+        Log.v("surveySDK", "closeSurveyView");
+        webView.setVisibility(GONE);
+        this.removeView(webView);
+        this.setVisibility(GONE);
+        this.setLayoutParams(new LayoutParams(0, 0));
+        this.closed = true;
+    }
+
 
     @JavascriptInterface
     public void postMessage(String message) {
@@ -255,6 +281,8 @@ public class HYSurveyView extends LinearLayout {
                                 data.put("surveyId", surveyId);
                                 data.put("channelId", channelId);
                                 data.put("delay", delay);
+                                data.put("halfscreen", halfscreen);
+                                data.put("project", project);
                                 data.put("server", server);
                                 data.put("parameters", parameters);
                                 data.put("borderRadiusMode", borderRadiusMode);
@@ -269,6 +297,28 @@ public class HYSurveyView extends LinearLayout {
                             } catch (JSONException e) {
                                 Log.e("surveySDK", "init error \"" + message + "\"" + e.getMessage());
                             }
+                            break;
+                        case "input-focus":
+                            Log.v("surveySDK", "input focus gain");
+                            if (System.currentTimeMillis() - lastClickTime < 100) {
+                                // 忽略这次点击，因为距离上次点击不足一秒
+                                return;
+                            }
+                            lastClickTime = System.currentTimeMillis();
+                            if (!inputFocused) {
+                                webView.setFocusableInTouchMode(true);
+                            }
+                            webView.requestFocus();
+                            InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                            if (imm != null) {
+                                Boolean res = imm.showSoftInput(webView, InputMethodManager.SHOW_IMPLICIT);
+                                Log.v("surveySDK", "show soft input " + res);
+                            }
+                            break;
+                        case "input-blur":
+                            Log.v("surveySDK", "input focus lost");
+//                            webView.clearFocus();
+//                            webView.setFocusableInTouchMode(false);
                             break;
                         case "load":
                             int screenWidth = displayMetrics.widthPixels;
@@ -293,6 +343,7 @@ public class HYSurveyView extends LinearLayout {
                                 int height = px;
                                 if (previousHeight != height) {
                                     Log.v("surveySDK", "change height to " + height);
+                                    webView.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height));
                                     container.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height));
                                     if (onSize != null) {
                                         onSize.accept(px);
@@ -304,13 +355,13 @@ public class HYSurveyView extends LinearLayout {
                             break;
                         case "cancel":
                             Log.v("surveySDK", "survey canceled");
-                            container.setLayoutParams(new LayoutParams(0, 0));
+                            close();
                             if (onCancel != null) {
                                 onCancel.accept(null);
                             }
                             break;
                         case "close":
-                            container.setLayoutParams(new LayoutParams(0, 0));
+                            close();
                             Log.v("surveySDK", "survey closed");
                             if (onClose != null) {
                                 onClose.accept(null);
