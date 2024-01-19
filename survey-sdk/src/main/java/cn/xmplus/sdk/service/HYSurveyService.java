@@ -35,8 +35,9 @@ public class HYSurveyService extends AsyncTask<String, Void, List<Object>> {
         String surveyId = strings[1];
         String channelId = strings[2];
         String accessCode = strings[3];
+        String externalUserId =  strings.length > 3 ? strings[4] : "";
         try {
-            URL url = new URL(String.format("%s/surveys/%s/embed?channelId=%s&accessCode=%s", server, surveyId, channelId, accessCode));
+            URL url = new URL(String.format("%s/surveys/%s/embed?channelId=%s&accessCode=%s&externalUserId=%s", server, surveyId, channelId, accessCode, externalUserId));
             Log.d("surveySDK", String.format("download config from %s %s %s", server, surveyId, channelId));
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
             int status = urlConnection.getResponseCode();
