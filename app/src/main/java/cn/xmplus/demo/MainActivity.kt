@@ -24,6 +24,7 @@ class MainActivity : AppCompatActivity() {
     private var halfscreen: Boolean = true;
     private var delay: Int = 1000;
     private var accessCode: String = "";
+    private var euid: String = "";
 //    private var accessCode: String = "1128430492441440256";
 
     // JLTEST
@@ -52,9 +53,13 @@ class MainActivity : AppCompatActivity() {
         var cid: String = findViewById<EditText>(R.id.editTextChannelId).text.toString();
         var ser: String = getServer();
         var code: String = findViewById<EditText>(R.id.editTextAccessCode).text.toString();
+        var euid: String = findViewById<EditText>(R.id.editTextEUID).text.toString();
 
         var parameters = JSONObject();
         parameters.put("accessCode", code);
+        if (euid.isNotEmpty()) {
+            parameters.put("externalUserId", euid);
+        }
 
         var options = JSONObject();
         options.put("debug", debug);
@@ -93,9 +98,13 @@ class MainActivity : AppCompatActivity() {
         var cid: String = findViewById<EditText>(R.id.editTextChannelId).text.toString();
         var ser: String = getServer();
         var code: String = findViewById<EditText>(R.id.editTextAccessCode).text.toString();
+        var euid: String = findViewById<EditText>(R.id.editTextEUID).text.toString();
 
         var parameters = JSONObject();
         parameters.put("accessCode", code);
+        if (euid.isNotEmpty()) {
+            parameters.put("externalUserId", euid);
+        }
 
         var options = JSONObject();
         options.put("debug", debug);
@@ -198,6 +207,8 @@ class MainActivity : AppCompatActivity() {
         findViewById<EditText>(R.id.editTextChannelId).setText(channelId);
         findViewById<EditText>(R.id.editTextAccessCode).setText(accessCode);
         findViewById<CheckBox>(R.id.checkBoxHalfScreen).isChecked = halfscreen;
+        findViewById<EditText>(R.id.editTextEUID).setText(euid);
+
 
 //        handleClickPopup(window.decorView);
         findViewById<CheckBox>(R.id.checkBoxTEST).setOnClickListener { onCheckboxClick(it) };
