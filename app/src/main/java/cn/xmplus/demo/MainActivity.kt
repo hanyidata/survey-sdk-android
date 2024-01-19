@@ -41,9 +41,9 @@ class MainActivity : AppCompatActivity() {
 //    private var server: String = "https://mktcs.lynkco.com/api/survey";
 
     // TEST
-    private var surveyId: String = "5527996447123456";
-    private var channelId: String = "5533888859853824";
-    private var server: String = "https://www.xmplus.cn/api/survey";
+    private var surveyId: String = "5538281361811456";
+    private var channelId: String = "5538283231225856";
+    private var server: String = "https://test.xmplus.cn/api/survey";
     private var lynkco: Boolean = true;
 
     fun handleClickEmbed(view: View) {
@@ -174,7 +174,7 @@ class MainActivity : AppCompatActivity() {
             findViewById<CheckBox>(R.id.checkBoxTEST).isChecked = true;
             findViewById<CheckBox>(R.id.checkBoxUAT).isChecked = false;
             findViewById<CheckBox>(R.id.checkBoxPROD).isChecked = false;
-            findViewById<CheckBox>(R.id.checkBoxPROD).isChecked = false;
+            findViewById<CheckBox>(R.id.checkBoxJPROD).isChecked = false;
         } else if (server == "https://mktcs-uat.lynkco-test.com/api/survey") {
             findViewById<CheckBox>(R.id.checkBoxUAT).isChecked = true;
             findViewById<CheckBox>(R.id.checkBoxPROD).isChecked = false;
