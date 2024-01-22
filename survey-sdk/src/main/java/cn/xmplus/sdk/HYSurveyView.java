@@ -112,6 +112,8 @@ public class HYSurveyView extends LinearLayout {
         }
         String server = options.optString("server", "https://www.xmplus.cn/api/survey");
         String accessCode = parameters.optString("accessCode", "");
+        String externalUserId = parameters.optString("externalUserId", "");
+
         new HYSurveyService((JSONObject config, String error) -> {
             if (config != null) {
                 HYSurveyView view = new HYSurveyView(context, surveyId, channelId, parameters, options);
@@ -122,7 +124,7 @@ public class HYSurveyView extends LinearLayout {
                     onError.accept(error);
                 }
             }
-        }).execute(server, surveyId, channelId, accessCode);
+        }).execute(server, surveyId, channelId, accessCode, externalUserId);
     }
 
     public void setOnSubmit(SurveyFunction callback) {
@@ -282,6 +284,7 @@ public class HYSurveyView extends LinearLayout {
                                 data.put("channelId", channelId);
                                 data.put("delay", delay);
                                 data.put("halfscreen", halfscreen);
+                                // lynkco project hardcode here.
                                 data.put("project", project);
                                 data.put("server", server);
                                 data.put("parameters", parameters);

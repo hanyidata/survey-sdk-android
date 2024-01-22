@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity() {
     private var padding: Int = 0;
     private var bord: Boolean = false;
     private var debug: Boolean = true;
-    private var halfscreen: Boolean = true;
+    private var halfscreen: Boolean = false;
     private var delay: Int = 1000;
     private var accessCode: String = "";
     private var euid: String = "";
@@ -42,10 +42,9 @@ class MainActivity : AppCompatActivity() {
 //    private var server: String = "https://mktcs.lynkco.com/api/survey";
 
     // TEST
-    private var surveyId: String = "5538281361811456";
-    private var channelId: String = "5538283231225856";
+    private var surveyId: String = "5623325575501824";
+    private var channelId: String = "5623326819536896";
     private var server: String = "https://test.xmplus.cn/api/survey";
-    private var lynkco: Boolean = true;
 
     fun handleClickEmbed(view: View) {
 
@@ -129,8 +128,6 @@ class MainActivity : AppCompatActivity() {
             },
             {
                 alert("发生错误 $it");
-            }, {
-                Log.d("surveyExample", "onLoad")
             }
         );
     }
@@ -201,8 +198,6 @@ class MainActivity : AppCompatActivity() {
             findViewById<CheckBox>(R.id.checkBoxJPROD).isChecked = false;
         }
 
-        findViewById<CheckBox>(R.id.checkBoxLynkLogo).isChecked = lynkco;
-
         findViewById<EditText>(R.id.editTextSurveyId).setText(surveyId);
         findViewById<EditText>(R.id.editTextChannelId).setText(channelId);
         findViewById<EditText>(R.id.editTextAccessCode).setText(accessCode);
@@ -230,7 +225,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getProject(): String? {
-        if (findViewById<CheckBox>(R.id.checkBoxLynkLogo).isChecked) {
+        if (findViewById<CheckBox>(R.id.checkBoxLynkco).isChecked) {
             return "lynkco";
         }
         return null;

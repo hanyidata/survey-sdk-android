@@ -74,6 +74,10 @@ public class HYPopupDialog extends Dialog {
         setCanceledOnTouchOutside(false);
     }
 
+    public static void makeDialog(Context context, String surveyId, String channelId, JSONObject parameters, JSONObject options, SurveyFunction onCancel, SurveyFunction onSubmit, SurveyFunction onError) {
+        makeDialog(context, surveyId, channelId, parameters, options, onCancel, onSubmit, onError, null);
+    }
+
     /**
      *
      * @param context
@@ -85,6 +89,7 @@ public class HYPopupDialog extends Dialog {
     public static void makeDialog(Context context, String surveyId, String channelId, JSONObject parameters, JSONObject options, SurveyFunction onCancel, SurveyFunction onSubmit, SurveyFunction onError, SurveyFunction onLoad)  {
         String server = options.optString("server", "https://www.xmplus.cn/api/survey");
         String accessCode = parameters.optString("accessCode", "");
+        String externalUserId = parameters.optString("externalUserId", "");
         JSONObject mergeOption = options;
         try {
             mergeOption.put("isDialogMode", true);
@@ -101,7 +106,7 @@ public class HYPopupDialog extends Dialog {
                     onError.accept(error);
                 }
             }
-        }).execute(server, surveyId, channelId, accessCode);
+        }).execute(server, surveyId, channelId, accessCode, externalUserId);
     }
 
     @Override
