@@ -21,10 +21,10 @@ class MainActivity : AppCompatActivity() {
     private var padding: Int = 0;
     private var bord: Boolean = false;
     private var debug: Boolean = true;
-    private var halfscreen: Boolean = true;
+    private var halfscreen: Boolean = false;
     private var delay: Int = 1000;
     private var accessCode: String = "";
-    private var euid: String = "0000111";
+    private var euid: String = "";
 //    private var accessCode: String = "1128430492441440256";
 
     // JLTEST
@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity() {
         options.put("server", ser);
         options.put("delay", delay);
         options.put("halfscreen", findViewById<CheckBox>(R.id.checkBoxHalfScreen).isChecked);
-//        options.put("project", getProject());
+        options.put("project", getProject());
 
         var container:LinearLayout = findViewById(R.id.container)
         val displayMetrics: DisplayMetrics = this.getResources().getDisplayMetrics()
@@ -113,7 +113,7 @@ class MainActivity : AppCompatActivity() {
         options.put("server", ser);
         options.put("delay", delay);
 //        options.put("halfscreen", findViewById<CheckBox>(R.id.checkBoxHalfScreen).isChecked);
-//        options.put("project", getProject());
+        options.put("project", getProject());
 
         var root = findViewById<View>(android.R.id.content)
         HYPopupDialog.makeDialog(
@@ -224,12 +224,12 @@ class MainActivity : AppCompatActivity() {
         return "";
     }
 
-//    private fun getProject(): String? {
-//        if (findViewById<CheckBox>(R.id.checkBoxLynkLogo).isChecked) {
-//            return "lynkco";
-//        }
-//        return null;
-//    }
+    private fun getProject(): String? {
+        if (findViewById<CheckBox>(R.id.checkBoxLynkco).isChecked) {
+            return "lynkco";
+        }
+        return null;
+    }
 
     private fun onCheckboxClick(view: View?) {
         Log.d("example", "checkbox");

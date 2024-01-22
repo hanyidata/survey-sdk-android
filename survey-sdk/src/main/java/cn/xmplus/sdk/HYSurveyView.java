@@ -285,7 +285,7 @@ public class HYSurveyView extends LinearLayout {
                                 data.put("delay", delay);
                                 data.put("halfscreen", halfscreen);
                                 // lynkco project hardcode here.
-                                data.put("project", "lynkco");
+                                data.put("project", project);
                                 data.put("server", server);
                                 data.put("parameters", parameters);
                                 data.put("borderRadiusMode", borderRadiusMode);

@@ -201,6 +201,13 @@
                     android:checked="false"
                     android:text="HalfScreen" />
 
+                <CheckBox
+                    android:id="@+id/checkBoxLynkco"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:checked="false"
+                    android:text="Lynkco" />
             </LinearLayout>
 
             <Button
