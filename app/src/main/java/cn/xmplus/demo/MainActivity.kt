@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
     private var halfscreen: Boolean = true;
     private var delay: Int = 1000;
     private var accessCode: String = "";
-    private var euid: String = "0000111";
+    private var euid: String = "";
 //    private var accessCode: String = "1128430492441440256";
 
     // JLTEST
