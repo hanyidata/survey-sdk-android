@@ -87,8 +87,13 @@ public class HYPopupDialog extends Dialog {
      * @param options
      */
     public static void makeDialog(Context context, String surveyId, String channelId, JSONObject parameters, JSONObject options, SurveyFunction onCancel, SurveyFunction onSubmit, SurveyFunction onError, SurveyFunction onLoad)  {
-        String server = options.optString("server", "https://www.xmplus.cn/api/survey");
-        String accessCode = parameters.optString("accessCode", "");
+        if (!HYGlobalConfig.check()) {
+            onError.accept("access code is not ready or invalid");
+            return;
+        }
+
+        String server = options.optString("server", HYGlobalConfig.getServer());
+        String accessCode = parameters.optString("accessCode", HYGlobalConfig.getAccessCode());
         String externalUserId = parameters.optString("externalUserId", "");
         JSONObject mergeOption = options;
         try {

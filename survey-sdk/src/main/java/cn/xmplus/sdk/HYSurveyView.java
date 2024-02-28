@@ -21,6 +21,7 @@ import android.widget.LinearLayout;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Arrays;
 import java.util.Iterator;
 
 import cn.xmplus.sdk.callback.SurveyFunction;
@@ -110,8 +111,14 @@ public class HYSurveyView extends LinearLayout {
             Log.e("surveySDK", "onReady not setup");
             return;
         }
-        String server = options.optString("server", "https://www.xmplus.cn/api/survey");
-        String accessCode = parameters.optString("accessCode", "");
+
+        if (!HYGlobalConfig.check()) {
+            onError.accept("access code is not ready or invalid");
+            return;
+        }
+
+        String server = options.optString("server", HYGlobalConfig.getServer());
+        String accessCode = parameters.optString("accessCode", HYGlobalConfig.getAccessCode());
         String externalUserId = parameters.optString("externalUserId", "");
 
         new HYSurveyService((JSONObject config, String error) -> {

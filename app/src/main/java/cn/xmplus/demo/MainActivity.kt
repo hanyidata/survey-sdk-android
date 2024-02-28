@@ -11,6 +11,7 @@ import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
+import cn.xmplus.sdk.HYGlobalConfig
 import cn.xmplus.sdk.HYPopupDialog
 import cn.xmplus.sdk.HYSurveyView
 import org.json.JSONObject
@@ -21,11 +22,11 @@ class MainActivity : AppCompatActivity() {
     private var padding: Int = 0;
     private var bord: Boolean = false;
     private var debug: Boolean = true;
-    private var halfscreen: Boolean = true;
+    private var halfscreen: Boolean = false;
     private var delay: Int = 1000;
-    private var accessCode: String = "";
+//    private var accessCode: String = "";
     private var euid: String = "";
-//    private var accessCode: String = "1128430492441440256";
+    private var accessCode: String = "1209860970009583616";
 
     // JLTEST
 //    private var surveyId: String = "4445329530320896";
@@ -33,18 +34,18 @@ class MainActivity : AppCompatActivity() {
 //    private var server: String = "https://jltest.xmplus.cn/api/survey";
 
 //    // UAT
-//    private var surveyId: String = "4475002070663168";
-//    private var channelId: String = "4475389028433920";
-//    private var server: String = "https://mktcs-uat.lynkco-test.com/api/survey";
+    private var surveyId: String = "4475002070663168";
+    private var channelId: String = "4475389028433920";
+    private var server: String = "https://mktcs-uat.lynkco-test.com/api/survey";
 
 //    private var surveyId: String = "4538358709728256";
 //    private var channelId: String = "4538360831580160";
 //    private var server: String = "https://mktcs.lynkco.com/api/survey";
 
     // TEST
-    private var surveyId: String = "5623325575501824";
-    private var channelId: String = "5623326819536896";
-    private var server: String = "https://test.xmplus.cn/api/survey";
+//    private var surveyId: String = "5623325575501824";
+//    private var channelId: String = "5623326819536896";
+//    private var server: String = "https://test.xmplus.cn/api/survey";
 
     fun handleClickEmbed(view: View) {
 
@@ -90,6 +91,12 @@ class MainActivity : AppCompatActivity() {
         }, {
             alert(it.toString());
         })
+    }
+
+    fun handleConfigApply(view: View) {
+        var ser: String = getServer();
+        var code: String = findViewById<EditText>(R.id.editTextAccessCode).text.toString();
+        HYGlobalConfig.setup(ser, code, true);
     }
 
     fun handleClickPopup(view: View) {
@@ -177,24 +184,16 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         if (server == "https://test.xmplus.cn/api/survey") {
-            findViewById<CheckBox>(R.id.checkBoxTEST).isChecked = true;
             findViewById<CheckBox>(R.id.checkBoxUAT).isChecked = false;
-            findViewById<CheckBox>(R.id.checkBoxPROD).isChecked = false;
             findViewById<CheckBox>(R.id.checkBoxJPROD).isChecked = false;
         } else if (server == "https://mktcs-uat.lynkco-test.com/api/survey") {
             findViewById<CheckBox>(R.id.checkBoxUAT).isChecked = true;
-            findViewById<CheckBox>(R.id.checkBoxPROD).isChecked = false;
-            findViewById<CheckBox>(R.id.checkBoxTEST).isChecked = false;
-            findViewById<CheckBox>(R.id.checkBoxPROD).isChecked = false;
+            findViewById<CheckBox>(R.id.checkBoxJPROD).isChecked = false;
         } else if (server == "https://mktcs.lynkco.com/api/survey") {
             findViewById<CheckBox>(R.id.checkBoxJPROD).isChecked = true;
-            findViewById<CheckBox>(R.id.checkBoxPROD).isChecked = false;
             findViewById<CheckBox>(R.id.checkBoxUAT).isChecked = false;
-            findViewById<CheckBox>(R.id.checkBoxTEST).isChecked = false;
         } else if (server == "https://www.xmplus.cn/api/survey") {
-            findViewById<CheckBox>(R.id.checkBoxPROD).isChecked = true;
             findViewById<CheckBox>(R.id.checkBoxUAT).isChecked = false;
-            findViewById<CheckBox>(R.id.checkBoxTEST).isChecked = false;
             findViewById<CheckBox>(R.id.checkBoxJPROD).isChecked = false;
         }
 
@@ -206,20 +205,15 @@ class MainActivity : AppCompatActivity() {
 
 
 //        handleClickPopup(window.decorView);
-        findViewById<CheckBox>(R.id.checkBoxTEST).setOnClickListener { onCheckboxClick(it) };
         findViewById<CheckBox>(R.id.checkBoxUAT).setOnClickListener { onCheckboxClick(it) };
-        findViewById<CheckBox>(R.id.checkBoxPROD).setOnClickListener { onCheckboxClick(it) };
+        findViewById<CheckBox>(R.id.checkBoxJPROD).setOnClickListener { onCheckboxClick(it) };
     }
 
     private fun getServer(): String {
-        if (findViewById<CheckBox>(R.id.checkBoxTEST).isChecked) {
-            return "https://test.xmplus.cn/api/survey"
-        } else if (findViewById<CheckBox>(R.id.checkBoxUAT).isChecked) {
+        if (findViewById<CheckBox>(R.id.checkBoxUAT).isChecked) {
             return "https://mktcs-uat.lynkco-test.com/api/survey"
         } else if (findViewById<CheckBox>(R.id.checkBoxJPROD).isChecked) {
             return "https://mktcs.lynkco.com/api/survey"
-        } else if (findViewById<CheckBox>(R.id.checkBoxPROD).isChecked) {
-            return "https://www.xmplus.cn/api/survey"
         }
         return "";
     }
@@ -233,17 +227,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun onCheckboxClick(view: View?) {
         Log.d("example", "checkbox");
-        if (view!!.id == R.id.checkBoxTEST) {
+        if (view!!.id == R.id.checkBoxUAT) {
+            findViewById<CheckBox>(R.id.checkBoxJPROD).isChecked = false;
+        } else if (view!!.id == R.id.checkBoxJPROD) {
             findViewById<CheckBox>(R.id.checkBoxUAT).isChecked = false;
-            findViewById<CheckBox>(R.id.checkBoxPROD).isChecked = false;
-        } else if (view!!.id == R.id.checkBoxUAT) {
-            findViewById<CheckBox>(R.id.checkBoxTEST).isChecked = false;
-            findViewById<CheckBox>(R.id.checkBoxPROD).isChecked = false;
-        } else if (view!!.id == R.id.checkBoxPROD) {
-            findViewById<CheckBox>(R.id.checkBoxUAT).isChecked = false;
-            findViewById<CheckBox>(R.id.checkBoxTEST).isChecked = false;
         }
-
     }
 
 

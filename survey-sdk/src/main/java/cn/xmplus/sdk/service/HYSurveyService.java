@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import cn.xmplus.sdk.HYGlobalConfig;
 import cn.xmplus.sdk.callback.SurveyTaskCallback;
 
 import java.util.Arrays;
@@ -36,6 +37,8 @@ public class HYSurveyService extends AsyncTask<String, Void, List<Object>> {
         String channelId = strings[2];
         String accessCode = strings[3];
         String externalUserId =  strings.length > 3 ? strings[4] : "";
+
+
         try {
             String _url = String.format("%s/surveys/%s/embed?channelId=%s&accessCode=%s&externalUserId=%s", server, surveyId, channelId, accessCode, externalUserId);
             if (accessCode != null && !accessCode.isEmpty()) {
