@@ -3,6 +3,7 @@ package cn.xmplus.demo
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.DialogInterface
+import android.graphics.Color
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
@@ -87,6 +88,9 @@ class MainActivity : AppCompatActivity() {
             this.survey?.setOnClose(::onClose);
             this.survey?.setOnLoad(::onLoad);
             this.survey?.setOnSize(::onSize);
+
+            this.survey?.setBackgroundColor(Color.RED);
+
         }, {
             alert(it.toString());
         })
@@ -158,6 +162,7 @@ class MainActivity : AppCompatActivity() {
 //        alert("关闭")
         var container:LinearLayout = findViewById(R.id.container)
         container.layoutParams.height = 0;
+
     }
 
     fun alert(message: String) {
@@ -209,6 +214,8 @@ class MainActivity : AppCompatActivity() {
         findViewById<CheckBox>(R.id.checkBoxTEST).setOnClickListener { onCheckboxClick(it) };
         findViewById<CheckBox>(R.id.checkBoxUAT).setOnClickListener { onCheckboxClick(it) };
         findViewById<CheckBox>(R.id.checkBoxPROD).setOnClickListener { onCheckboxClick(it) };
+
+        handleClickEmbed(view = findViewById<EditText>(R.id.editTextSurveyId));
     }
 
     private fun getServer(): String {

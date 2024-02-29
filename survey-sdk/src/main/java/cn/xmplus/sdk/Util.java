@@ -11,11 +11,13 @@ public class Util {
     static Pattern PATTERN_PERC =  Pattern.compile("\\d+%");
 
     public static int dpFromPx(final Context context, final double px) {
-        return (int) Math.round(px / context.getResources().getDisplayMetrics().density);
+        Float density = HYConfig.getDensity() != null ? HYConfig.getDensity() : context.getResources().getDisplayMetrics().density;
+        return (int) Math.round(px / density);
     }
 
     public static int pxFromDp(final Context context, final float dp) {
-        return Math.round(dp * context.getResources().getDisplayMetrics().density);
+        Float density = HYConfig.getDensity() != null ? HYConfig.getDensity() : context.getResources().getDisplayMetrics().density;
+        return Math.round(dp * density);
     }
 
     /**
