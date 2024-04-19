@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity() {
     private var delay: Int = 1000;
 //    private var accessCode: String = "";
     private var euid: String = "";
-    private var accessCode: String = "1209860970009583616";
+    private var accessCode: String = "";
 
     // JLTEST
 //    private var surveyId: String = "4445329530320896";
