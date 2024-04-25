@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity() {
     private var delay: Int = 1000;
 //    private var accessCode: String = "";
     private var euid: String = "";
-    private var accessCode: String = "";
+    private var accessCode: String = "1233114638330048512";
 
     // JLTEST
 //    private var surveyId: String = "4445329530320896";
@@ -66,7 +66,7 @@ class MainActivity : AppCompatActivity() {
         options.put("bord", bord);
 //        options.put("delay", delay);
         options.put("padding", padding);
-        options.put("server", ser);
+//        options.put("server", ser);
         options.put("delay", delay);
         options.put("halfscreen", findViewById<CheckBox>(R.id.checkBoxHalfScreen).isChecked);
 //        options.put("project", getProject());
@@ -117,7 +117,7 @@ class MainActivity : AppCompatActivity() {
         options.put("bord", bord);
 //        options.put("delay", delay);
         options.put("padding", padding);
-        options.put("server", ser);
+//        options.put("server", ser);
         options.put("delay", delay);
 //        options.put("halfscreen", findViewById<CheckBox>(R.id.checkBoxHalfScreen).isChecked);
 //        options.put("project", getProject());
