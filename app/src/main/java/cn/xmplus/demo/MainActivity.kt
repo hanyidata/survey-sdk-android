@@ -43,9 +43,13 @@ class MainActivity : AppCompatActivity() {
 //    private var server: String = "https://mktcs.lynkco.com/api/survey";
 
     // TEST
-    private var surveyId: String = "5623325575501824";
-    private var channelId: String = "5623326819536896";
-    private var server: String = "https://test.xmplus.cn/api/survey";
+    private var surveyId: String = "6167069344957440";
+    private var channelId: String = "6195126609692672";
+    private var server: String = "https://www.xmplus.cn/api/survey";
+
+    fun handleCloseDialog(view: View)  {
+        HYPopupDialog.close();
+    }
 
     fun handleClickEmbed(view: View) {
 
@@ -121,7 +125,7 @@ class MainActivity : AppCompatActivity() {
 
         var root = findViewById<View>(android.R.id.content)
         HYPopupDialog.makeDialog(
-            root.context, sid, cid, parameters, options,
+            root, sid, cid, parameters, options,
             {
 //                alert("取消");
                 onCancel(null);
@@ -215,7 +219,7 @@ class MainActivity : AppCompatActivity() {
         findViewById<CheckBox>(R.id.checkBoxUAT).setOnClickListener { onCheckboxClick(it) };
         findViewById<CheckBox>(R.id.checkBoxPROD).setOnClickListener { onCheckboxClick(it) };
 
-        handleClickEmbed(view = findViewById<EditText>(R.id.editTextSurveyId));
+//        handleClickEmbed(view = findViewById<EditText>(R.id.editTextSurveyId));
     }
 
     private fun getServer(): String {

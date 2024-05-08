@@ -159,7 +159,8 @@ public class HYSurveyView extends LinearLayout {
         webView.setVerticalScrollBarEnabled(true);
         webView.setClipToOutline(true);
         webView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-        webView.setFocusableInTouchMode(false);
+        webView.setFocusableInTouchMode(true);
+        webView.setFocusable(true);
         webView.getSettings().setNeedInitialFocus(false);
         webView.setWebChromeClient(new WebChromeClient()
         {
