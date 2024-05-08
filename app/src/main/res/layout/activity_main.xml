@@ -247,7 +247,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Button" />
+                android:onClick="handleCloseDialog"
+                android:text="弹窗关闭" />
 
         </LinearLayout>
     </ScrollView>

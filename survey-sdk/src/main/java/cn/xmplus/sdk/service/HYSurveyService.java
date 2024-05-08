@@ -37,6 +37,7 @@ public class HYSurveyService extends AsyncTask<String, Void, List<Object>> {
         String accessCode = strings[3];
         String externalUserId =  strings.length > 3 ? strings[4] : "";
         try {
+            //Thread.sleep(5000);
             String _url = String.format("%s/surveys/%s/embed?channelId=%s&accessCode=%s&externalUserId=%s", server, surveyId, channelId, accessCode, externalUserId);
             if (accessCode != null && !accessCode.isEmpty()) {
                 _url = _url + String.format("&accessCode=%s", accessCode);
