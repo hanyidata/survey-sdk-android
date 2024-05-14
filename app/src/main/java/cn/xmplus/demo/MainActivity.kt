@@ -22,11 +22,11 @@ class MainActivity : AppCompatActivity() {
     private var padding: Int = 0;
     private var bord: Boolean = false;
     private var debug: Boolean = true;
-    private var halfscreen: Boolean = false;
+    private var halfscreen: Boolean = true;
     private var delay: Int = 1000;
-//    private var accessCode: String = "";
     private var euid: String = "";
-    private var accessCode: String = "1233114638330048512";
+    private var accessCode: String = "";
+//    private var accessCode: String = "1233114638330048512";
 
     // JLTEST
 //    private var surveyId: String = "4445329530320896";
@@ -34,18 +34,18 @@ class MainActivity : AppCompatActivity() {
 //    private var server: String = "https://jltest.xmplus.cn/api/survey";
 
 //    // UAT
-    private var surveyId: String = "4475002070663168";
-    private var channelId: String = "4475389028433920";
-    private var server: String = "https://mktcs-uat.lynkco-test.com/api/survey";
+//    private var surveyId: String = "4475002070663168";
+//    private var channelId: String = "4475389028433920";
+//    private var server: String = "https://mktcs-uat.lynkco-test.com/api/survey";
 
 //    private var surveyId: String = "4538358709728256";
 //    private var channelId: String = "4538360831580160";
 //    private var server: String = "https://mktcs.lynkco.com/api/survey";
 
     // TEST
-//    private var surveyId: String = "5623325575501824";
-//    private var channelId: String = "5623326819536896";
-//    private var server: String = "https://test.xmplus.cn/api/survey";
+    private var surveyId: String = "5936222062973952";
+    private var channelId: String = "6280969133345792";
+    private var server: String = "https://test.xmplus.cn/api/survey";
 
     fun handleClickEmbed(view: View) {
 
@@ -66,7 +66,7 @@ class MainActivity : AppCompatActivity() {
         options.put("bord", bord);
 //        options.put("delay", delay);
         options.put("padding", padding);
-//        options.put("server", ser);
+        options.put("server", ser);
         options.put("delay", delay);
         options.put("halfscreen", findViewById<CheckBox>(R.id.checkBoxHalfScreen).isChecked);
 //        options.put("project", getProject());
@@ -117,9 +117,8 @@ class MainActivity : AppCompatActivity() {
         options.put("bord", bord);
 //        options.put("delay", delay);
         options.put("padding", padding);
-//        options.put("server", ser);
+        options.put("server", ser);
         options.put("delay", delay);
-//        options.put("halfscreen", findViewById<CheckBox>(R.id.checkBoxHalfScreen).isChecked);
 //        options.put("project", getProject());
 
         var root = findViewById<View>(android.R.id.content)
@@ -215,7 +214,7 @@ class MainActivity : AppCompatActivity() {
         } else if (findViewById<CheckBox>(R.id.checkBoxJPROD).isChecked) {
             return "https://mktcs.lynkco.com/api/survey"
         }
-        return "";
+        return server;
     }
 
 //    private fun getProject(): String? {

@@ -281,110 +281,113 @@ public class HYSurveyView extends LinearLayout {
             webView.post(new Runnable() {
                 @Override
                 public void run() {
-                    DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
+                    try {
+                        DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
+                        switch (type) {
+                            case "init":
+                                JSONObject data = new JSONObject();
+                                try {
+                                    data.put("surveyId", surveyId);
+                                    data.put("channelId", channelId);
+                                    data.put("delay", delay);
+                                    data.put("halfscreen", halfscreen);
+                                    // lynkco project hardcode here.
+                                    data.put("project", "lynkco");
+                                    data.put("server", server);
+                                    data.put("parameters", parameters);
+                                    data.put("borderRadiusMode", borderRadiusMode);
+                                    Log.v("surveySDK", data.toString());
+                                    String script = String.format("document.dispatchEvent(new CustomEvent('init', { detail: %s}))", data);
+                                    webView.evaluateJavascript(script, new ValueCallback<String>() {
+                                        @Override
+                                        public void onReceiveValue(String value) {
+                                        }
+                                    });
 
-                    switch (type) {
-                        case "init":
-                            JSONObject data = new JSONObject();
-                            try {
-                                data.put("surveyId", surveyId);
-                                data.put("channelId", channelId);
-                                data.put("delay", delay);
-                                data.put("halfscreen", halfscreen);
-                                // lynkco project hardcode here.
-                                data.put("project", "lynkco");
-                                data.put("server", server);
-                                data.put("parameters", parameters);
-                                data.put("borderRadiusMode", borderRadiusMode);
-                                Log.v("surveySDK", data.toString());
-                                String script = String.format("document.dispatchEvent(new CustomEvent('init', { detail: %s}))", data);
-                                webView.evaluateJavascript(script, new ValueCallback<String>() {
-                                    @Override
-                                    public void onReceiveValue(String value) {
-                                    }
-                                });
-
-                            } catch (JSONException e) {
-                                Log.e("surveySDK", "init error \"" + message + "\"" + e.getMessage());
-                            }
-                            break;
-                        case "input-focus":
-                            Log.v("surveySDK", "input focus gain");
-                            if (System.currentTimeMillis() - lastClickTime < 100) {
-                                // 忽略这次点击，因为距离上次点击不足一秒
-                                return;
-                            }
-                            lastClickTime = System.currentTimeMillis();
-                            if (!inputFocused) {
-                                webView.setFocusableInTouchMode(true);
-                            }
-                            webView.requestFocus();
-                            InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                            if (imm != null) {
-                                Boolean res = imm.showSoftInput(webView, InputMethodManager.SHOW_IMPLICIT);
-                                Log.v("surveySDK", "show soft input " + res);
-                            }
-                            break;
-                        case "input-blur":
-                            Log.v("surveySDK", "input focus lost");
+                                } catch (JSONException e) {
+                                    Log.e("surveySDK", "init error \"" + message + "\"" + e.getMessage());
+                                }
+                                break;
+                            case "input-focus":
+                                Log.v("surveySDK", "input focus gain");
+                                if (System.currentTimeMillis() - lastClickTime < 100) {
+                                    // 忽略这次点击，因为距离上次点击不足一秒
+                                    return;
+                                }
+                                lastClickTime = System.currentTimeMillis();
+                                if (!inputFocused) {
+                                    webView.setFocusableInTouchMode(true);
+                                }
+                                webView.requestFocus();
+                                InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                                if (imm != null) {
+                                    Boolean res = imm.showSoftInput(webView, InputMethodManager.SHOW_IMPLICIT);
+                                    Log.v("surveySDK", "show soft input " + res);
+                                }
+                                break;
+                            case "input-blur":
+                                Log.v("surveySDK", "input focus lost");
 //                            webView.clearFocus();
 //                            webView.setFocusableInTouchMode(false);
-                            break;
-                        case "load":
-                            int screenWidth = displayMetrics.widthPixels;
-                            appBorderRadiusPx = Util.parsePx(getContext(), mergedConfig.optString("appBorderRadius", "0px"), screenWidth);
-                            appPaddingWidth = Util.parsePx(getContext(), mergedConfig.optString("appPaddingWidth", "0px"), screenWidth);
+                                break;
+                            case "load":
+                                int screenWidth = displayMetrics.widthPixels;
+                                appBorderRadiusPx = Util.parsePx(getContext(), mergedConfig.optString("appBorderRadius", "0px"), screenWidth);
+                                appPaddingWidth = Util.parsePx(getContext(), mergedConfig.optString("appPaddingWidth", "0px"), screenWidth);
 
-                            // check should render corner radius
-                            if (!isDialogMode) {
-                                GradientDrawable drawable = new GradientDrawable();
-                                drawable.setCornerRadius(appBorderRadiusPx);
-                                webView.setBackground(drawable);
-                                setPadding(appPaddingWidth, 0, appPaddingWidth, 0);
-                            }
-                            if (onLoad != null) {
-                                onLoad.accept(mergedConfig);
-                            }
-                            break;
-                        case "size":
-                            try {
-                                int dp = value.getInt("height");
-                                int px = Util.pxFromDp(getContext(), dp);
-                                int height = px;
-                                if (previousHeight != height) {
-                                    Log.v("surveySDK", "change height to " + height);
-                                    webView.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height));
-                                    container.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height));
-                                    if (onSize != null) {
-                                        onSize.accept(px);
-                                    }
-                                    previousHeight = height;
+                                // check should render corner radius
+                                if (!isDialogMode) {
+                                    GradientDrawable drawable = new GradientDrawable();
+                                    drawable.setCornerRadius(appBorderRadiusPx);
+                                    webView.setBackground(drawable);
+                                    setPadding(appPaddingWidth, 0, appPaddingWidth, 0);
                                 }
-                            } catch (JSONException e) {
-                            }
-                            break;
-                        case "cancel":
-                            Log.v("surveySDK", "survey canceled");
-                            close();
-                            if (onCancel != null) {
-                                onCancel.accept(null);
-                            }
-                            break;
-                        case "close":
-                            close();
-                            Log.v("surveySDK", "survey closed");
-                            if (onClose != null) {
-                                onClose.accept(null);
-                            }
-                            break;
-                        case "submit":
-                            finished = true;
-                            if (onSubmit != null) {
-                                onSubmit.accept(null);
-                            }
-                            break;
-                        default:
-                            break;
+                                if (onLoad != null) {
+                                    onLoad.accept(mergedConfig);
+                                }
+                                break;
+                            case "size":
+                                try {
+                                    int dp = value.getInt("height");
+                                    int px = Util.pxFromDp(getContext(), dp);
+                                    int height = px;
+                                    if (previousHeight != height) {
+                                        Log.v("surveySDK", "change height to " + height);
+                                        webView.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height));
+                                        container.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height));
+                                        if (onSize != null) {
+                                            onSize.accept(px);
+                                        }
+                                        previousHeight = height;
+                                    }
+                                } catch (JSONException e) {
+                                }
+                                break;
+                            case "cancel":
+                                Log.v("surveySDK", "survey canceled");
+                                close();
+                                if (onCancel != null) {
+                                    onCancel.accept(null);
+                                }
+                                break;
+                            case "close":
+                                close();
+                                Log.v("surveySDK", "survey closed");
+                                if (onClose != null) {
+                                    onClose.accept(null);
+                                }
+                                break;
+                            case "submit":
+                                finished = true;
+                                if (onSubmit != null) {
+                                    onSubmit.accept(null);
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                    } catch (Exception ex) {
+                        Log.e("surveySDK", "failed to handle due to " + ex.getMessage());
                     }
                 }
             });
