@@ -6,6 +6,9 @@ import cn.xmplus.sdk.service.HYSurveyConfigService;
 
 public class HYGlobalConfig {
     private static String accessCode;
+    private static int connectionTimeout = 5000;
+    private static int readTimeout = 5000;
+
     private static String server = "https://www.xmplus.cn/api/survey";
     private static boolean authRequired = false;
     private static boolean verified = false;
@@ -15,6 +18,12 @@ public class HYGlobalConfig {
     }
 
     public static String getServer() { return server; }
+
+    public static int getConnectionTimeout() { return connectionTimeout; }
+    public static int getReadTimeout() { return readTimeout; }
+
+    public static void setConnectionTimeout(int val) { connectionTimeout = val; }
+    public static void setReadTimeout(int val) { readTimeout = val; }
 
     /**
      * global auth config

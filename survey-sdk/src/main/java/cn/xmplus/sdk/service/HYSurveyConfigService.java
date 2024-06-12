@@ -36,6 +36,8 @@ public class HYSurveyConfigService extends AsyncTask<String, Void, List<Object>>
             URL url = new URL(_url);
             Log.d("surveySDK", String.format("pre check access code for %s", _url));
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setConnectTimeout(HYGlobalConfig.getConnectionTimeout());
+            urlConnection.setReadTimeout(HYGlobalConfig.getReadTimeout());
             int status = urlConnection.getResponseCode();
             if (status >= 500) {
                 urlConnection.disconnect();

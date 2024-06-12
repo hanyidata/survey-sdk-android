@@ -50,6 +50,8 @@ public class HYSurveyService extends AsyncTask<String, Void, List<Object>> {
             URL url = new URL(_url);
             Log.d("surveySDK", String.format("download config from %s %s %s", server, surveyId, channelId));
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setConnectTimeout(HYGlobalConfig.getConnectionTimeout());
+            urlConnection.setReadTimeout(HYGlobalConfig.getReadTimeout());
             int status = urlConnection.getResponseCode();
             if (status >= 500) {
                 urlConnection.disconnect();
