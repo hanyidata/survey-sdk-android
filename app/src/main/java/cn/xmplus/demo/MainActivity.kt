@@ -43,8 +43,8 @@ class MainActivity : AppCompatActivity() {
 //    private var server: String = "https://mktcs.lynkco.com/api/survey";
 
     // TEST
-    private var surveyId: String = "5936222062973952";
-    private var channelId: String = "6280969133345792";
+    private var surveyId: String = "6417370258754560";
+    private var channelId: String = "6417382901173248";
     private var server: String = "https://test.xmplus.cn/api/survey";
 
     fun handleClickEmbed(view: View) {
@@ -107,6 +107,9 @@ class MainActivity : AppCompatActivity() {
         var euid: String = findViewById<EditText>(R.id.editTextEUID).text.toString();
 
         var parameters = JSONObject();
+        var pp = JSONObject();
+        pp.put("role", "role1");
+        parameters.put("parameters", pp);
         parameters.put("accessCode", code);
         if (euid.isNotEmpty()) {
             parameters.put("externalUserId", euid);
