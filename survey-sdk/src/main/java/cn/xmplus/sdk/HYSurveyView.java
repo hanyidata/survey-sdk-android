@@ -42,6 +42,7 @@ public class HYSurveyView extends LinearLayout {
     private Boolean finished = false;
     private Integer previousHeight = 0;
     private Boolean halfscreen = false;
+    private String showType = "";
     private String project = null;
     private Boolean closed = false;
 
@@ -87,6 +88,7 @@ public class HYSurveyView extends LinearLayout {
         this.isDialogMode = options.optBoolean("isDialogMode", false);
         this.delay = options.optInt("delay", 1000);
         this.halfscreen = options.optBoolean("halfscreen", false);
+        this.showType = options.optString("showType", "embedded");
         this.project = options.optString("project", null);
         this.server = options.optString("server", HYGlobalConfig.getServer());
         this.borderRadiusMode = options.optString("borderRadiusMode", "CENTER");
@@ -291,6 +293,7 @@ public class HYSurveyView extends LinearLayout {
                                     data.put("channelId", channelId);
                                     data.put("delay", delay);
                                     data.put("halfscreen", halfscreen);
+                                    data.put("showType", showType);
                                     // lynkco project hardcode here.
                                     data.put("project", "lynkco");
                                     data.put("server", server);

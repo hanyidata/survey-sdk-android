@@ -98,6 +98,7 @@ public class HYPopupDialog extends Dialog {
         JSONObject mergeOption = options;
         try {
             mergeOption.put("isDialogMode", true);
+            mergeOption.put("showType", "dialog");
         } catch (JSONException e) {
             Log.d("surveySDK", e.getMessage());
         }
