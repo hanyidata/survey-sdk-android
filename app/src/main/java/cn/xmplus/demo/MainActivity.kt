@@ -93,7 +93,7 @@ class MainActivity : AppCompatActivity() {
             this.survey?.setOnLoad(::onLoad);
             this.survey?.setOnSize(::onSize);
 
-            this.survey?.setBackgroundColor(Color.RED);
+//            this.survey?.setBackgroundColor(Color.RED);
 
         }, {
             alert(it.toString());
