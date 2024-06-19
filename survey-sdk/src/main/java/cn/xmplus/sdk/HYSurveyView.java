@@ -3,6 +3,7 @@ package cn.xmplus.sdk;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
+import android.os.Build;
 import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -31,7 +32,7 @@ import cn.xmplus.sdk.service.HYSurveyService;
  * Survey View
  */
 public class HYSurveyView extends LinearLayout {
-    private WebView webView;
+    private HYRoundWebView webView;
     private final String surveyId;
     private final String channelId;
     private final JSONObject parameters;
@@ -148,7 +149,8 @@ public class HYSurveyView extends LinearLayout {
      * setup webview
      */
     private void setup() {
-        webView = new WebView(this.getContext());
+//        webView = new WebView(this.getContext());
+        webView = new HYRoundWebView(this.getContext());
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
         webView.getSettings().setDomStorageEnabled(true);
@@ -162,6 +164,8 @@ public class HYSurveyView extends LinearLayout {
         webView.setFocusableInTouchMode(true);
         webView.setFocusable(true);
         webView.getSettings().setNeedInitialFocus(false);
+        webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+
         webView.setWebChromeClient(new WebChromeClient()
         {
             @Override
@@ -189,27 +193,7 @@ public class HYSurveyView extends LinearLayout {
      *
      */
     private void  applyConfig() {
-        DisplayMetrics displayMetrics = this.getContext().getResources().getDisplayMetrics();
-        int screenWidth = displayMetrics.widthPixels;
 
-        String embedVerticalAlign = config.optString("embedVerticalAlign", "CENTER");
-        int appBorderRadiusPx = Util.parsePx(getContext(), config.optString("appBorderRadius", "0px"), screenWidth);
-
-        GradientDrawable gradientDrawable = new GradientDrawable();
-        gradientDrawable.setColor(Color.TRANSPARENT);
-        switch (embedVerticalAlign) {
-            case "CENTER":
-//                gradientDrawable.setCornerRadius(appBorderRadiusPx);
-                break;
-            case "TOP":
-//                gradientDrawable.setCornerRadii(new float[] {0,0,0,0, appBorderRadiusPx, appBorderRadiusPx, appBorderRadiusPx, appBorderRadiusPx});
-                break;
-            case "BOTTOM":
-//                gradientDrawable.setCornerRadii(new float[] {appBorderRadiusPx, appBorderRadiusPx, appBorderRadiusPx, appBorderRadiusPx, 0,0,0,0});
-                break;
-        }
-        webView.setBackgroundColor(Color.TRANSPARENT);
-//        webView.setBackground(gradientDrawable);
     }
 
     public String getVersion() {
@@ -328,14 +312,24 @@ public class HYSurveyView extends LinearLayout {
                             int screenWidth = displayMetrics.widthPixels;
                             appBorderRadiusPx = Util.parsePx(getContext(), mergedConfig.optString("appBorderRadius", "0px"), screenWidth);
                             appPaddingWidth = Util.parsePx(getContext(), mergedConfig.optString("appPaddingWidth", "0px"), screenWidth);
+                            String embedVerticalAlign = mergedConfig.optString("embedVerticalAlign", "CENTER");
 
-                            // check should render corner radius
-                            if (!isDialogMode) {
-                                GradientDrawable drawable = new GradientDrawable();
-                                drawable.setCornerRadius(appBorderRadiusPx);
-                                webView.setBackground(drawable);
-                                setPadding(appPaddingWidth, 0, appPaddingWidth, 0);
+                            if (isDialogMode) {
+                                switch (embedVerticalAlign) {
+                                    case "CENTER":
+                                        webView.setCornerRadius(appBorderRadiusPx, appBorderRadiusPx);
+                                        break;
+                                    case "TOP":
+                                        webView.setCornerRadius(0, appBorderRadiusPx);
+                                        break;
+                                    case "BOTTOM":
+                                        webView.setCornerRadius(appBorderRadiusPx, 0);
+                                        break;
+                                }
+                            } else {
+                                webView.setCornerRadius(appBorderRadiusPx, appBorderRadiusPx);
                             }
+
                             if (onLoad != null) {
                                 onLoad.accept(mergedConfig);
                             }
