@@ -164,7 +164,6 @@ public class HYSurveyView extends LinearLayout {
         webView.setFocusableInTouchMode(true);
         webView.setFocusable(true);
         webView.getSettings().setNeedInitialFocus(false);
-        webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
 
         webView.setWebChromeClient(new WebChromeClient()
         {

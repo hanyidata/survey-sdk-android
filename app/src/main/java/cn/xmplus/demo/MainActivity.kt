@@ -43,8 +43,8 @@ class MainActivity : AppCompatActivity() {
 //    private var server: String = "https://mktcs.lynkco.com/api/survey";
 
     // TEST
-    private var surveyId: String = "6167069344957440";
-    private var channelId: String = "6195126609692672";
+    private var surveyId: String = "6495158537216000";
+    private var channelId: String = "6495159554990080";
     private var server: String = "https://www.xmplus.cn/api/survey";
 
     fun handleCloseDialog(view: View)  {
