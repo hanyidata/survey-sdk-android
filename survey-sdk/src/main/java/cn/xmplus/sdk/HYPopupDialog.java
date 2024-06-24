@@ -23,11 +23,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import cn.xmplus.sdk.callback.SurveyFunction;
+import cn.xmplus.sdk.service.HYSurveySendService;
 import cn.xmplus.sdk.service.HYSurveyService;
 
 public class HYPopupDialog extends Dialog {
-    private final String surveyId;
-    private final String channelId;
+    private String surveyId;
+    private String channelId;
     private final JSONObject parameters;
     private JSONObject options;
 
@@ -58,6 +59,18 @@ public class HYPopupDialog extends Dialog {
     // 标记最近一次的tracking view
     static View _trackingView = null;
 
+    /**
+     * 根据sid cid弹出问卷
+     * @param context
+     * @param surveyId
+     * @param channelId
+     * @param parameters
+     * @param options
+     * @param config
+     * @param onCancel
+     * @param onSubmit
+     * @param onLoad
+     */
     public HYPopupDialog(Context context, String surveyId, String channelId, JSONObject parameters, JSONObject options, JSONObject config, SurveyFunction onCancel, SurveyFunction onSubmit, SurveyFunction onLoad)  {
         super(context);
         this.context = context;
@@ -83,8 +96,10 @@ public class HYPopupDialog extends Dialog {
         setCanceledOnTouchOutside(false);
     }
 
+
+
     /**
-     * Make Dialog
+     * Make Dialog by sid and cid
      * @deprecated
      * please replace the first parameter context to view, since we will track the view status
      * before popup dialog.
@@ -100,11 +115,11 @@ public class HYPopupDialog extends Dialog {
      */
     @Deprecated()
     public static void makeDialog(Context context, String surveyId, String channelId, JSONObject parameters, JSONObject options, SurveyFunction onCancel, SurveyFunction onSubmit, SurveyFunction onError) {
-        _makeDialog(null, context, surveyId, channelId, parameters, options, onCancel, onSubmit, onError, null);
+        _makeDialog(null, context, surveyId, channelId,  "", parameters, options, onCancel, onSubmit, onError, null);
     }
 
     /**
-     * Make Dialog
+     * Make Dialog sid and cid
      * @deprecated
      * please replace the first parameter context to view, since we will track the view status
      * before popup dialog.
@@ -121,11 +136,11 @@ public class HYPopupDialog extends Dialog {
      */
     @Deprecated()
     public static void makeDialog(Context context, String surveyId, String channelId, JSONObject parameters, JSONObject options, SurveyFunction onCancel, SurveyFunction onSubmit, SurveyFunction onError, SurveyFunction onLoad)  {
-        _makeDialog(null, context, surveyId, channelId, parameters, options, onCancel, onSubmit, onError, onLoad);
+        _makeDialog(null, context, surveyId, channelId, "", parameters, options, onCancel, onSubmit, onError, onLoad);
     }
 
     /**
-     * Make Dialog
+     * Make Dialog sid and cid
      *
      * @param view
      * @param surveyId
@@ -137,7 +152,7 @@ public class HYPopupDialog extends Dialog {
      * @param onError
      */
     public static void makeDialog(View view, String surveyId, String channelId, JSONObject parameters, JSONObject options, SurveyFunction onCancel, SurveyFunction onSubmit, SurveyFunction onError) {
-        _makeDialog(view, view.getContext(), surveyId, channelId, parameters, options, onCancel, onSubmit, onError, null);
+        _makeDialog(view, view.getContext(), surveyId, channelId, "", parameters, options, onCancel, onSubmit, onError, null);
     }
 
     /**
@@ -154,15 +169,28 @@ public class HYPopupDialog extends Dialog {
      * @param onLoad
      */
     public static void makeDialog(View view, String surveyId, String channelId, JSONObject parameters, JSONObject options, SurveyFunction onCancel, SurveyFunction onSubmit, SurveyFunction onError, SurveyFunction onLoad) {
-        _makeDialog(view, view.getContext(), surveyId, channelId, parameters, options, onCancel, onSubmit, onError, onLoad);
+        _makeDialog(view, view.getContext(), surveyId, channelId, "", parameters, options, onCancel, onSubmit, onError, onLoad);
     }
 
     /**
-     * internal make dialog
+     * Make Dialog by sendId
+     *
      * @param view
-     * @param context
-     * @param surveyId
-     * @param channelId
+     * @param sendId
+     * @param parameters
+     * @param options
+     * @param onCancel
+     * @param onSubmit
+     * @param onError
+     */
+    public static void makeDialogBySendId(View view, String sendId, JSONObject parameters, JSONObject options, SurveyFunction onCancel, SurveyFunction onSubmit, SurveyFunction onError) {
+        _makeDialog(view, view.getContext(), "", "", sendId, parameters, options, onCancel, onSubmit, onError, null);
+    }
+
+    /**
+     * Make Dialog by sendId
+     *
+     * @param view
      * @param parameters
      * @param options
      * @param onCancel
@@ -170,7 +198,27 @@ public class HYPopupDialog extends Dialog {
      * @param onError
      * @param onLoad
      */
-    private static void _makeDialog(View view, Context context, String surveyId, String channelId, JSONObject parameters, JSONObject options, SurveyFunction onCancel, SurveyFunction onSubmit, SurveyFunction onError, SurveyFunction onLoad) {
+    public static void makeDialogBySendId(View view, String sendId, JSONObject parameters, JSONObject options, SurveyFunction onCancel, SurveyFunction onSubmit, SurveyFunction onError, SurveyFunction onLoad) {
+        _makeDialog(view, view.getContext(), "", "", sendId, parameters, options, onCancel, onSubmit, onError, onLoad);
+    }
+
+
+
+    /**
+     * internal make dialog
+     * @param view
+     * @param context
+     * @param surveyId
+     * @param channelId
+     * @param sendId
+     * @param parameters
+     * @param options
+     * @param onCancel
+     * @param onSubmit
+     * @param onError
+     * @param onLoad
+     */
+    private static void _makeDialog(View view, Context context, String surveyId, String channelId, String sendId, JSONObject parameters, JSONObject options, SurveyFunction onCancel, SurveyFunction onSubmit, SurveyFunction onError, SurveyFunction onLoad) {
         String server = options.optString("server", "https://www.xmplus.cn/api/survey");
         String accessCode = parameters.optString("accessCode", "");
         String externalUserId = parameters.optString("externalUserId", "");
@@ -185,24 +233,43 @@ public class HYPopupDialog extends Dialog {
         HYPopupDialog._lastInstance = null;
         HYPopupDialog._close = false;
 
-        new HYSurveyService((JSONObject config, String error) -> {
-            if (config != null) {
-                if (!HYPopupDialog.canPopup()) {
-                    Log.e("surveySDK", "survey skip popup");
+        if (sendId.isEmpty()) {
+            // sid + channel id
+            new HYSurveyService((String sid, String cid, JSONObject config, String error) -> {
+                if (config != null) {
+                    HYPopupDialog._showDialog(context, surveyId, channelId, parameters, mergeOption, config, onCancel, onSubmit, onLoad, onError);
+                } else {
+                    Log.e("surveySDK", String.format("survey popup failed %s", error));
                     if (onError != null) {
-                        onError.accept("popup skipped");
+                        onError.accept(error);
                     }
-                    return;
                 }
-                HYPopupDialog._lastInstance = new HYPopupDialog(context, surveyId, channelId, parameters, mergeOption, config, onCancel, onSubmit, onLoad);
-                HYPopupDialog._lastInstance.show();
-            } else {
-                Log.e("surveySDK", String.format("survey popup failed %s", error));
-                if (onError != null) {
-                    onError.accept(error);
+            }).execute(server, surveyId, channelId, accessCode, externalUserId);
+        } else {
+            // send id
+            new HYSurveySendService((String sid, String cid, JSONObject config, String error) -> {
+                if (config != null) {
+                    HYPopupDialog._showDialog(context, sid, cid, parameters, mergeOption, config, onCancel, onSubmit, onLoad, onError);
+                } else {
+                    Log.e("surveySDK", String.format("survey popup failed %s", error));
+                    if (onError != null) {
+                        onError.accept(error);
+                    }
                 }
+            }).execute(server, sendId, accessCode, externalUserId);
+        }
+    }
+
+    private static void _showDialog(Context context, String surveyId, String channelId, JSONObject parameters, JSONObject options, JSONObject config, SurveyFunction onCancel, SurveyFunction onSubmit, SurveyFunction onLoad, SurveyFunction onError) {
+        if (!HYPopupDialog.canPopup()) {
+            Log.e("surveySDK", "survey skip popup");
+            if (onError != null) {
+                onError.accept("popup skipped");
             }
-        }).execute(server, surveyId, channelId, accessCode, externalUserId);
+            return;
+        }
+        HYPopupDialog._lastInstance = new HYPopupDialog(context, surveyId, channelId, parameters, options, config, onCancel, onSubmit, onLoad);
+        HYPopupDialog._lastInstance.show();
     }
 
     /**

@@ -4,5 +4,5 @@ import org.json.JSONObject;
 
 @FunctionalInterface
 public interface SurveyTaskCallback {
-    void onConfigReady(JSONObject config, String error);
+    void onConfigReady(String sid, String cid, JSONObject config, String error);
 }

@@ -25,6 +25,7 @@ import org.json.JSONObject;
 import java.util.Iterator;
 
 import cn.xmplus.sdk.callback.SurveyFunction;
+import cn.xmplus.sdk.service.HYSurveySendService;
 import cn.xmplus.sdk.service.HYSurveyService;
 
 
@@ -98,7 +99,7 @@ public class HYSurveyView extends LinearLayout {
     }
 
     /**
-     * Async version make view
+     * 根据sid cid显示问卷
      * @param context
      * @param surveyId
      * @param channelId
@@ -115,7 +116,7 @@ public class HYSurveyView extends LinearLayout {
         String accessCode = parameters.optString("accessCode", "");
         String externalUserId = parameters.optString("externalUserId", "");
 
-        new HYSurveyService((JSONObject config, String error) -> {
+        new HYSurveyService((String sid, String cid, JSONObject config, String error) -> {
             if (config != null) {
                 HYSurveyView view = new HYSurveyView(context, surveyId, channelId, parameters, options);
                 onReady.accept(view);
@@ -126,6 +127,37 @@ public class HYSurveyView extends LinearLayout {
                 }
             }
         }).execute(server, surveyId, channelId, accessCode, externalUserId);
+    }
+
+    /**
+     * 根据发送id显示问卷
+     * @param context
+     * @param sendId
+     * @param parameters
+     * @param options
+     * @param onReady
+     * @param onError
+     */
+    public static void makeViewAsyncBySendId(Context context, String sendId, JSONObject parameters, JSONObject options, SurveyFunction onReady, SurveyFunction onError)  {
+        if (onReady == null) {
+            Log.e("surveySDK", "onReady not setup");
+            return;
+        }
+        String server = options.optString("server", "https://www.xmplus.cn/api/survey");
+        String accessCode = parameters.optString("accessCode", "");
+        String externalUserId = parameters.optString("externalUserId", "");
+
+        new HYSurveySendService((String sid, String cid, JSONObject config, String error) -> {
+            if (config != null) {
+                HYSurveyView view = new HYSurveyView(context, sid, cid, parameters, options);
+                onReady.accept(view);
+            } else {
+                Log.e("surveySDK", String.format("survey popup failed %s", error));
+                if (onError != null) {
+                    onError.accept(error);
+                }
+            }
+        }).execute(server, sendId, accessCode, externalUserId);
     }
 
     public void setOnSubmit(SurveyFunction callback) {
