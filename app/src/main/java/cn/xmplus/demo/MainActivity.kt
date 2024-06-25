@@ -45,7 +45,8 @@ class MainActivity : AppCompatActivity() {
     // TEST
     private var surveyId: String = "6495158537216000";
     private var channelId: String = "6495159554990080";
-    private var sendId: String = "BddfddRImjktRzRk";
+//    private var sendId: String = "BddfddRImjktRzRk";
+    private var sendId: String = "";
     private var server: String = "https://www.xmplus.cn/api/survey";
 
     fun handleCloseDialog(view: View)  {
@@ -149,30 +150,30 @@ class MainActivity : AppCompatActivity() {
             HYPopupDialog.makeDialogBySendId(
                 root, sdid, parameters, options,
                 {
-//                alert("取消");
                     onCancel(null);
                 },
                 {
-//                alert("提交");
                     onSubmit(null);
                 },
                 {
                     alert("发生错误 $it");
+                }, {
+                    Log.d("surveyExample", "onLoad")
                 }
             );
         } else {
             HYPopupDialog.makeDialog(
                 root, sid, cid, parameters, options,
                 {
-//                alert("取消");
                     onCancel(null);
                 },
                 {
-//                alert("提交");
                     onSubmit(null);
                 },
                 {
                     alert("发生错误 $it");
+                }, {
+                    Log.d("surveyExample", "onLoad")
                 }
             );
         }
