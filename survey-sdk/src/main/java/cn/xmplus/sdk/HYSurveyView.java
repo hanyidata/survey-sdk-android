@@ -23,6 +23,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Iterator;
+import java.util.Locale;
 
 import cn.xmplus.sdk.callback.SurveyFunction;
 import cn.xmplus.sdk.service.HYSurveySendService;
@@ -295,11 +296,18 @@ public class HYSurveyView extends LinearLayout {
                     switch (type) {
                         case "init":
                             JSONObject data = new JSONObject();
+                            Locale current = Locale.getDefault();
+                            String language = current.getLanguage(); // zh
+                            String country = current.getCountry();   // CN
+                            String languageTag = language + "-" + country.toLowerCase(); // zh-cn
+
                             try {
                                 data.put("surveyId", surveyId);
                                 data.put("channelId", channelId);
                                 data.put("delay", delay);
+                                data.put("language", languageTag);
                                 data.put("halfscreen", halfscreen);
+                                data.put("showType", "embedded");
                                 // lynkco project hardcode here.
                                 data.put("project", project);
                                 data.put("server", server);
