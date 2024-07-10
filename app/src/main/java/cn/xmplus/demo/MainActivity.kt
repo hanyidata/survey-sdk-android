@@ -61,6 +61,7 @@ class MainActivity : AppCompatActivity() {
         var code: String = findViewById<EditText>(R.id.editTextAccessCode).text.toString();
         var euid: String = findViewById<EditText>(R.id.editTextEUID).text.toString();
         var sdid: String = findViewById<EditText>(R.id.editTextSendId).text.toString();
+        var lang: String = findViewById<EditText>(R.id.editTextLang).text.toString();
 
         var parameters = JSONObject();
         parameters.put("accessCode", code);
@@ -69,6 +70,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         var options = JSONObject();
+        options.put("lang", lang);
         options.put("debug", debug);
         options.put("bord", bord);
 //        options.put("delay", delay);
@@ -128,6 +130,7 @@ class MainActivity : AppCompatActivity() {
         var code: String = findViewById<EditText>(R.id.editTextAccessCode).text.toString();
         var euid: String = findViewById<EditText>(R.id.editTextEUID).text.toString();
         var sdid: String = findViewById<EditText>(R.id.editTextSendId).text.toString();
+        var lang: String = findViewById<EditText>(R.id.editTextLang).text.toString();
 
         var parameters = JSONObject();
         parameters.put("accessCode", code);
@@ -136,6 +139,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         var options = JSONObject();
+        options.put("lang", lang);
         options.put("debug", debug);
         options.put("bord", bord);
 //        options.put("delay", delay);
@@ -227,24 +231,24 @@ class MainActivity : AppCompatActivity() {
 
         if (server == "https://test.xmplus.cn/api/survey") {
             findViewById<CheckBox>(R.id.checkBoxTEST).isChecked = true;
-            findViewById<CheckBox>(R.id.checkBoxUAT).isChecked = false;
+//            findViewById<CheckBox>(R.id.checkBoxUAT).isChecked = false;
             findViewById<CheckBox>(R.id.checkBoxPROD).isChecked = false;
-            findViewById<CheckBox>(R.id.checkBoxJPROD).isChecked = false;
+//            findViewById<CheckBox>(R.id.checkBoxJPROD).isChecked = false;
         } else if (server == "https://mktcs-uat.lynkco-test.com/api/survey") {
-            findViewById<CheckBox>(R.id.checkBoxUAT).isChecked = true;
+//            findViewById<CheckBox>(R.id.checkBoxUAT).isChecked = true;
             findViewById<CheckBox>(R.id.checkBoxPROD).isChecked = false;
             findViewById<CheckBox>(R.id.checkBoxTEST).isChecked = false;
             findViewById<CheckBox>(R.id.checkBoxPROD).isChecked = false;
         } else if (server == "https://mktcs.lynkco.com/api/survey") {
-            findViewById<CheckBox>(R.id.checkBoxJPROD).isChecked = true;
+//            findViewById<CheckBox>(R.id.checkBoxJPROD).isChecked = true;
             findViewById<CheckBox>(R.id.checkBoxPROD).isChecked = false;
-            findViewById<CheckBox>(R.id.checkBoxUAT).isChecked = false;
+//            findViewById<CheckBox>(R.id.checkBoxUAT).isChecked = false;
             findViewById<CheckBox>(R.id.checkBoxTEST).isChecked = false;
         } else if (server == "https://www.xmplus.cn/api/survey") {
             findViewById<CheckBox>(R.id.checkBoxPROD).isChecked = true;
-            findViewById<CheckBox>(R.id.checkBoxUAT).isChecked = false;
+//            findViewById<CheckBox>(R.id.checkBoxUAT).isChecked = false;
             findViewById<CheckBox>(R.id.checkBoxTEST).isChecked = false;
-            findViewById<CheckBox>(R.id.checkBoxJPROD).isChecked = false;
+//            findViewById<CheckBox>(R.id.checkBoxJPROD).isChecked = false;
         }
 
         findViewById<EditText>(R.id.editTextSurveyId).setText(surveyId);
@@ -257,7 +261,7 @@ class MainActivity : AppCompatActivity() {
 
 //        handleClickPopup(window.decorView);
         findViewById<CheckBox>(R.id.checkBoxTEST).setOnClickListener { onCheckboxClick(it) };
-        findViewById<CheckBox>(R.id.checkBoxUAT).setOnClickListener { onCheckboxClick(it) };
+//        findViewById<CheckBox>(R.id.checkBoxUAT).setOnClickListener { onCheckboxClick(it) };
         findViewById<CheckBox>(R.id.checkBoxPROD).setOnClickListener { onCheckboxClick(it) };
 
 //        handleClickEmbed(view = findViewById<EditText>(R.id.editTextSurveyId));
@@ -266,10 +270,10 @@ class MainActivity : AppCompatActivity() {
     private fun getServer(): String {
         if (findViewById<CheckBox>(R.id.checkBoxTEST).isChecked) {
             return "https://test.xmplus.cn/api/survey"
-        } else if (findViewById<CheckBox>(R.id.checkBoxUAT).isChecked) {
-            return "https://mktcs-uat.lynkco-test.com/api/survey"
-        } else if (findViewById<CheckBox>(R.id.checkBoxJPROD).isChecked) {
-            return "https://mktcs.lynkco.com/api/survey"
+//        } else if (findViewById<CheckBox>(R.id.checkBoxUAT).isChecked) {
+//            return "https://mktcs-uat.lynkco-test.com/api/survey"
+//        } else if (findViewById<CheckBox>(R.id.checkBoxJPROD).isChecked) {
+//            return "https://mktcs.lynkco.com/api/survey"
         } else if (findViewById<CheckBox>(R.id.checkBoxPROD).isChecked) {
             return "https://www.xmplus.cn/api/survey"
         }
@@ -286,13 +290,13 @@ class MainActivity : AppCompatActivity() {
     private fun onCheckboxClick(view: View?) {
         Log.d("example", "checkbox");
         if (view!!.id == R.id.checkBoxTEST) {
-            findViewById<CheckBox>(R.id.checkBoxUAT).isChecked = false;
+//            findViewById<CheckBox>(R.id.checkBoxUAT).isChecked = false;
             findViewById<CheckBox>(R.id.checkBoxPROD).isChecked = false;
-        } else if (view!!.id == R.id.checkBoxUAT) {
-            findViewById<CheckBox>(R.id.checkBoxTEST).isChecked = false;
-            findViewById<CheckBox>(R.id.checkBoxPROD).isChecked = false;
+//        } else if (view!!.id == R.id.checkBoxUAT) {
+//            findViewById<CheckBox>(R.id.checkBoxTEST).isChecked = false;
+//            findViewById<CheckBox>(R.id.checkBoxPROD).isChecked = false;
         } else if (view!!.id == R.id.checkBoxPROD) {
-            findViewById<CheckBox>(R.id.checkBoxUAT).isChecked = false;
+//            findViewById<CheckBox>(R.id.checkBoxUAT).isChecked = false;
             findViewById<CheckBox>(R.id.checkBoxTEST).isChecked = false;
         }
 

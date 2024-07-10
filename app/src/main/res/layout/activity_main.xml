@@ -43,6 +43,31 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/editTextTextLangID"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:inputType="text"
+                    android:text="LANG" />
+
+                <EditText
+                    android:id="@+id/editTextLang"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:inputType="text"
+                    android:text="en" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:orientation="horizontal">
@@ -130,24 +155,6 @@
                         android:editable="true"
                         android:enabled="true"
                         android:text="PROD" />
-
-                    <CheckBox
-                        android:id="@+id/checkBoxUAT"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:checked="false"
-                        android:text="JLUAT" />
-
-                    <CheckBox
-                        android:id="@+id/checkBoxJPROD"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:checked="true"
-                        android:editable="true"
-                        android:enabled="true"
-                        android:text="JPROD" />
 
                 </LinearLayout>
 
