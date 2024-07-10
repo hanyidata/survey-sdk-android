@@ -301,11 +301,16 @@ public class HYSurveyView extends LinearLayout {
                     switch (type) {
                         case "init":
                             JSONObject data = new JSONObject();
-                            Locale current = Locale.getDefault();
-                            String language = current.getLanguage(); // zh
-                            String country = current.getCountry();   // CN
-                            String languageTag = language + "-" + country.toLowerCase(); // zh-cn
-
+                            String languageTag = null;
+                            String userLang = options.optString("lang", "");
+                            if (!userLang.isEmpty()) {
+                                languageTag = userLang;
+                            } else {
+                                Locale current = Locale.getDefault();
+                                String language = current.getLanguage(); // zh
+                                String country = current.getCountry();   // CN
+                                languageTag = language + "-" + country.toLowerCase(); // zh-cn
+                            }
                             try {
                                 data.put("surveyId", surveyId);
                                 data.put("channelId", channelId);
