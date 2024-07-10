@@ -312,7 +312,7 @@ public class HYSurveyView extends LinearLayout {
                                 data.put("delay", delay);
                                 data.put("language", languageTag);
                                 data.put("halfscreen", halfscreen);
-                                data.put("showType", "embedded");
+                                data.put("showType", isDialogMode ? "dialog" : "embedded");
                                 // lynkco project hardcode here.
                                 data.put("project", project);
                                 data.put("server", server);
