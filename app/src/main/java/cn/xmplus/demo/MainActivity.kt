@@ -70,7 +70,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         var options = JSONObject();
-        options.put("lang", lang);
+        options.put("language", lang);
         options.put("debug", debug);
         options.put("bord", bord);
 //        options.put("delay", delay);
@@ -139,7 +139,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         var options = JSONObject();
-        options.put("lang", lang);
+        options.put("language", lang);
         options.put("debug", debug);
         options.put("bord", bord);
 //        options.put("delay", delay);

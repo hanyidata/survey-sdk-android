@@ -297,7 +297,7 @@ public class HYSurveyView extends LinearLayout {
                         case "init":
                             JSONObject data = new JSONObject();
                             String languageTag = null;
-                            String userLang = options.optString("lang", "");
+                            String userLang = options.optString("language", "");
                             if (!userLang.isEmpty()) {
                                 languageTag = userLang;
                             } else {
