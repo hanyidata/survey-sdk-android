@@ -227,8 +227,8 @@ public class HYPopupDialog extends Dialog {
      */
     private static void _makeDialog(View view, Context context, String surveyId, String channelId, String sendId, JSONObject parameters, JSONObject options, SurveyFunction onCancel, SurveyFunction onSubmit, SurveyFunction onError, SurveyFunction onLoad) {
         String server = options.optString("server", "https://www.xmplus.cn/api/survey");
-        String accessCode = parameters.optString("accessCode", "");
-        String externalUserId = parameters.optString("externalUserId", "");
+//        String accessCode = parameters.optString("accessCode", "");
+//        String externalUserId = parameters.optString("externalUserId", "");
         JSONObject mergeOption = options;
         try {
             mergeOption.put("isDialogMode", true);
@@ -240,46 +240,22 @@ public class HYPopupDialog extends Dialog {
         HYPopupDialog._lastInstance = null;
         HYPopupDialog._close = false;
 
-        if (sendId.isEmpty()) {
-            // sid + channel id
-            SurveyStartRequest request = new SurveyStartRequest(server, surveyId, channelId, sendId);
-            new HYSurveyBaseService2((SurveyStartResponse response) -> {
-                if (response.getError() == null) {
-                    String sid = response.getSurveyId();
-                    String cid = response.getChannelId();
-                    JSONObject config = response.getEmbed();
-                    JSONObject survey = response.getSurvey();
-                    HYPopupDialog._showDialog(context, sid, cid, survey, parameters, mergeOption, config, onCancel, onSubmit, onLoad, onError);
-                } else {
-                    Log.e("surveySDK", String.format("survey popup failed %s", response.getError()));
-                    if (onError != null) {
-                        onError.accept(response.getError());
-                    }
+        // sid + channel id
+        SurveyStartRequest request = new SurveyStartRequest(server, surveyId, channelId, sendId, parameters);
+        new HYSurveyBaseService2((SurveyStartResponse response) -> {
+            if (response.getError() == null) {
+                String sid = response.getSurveyId();
+                String cid = response.getChannelId();
+                JSONObject config = response.getEmbed();
+                JSONObject survey = response.getSurvey();
+                HYPopupDialog._showDialog(context, sid, cid, survey, parameters, mergeOption, config, onCancel, onSubmit, onLoad, onError);
+            } else {
+                Log.e("surveySDK", String.format("survey popup failed %s", response.getError()));
+                if (onError != null) {
+                    onError.accept(response.getError());
                 }
-            }).execute(request);
-//            new HYSurveyService((String sid, String cid, JSONObject config, String error) -> {
-//                if (config != null) {
-//                    HYPopupDialog._showDialog(context, surveyId, channelId, parameters, mergeOption, config, onCancel, onSubmit, onLoad, onError);
-//                } else {
-//                    Log.e("surveySDK", String.format("survey popup failed %s", error));
-//                    if (onError != null) {
-//                        onError.accept(error);
-//                    }
-//                }
-//            }).execute(server, surveyId, channelId, accessCode, externalUserId);
-        } else {
-            // send id
-            new HYSurveySendService((String sid, String cid, JSONObject config, String error) -> {
-                if (config != null) {
-                    HYPopupDialog._showDialog(context, sid, cid, null, parameters, mergeOption, config, onCancel, onSubmit, onLoad, onError);
-                } else {
-                    Log.e("surveySDK", String.format("survey popup failed %s", error));
-                    if (onError != null) {
-                        onError.accept(error);
-                    }
-                }
-            }).execute(server, sendId, accessCode, externalUserId);
-        }
+            }
+        }).execute(request);
     }
 
     private static void _showDialog(Context context, String surveyId, String channelId, JSONObject survey, JSONObject parameters, JSONObject options, JSONObject config, SurveyFunction onCancel, SurveyFunction onSubmit, SurveyFunction onLoad, SurveyFunction onError) {

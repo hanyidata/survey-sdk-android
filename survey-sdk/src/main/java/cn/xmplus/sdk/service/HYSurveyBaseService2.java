@@ -15,6 +15,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,12 +24,14 @@ import cn.xmplus.sdk.data.SurveyStartRequest;
 import cn.xmplus.sdk.data.SurveyStartResponse;
 import kotlin.NotImplementedError;
 
+
 /**
  * Survey Service to union start
  */
 public class HYSurveyBaseService2 extends AsyncTask<SurveyStartRequest, Void, SurveyStartResponse> {
     protected SurveyTaskCallback2 taskCallback;
     protected List<String> parameters = new ArrayList<>();
+    static List<String> systemParametersWhiteList = Arrays.asList("externalUserId", "departmentCode", "externalCompanyId", "customerName", "customerGender");
 
     public HYSurveyBaseService2(SurveyTaskCallback2 callback) {
         this.taskCallback = callback;
@@ -41,9 +44,34 @@ public class HYSurveyBaseService2 extends AsyncTask<SurveyStartRequest, Void, Su
 
         String _url = String.format("%s/surveys/union-start", param.getServer());
         HashMap<String, Object> data = new HashMap<>();
-        data.put("surveyId", param.getSurveyId());
-        data.put("channelId", param.getChannelId());
+        // 优先使用sendId
+        if (param.getSendId() != null && !param.getSendId().isEmpty()) {
+            data.put("sendToken", param.getSendId());
+        } else {
+            if (param.getSurveyId() != null && !param.getSurveyId().isEmpty()) {
+                data.put("surveyId", param.getSurveyId());
+            }
+            if (param.getChannelId() != null && !param.getChannelId().isEmpty()) {
+                data.put("channelId", param.getChannelId());
+            }
+        }
+
+        // 处理系统变量
+        if (param.getParameters() != null) {
+            Iterator<String> keys = param.getParameters().keys();
+            while (keys.hasNext()) {
+                String key = keys.next();
+                if (systemParametersWhiteList.contains(key)) {
+                    data.put(key, param.getParameters().opt(key));
+                }
+            };
+            if (param.getParameters().has("parameters")) {
+                data.put("parameters", param.getParameters().opt("parameters"));
+            }
+        }
+
         data.put("clientId", clientId);
+        data.put("collectorMethod", "APP");
 
         HttpURLConnection urlConnection = null;
         try {
@@ -60,6 +88,7 @@ public class HYSurveyBaseService2 extends AsyncTask<SurveyStartRequest, Void, Su
                 String jsonInputString = jsonInput.toString();
                 // Write the JSON data to the output stream
                 byte[] input = jsonInputString.getBytes("utf-8");
+                Log.d("surveySDK", String.format("doInBackground: post data %s", jsonInputString));
                 out.write(input, 0, input.length);
                 out.flush();
             }

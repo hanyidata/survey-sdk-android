@@ -1,5 +1,7 @@
 package cn.xmplus.sdk.data;
 
+import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,13 +11,14 @@ public class SurveyStartRequest {
     private String channelId;
     private String sendId;
 
-    private Map<String, Object> parameters = new HashMap<>();
+    private JSONObject parameters = new JSONObject();
 
-    public SurveyStartRequest(String server, String surveyId, String channelId, String sendId) {
+    public SurveyStartRequest(String server, String surveyId, String channelId, String sendId, JSONObject parameters) {
         this.server = server;
         this.surveyId = surveyId;
         this.channelId = channelId;
         this.sendId = sendId;
+        this.parameters = parameters;
     }
 
     public String getServer() {
@@ -32,5 +35,9 @@ public class SurveyStartRequest {
 
     public String getSurveyId() {
         return surveyId;
+    }
+
+    public JSONObject getParameters() {
+        return parameters;
     }
 }
