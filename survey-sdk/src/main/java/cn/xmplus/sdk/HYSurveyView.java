@@ -2,13 +2,9 @@ package cn.xmplus.sdk;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
-import android.os.Build;
-import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.ConsoleMessage;
@@ -16,7 +12,6 @@ import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
-import android.webkit.WebView;
 import android.widget.LinearLayout;
 
 import org.json.JSONException;
@@ -26,7 +21,8 @@ import java.util.Iterator;
 import java.util.Locale;
 
 import cn.xmplus.sdk.callback.SurveyFunction;
-import cn.xmplus.sdk.service.HYSurveySendService;
+import cn.xmplus.sdk.data.SurveyStartRequest;
+import cn.xmplus.sdk.data.SurveyStartResponse;
 import cn.xmplus.sdk.service.HYSurveyService;
 
 
@@ -120,20 +116,22 @@ public class HYSurveyView extends LinearLayout {
             return;
         }
         String server = options.optString("server", "https://www.xmplus.cn/api/survey");
-        String accessCode = parameters.optString("accessCode", "");
-        String externalUserId = parameters.optString("externalUserId", "");
 
-        new HYSurveyService((String sid, String cid, JSONObject config, String error) -> {
-            if (config != null) {
-                HYSurveyView view = new HYSurveyView(context, surveyId, channelId, parameters, options);
+        SurveyStartRequest request = new SurveyStartRequest(server, surveyId, channelId, null, parameters);
+        new HYSurveyService((SurveyStartResponse response) -> {
+            if (response.getError() == null) {
+                String sid = response.getSurveyId();
+                String cid = response.getChannelId();
+                JSONObject survey = response.getSurvey();
+                HYSurveyView view = new HYSurveyView(context, sid, cid, parameters, options, options, survey);
                 onReady.accept(view);
             } else {
-                Log.e("surveySDK", String.format("survey popup failed %s", error));
+                Log.e("surveySDK", String.format("survey popup failed %s", response.getError()));
                 if (onError != null) {
-                    onError.accept(error);
+                    onError.accept(response.getError());
                 }
             }
-        }).execute(server, surveyId, channelId, accessCode, externalUserId);
+        }).execute(request);
     }
 
     /**
@@ -151,20 +149,21 @@ public class HYSurveyView extends LinearLayout {
             return;
         }
         String server = options.optString("server", "https://www.xmplus.cn/api/survey");
-        String accessCode = parameters.optString("accessCode", "");
-        String externalUserId = parameters.optString("externalUserId", "");
-
-        new HYSurveySendService((String sid, String cid, JSONObject config, String error) -> {
-            if (config != null) {
-                HYSurveyView view = new HYSurveyView(context, sid, cid, parameters, options);
+        SurveyStartRequest request = new SurveyStartRequest(server, null, null, sendId, parameters);
+        new HYSurveyService((SurveyStartResponse response) -> {
+            if (response.getError() == null) {
+                String sid = response.getSurveyId();
+                String cid = response.getChannelId();
+                JSONObject survey = response.getSurvey();
+                HYSurveyView view = new HYSurveyView(context, sid, cid, parameters, options, options, survey);
                 onReady.accept(view);
             } else {
-                Log.e("surveySDK", String.format("survey popup failed %s", error));
+                Log.e("surveySDK", String.format("survey popup failed %s", response.getError()));
                 if (onError != null) {
-                    onError.accept(error);
+                    onError.accept(response.getError());
                 }
             }
-        }).execute(server, sendId, accessCode, externalUserId);
+        }).execute(request);
     }
 
     public void setOnSubmit(SurveyFunction callback) {

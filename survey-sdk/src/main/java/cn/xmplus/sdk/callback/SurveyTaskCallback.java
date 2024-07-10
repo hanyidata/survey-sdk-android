@@ -1,8 +1,8 @@
 package cn.xmplus.sdk.callback;
 
-import org.json.JSONObject;
+import cn.xmplus.sdk.data.SurveyStartResponse;
 
 @FunctionalInterface
 public interface SurveyTaskCallback {
-    void onConfigReady(String sid, String cid, JSONObject config, String error);
+    void onSurveyReady(SurveyStartResponse response);
 }

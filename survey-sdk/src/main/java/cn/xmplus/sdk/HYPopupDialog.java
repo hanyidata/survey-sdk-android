@@ -13,8 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.animation.AnimationUtils;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -22,13 +20,9 @@ import android.widget.ScrollView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Map;
-
 import cn.xmplus.sdk.callback.SurveyFunction;
 import cn.xmplus.sdk.data.SurveyStartRequest;
 import cn.xmplus.sdk.data.SurveyStartResponse;
-import cn.xmplus.sdk.service.HYSurveyBaseService2;
-import cn.xmplus.sdk.service.HYSurveySendService;
 import cn.xmplus.sdk.service.HYSurveyService;
 
 public class HYPopupDialog extends Dialog {
@@ -227,8 +221,6 @@ public class HYPopupDialog extends Dialog {
      */
     private static void _makeDialog(View view, Context context, String surveyId, String channelId, String sendId, JSONObject parameters, JSONObject options, SurveyFunction onCancel, SurveyFunction onSubmit, SurveyFunction onError, SurveyFunction onLoad) {
         String server = options.optString("server", "https://www.xmplus.cn/api/survey");
-//        String accessCode = parameters.optString("accessCode", "");
-//        String externalUserId = parameters.optString("externalUserId", "");
         JSONObject mergeOption = options;
         try {
             mergeOption.put("isDialogMode", true);
@@ -242,7 +234,7 @@ public class HYPopupDialog extends Dialog {
 
         // sid + channel id
         SurveyStartRequest request = new SurveyStartRequest(server, surveyId, channelId, sendId, parameters);
-        new HYSurveyBaseService2((SurveyStartResponse response) -> {
+        new HYSurveyService((SurveyStartResponse response) -> {
             if (response.getError() == null) {
                 String sid = response.getSurveyId();
                 String cid = response.getChannelId();
