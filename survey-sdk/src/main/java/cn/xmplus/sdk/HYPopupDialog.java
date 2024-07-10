@@ -22,7 +22,12 @@ import android.widget.ScrollView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Map;
+
 import cn.xmplus.sdk.callback.SurveyFunction;
+import cn.xmplus.sdk.data.SurveyStartRequest;
+import cn.xmplus.sdk.data.SurveyStartResponse;
+import cn.xmplus.sdk.service.HYSurveyBaseService2;
 import cn.xmplus.sdk.service.HYSurveySendService;
 import cn.xmplus.sdk.service.HYSurveyService;
 
@@ -34,6 +39,7 @@ public class HYPopupDialog extends Dialog {
 
     private HYSurveyView survey;
     private JSONObject config;
+    private JSONObject surveyJson;
 
     private ScrollView scrollView;
     private LinearLayout contentView;
@@ -71,7 +77,7 @@ public class HYPopupDialog extends Dialog {
      * @param onSubmit
      * @param onLoad
      */
-    public HYPopupDialog(Context context, String surveyId, String channelId, JSONObject parameters, JSONObject options, JSONObject config, SurveyFunction onCancel, SurveyFunction onSubmit, SurveyFunction onLoad)  {
+    public HYPopupDialog(Context context, String surveyId, String channelId, JSONObject surveyJson, JSONObject parameters, JSONObject options, JSONObject config, SurveyFunction onCancel, SurveyFunction onSubmit, SurveyFunction onLoad)  {
         super(context);
         this.context = context;
         this.surveyId = surveyId;
@@ -82,6 +88,7 @@ public class HYPopupDialog extends Dialog {
         this.onCancel = onCancel;
         this.onSubmit = onSubmit;
         this.onLoad = onLoad;
+        this.surveyJson = surveyJson;
 
         // global config
         getWindow().requestFeature(Window.FEATURE_NO_TITLE);
@@ -235,21 +242,36 @@ public class HYPopupDialog extends Dialog {
 
         if (sendId.isEmpty()) {
             // sid + channel id
-            new HYSurveyService((String sid, String cid, JSONObject config, String error) -> {
-                if (config != null) {
-                    HYPopupDialog._showDialog(context, surveyId, channelId, parameters, mergeOption, config, onCancel, onSubmit, onLoad, onError);
+            SurveyStartRequest request = new SurveyStartRequest(server, surveyId, channelId, sendId);
+            new HYSurveyBaseService2((SurveyStartResponse response) -> {
+                if (response.getError() == null) {
+                    String sid = response.getSurveyId();
+                    String cid = response.getChannelId();
+                    JSONObject config = response.getEmbed();
+                    JSONObject survey = response.getSurvey();
+                    HYPopupDialog._showDialog(context, sid, cid, survey, parameters, mergeOption, config, onCancel, onSubmit, onLoad, onError);
                 } else {
-                    Log.e("surveySDK", String.format("survey popup failed %s", error));
+                    Log.e("surveySDK", String.format("survey popup failed %s", response.getError()));
                     if (onError != null) {
-                        onError.accept(error);
+                        onError.accept(response.getError());
                     }
                 }
-            }).execute(server, surveyId, channelId, accessCode, externalUserId);
+            }).execute(request);
+//            new HYSurveyService((String sid, String cid, JSONObject config, String error) -> {
+//                if (config != null) {
+//                    HYPopupDialog._showDialog(context, surveyId, channelId, parameters, mergeOption, config, onCancel, onSubmit, onLoad, onError);
+//                } else {
+//                    Log.e("surveySDK", String.format("survey popup failed %s", error));
+//                    if (onError != null) {
+//                        onError.accept(error);
+//                    }
+//                }
+//            }).execute(server, surveyId, channelId, accessCode, externalUserId);
         } else {
             // send id
             new HYSurveySendService((String sid, String cid, JSONObject config, String error) -> {
                 if (config != null) {
-                    HYPopupDialog._showDialog(context, sid, cid, parameters, mergeOption, config, onCancel, onSubmit, onLoad, onError);
+                    HYPopupDialog._showDialog(context, sid, cid, null, parameters, mergeOption, config, onCancel, onSubmit, onLoad, onError);
                 } else {
                     Log.e("surveySDK", String.format("survey popup failed %s", error));
                     if (onError != null) {
@@ -260,7 +282,7 @@ public class HYPopupDialog extends Dialog {
         }
     }
 
-    private static void _showDialog(Context context, String surveyId, String channelId, JSONObject parameters, JSONObject options, JSONObject config, SurveyFunction onCancel, SurveyFunction onSubmit, SurveyFunction onLoad, SurveyFunction onError) {
+    private static void _showDialog(Context context, String surveyId, String channelId, JSONObject survey, JSONObject parameters, JSONObject options, JSONObject config, SurveyFunction onCancel, SurveyFunction onSubmit, SurveyFunction onLoad, SurveyFunction onError) {
         if (!HYPopupDialog.canPopup()) {
             Log.e("surveySDK", "survey skip popup");
             if (onError != null) {
@@ -268,7 +290,7 @@ public class HYPopupDialog extends Dialog {
             }
             return;
         }
-        HYPopupDialog._lastInstance = new HYPopupDialog(context, surveyId, channelId, parameters, options, config, onCancel, onSubmit, onLoad);
+        HYPopupDialog._lastInstance = new HYPopupDialog(context, surveyId, channelId, survey, parameters, options, config, onCancel, onSubmit, onLoad);
         HYPopupDialog._lastInstance.show();
     }
 
@@ -353,7 +375,7 @@ public class HYPopupDialog extends Dialog {
         }
 
         // survey
-        this.survey = new HYSurveyView(context, this.surveyId, this.channelId, this.parameters, this.options, this.config);
+        this.survey = new HYSurveyView(context, this.surveyId, this.channelId, this.parameters, this.options, this.config, this.surveyJson);
         this.survey.setOnCancel((Object param) -> {
             if (this.onCancel != null) {
                 this.onCancel.accept(null);

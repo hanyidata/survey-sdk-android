@@ -43,11 +43,11 @@ class MainActivity : AppCompatActivity() {
 //    private var server: String = "https://mktcs.lynkco.com/api/survey";
 
     // TEST
-    private var surveyId: String = "6495158537216000";
-    private var channelId: String = "6495159554990080";
+    private var surveyId: String = "6598041734402048";
+    private var channelId: String = "6598043194937344";
 //    private var sendId: String = "BddfddRImjktRzRk";
     private var sendId: String = "";
-    private var server: String = "https://www.xmplus.cn/api/survey";
+    private var server: String = "https://test.xmplus.cn/api/survey";
 
     fun handleCloseDialog(view: View)  {
         HYPopupDialog.close();

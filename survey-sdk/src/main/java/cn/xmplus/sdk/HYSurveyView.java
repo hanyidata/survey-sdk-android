@@ -40,6 +40,7 @@ public class HYSurveyView extends LinearLayout {
     private final JSONObject parameters;
     private final JSONObject options;
     private JSONObject config = new JSONObject();
+    private JSONObject surveyJson = null;
 
     private Boolean finished = false;
     private Integer previousHeight = 0;
@@ -73,12 +74,17 @@ public class HYSurveyView extends LinearLayout {
     private long lastClickTime = 0;
 
     public HYSurveyView(Context context, String surveyId, String channelId, JSONObject parameters, JSONObject options) {
-        this(context, surveyId, channelId, parameters, options, new JSONObject());
+        this(context, surveyId, channelId, parameters, options, new JSONObject(), null);
     }
     public HYSurveyView(Context context, String surveyId, String channelId, JSONObject parameters, JSONObject options, JSONObject config) {
+        this(context, surveyId, channelId, parameters, options, new JSONObject(), null);
+    }
+
+    public HYSurveyView(Context context, String surveyId, String channelId, JSONObject parameters, JSONObject options, JSONObject config, JSONObject surveyJson) {
         super(context);
 
         this.surveyId = surveyId;
+        this.surveyJson = surveyJson;
         this.channelId = channelId;
         this.parameters = parameters;
         this.options = options;
@@ -307,13 +313,17 @@ public class HYSurveyView extends LinearLayout {
                                 data.put("delay", delay);
                                 data.put("language", languageTag);
                                 data.put("halfscreen", halfscreen);
-                                data.put("showType", "embedded");
+                                data.put("showType", isDialogMode ? "dialog" : "embedded");
                                 // lynkco project hardcode here.
                                 data.put("project", project);
                                 data.put("server", server);
                                 data.put("parameters", parameters);
                                 data.put("borderRadiusMode", borderRadiusMode);
+
                                 Log.v("surveySDK", data.toString());
+                                if (surveyJson != null) {
+                                    data.put("survey", surveyJson);
+                                }
                                 String script = String.format("document.dispatchEvent(new CustomEvent('init', { detail: %s}))", data);
                                 webView.evaluateJavascript(script, new ValueCallback<String>() {
                                     @Override
