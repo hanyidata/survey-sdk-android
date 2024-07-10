@@ -88,13 +88,14 @@ public class HYPopupDialog extends Dialog {
         getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
+        this.setCanceledOnTouchOutside(true);
+
         // 弹窗场景下，圆角根据垂直对齐方式设置
         embedVerticalAlign = config.optString("embedVerticalAlign", "CENTER");
         try {
             this.options.put("borderRadiusMode", embedVerticalAlign);
         } catch (JSONException e) {
         }
-        setCanceledOnTouchOutside(false);
     }
 
 
@@ -238,7 +239,7 @@ public class HYPopupDialog extends Dialog {
             if (response.getError() == null) {
                 String sid = response.getSurveyId();
                 String cid = response.getChannelId();
-                JSONObject config = response.getEmbed();
+                JSONObject config = response.getChannelConfig();
                 JSONObject survey = response.getSurvey();
                 HYPopupDialog._showDialog(context, sid, cid, survey, parameters, mergeOption, config, onCancel, onSubmit, onLoad, onError);
             } else {

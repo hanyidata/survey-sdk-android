@@ -1,5 +1,8 @@
 package cn.xmplus.sdk.data;
 
+import android.util.Log;
+
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -10,27 +13,32 @@ public class SurveyStartResponse {
     private String error;
     private String channelId;
     private JSONObject survey = new JSONObject();
-    private JSONObject embed = new JSONObject();
     private JSONObject channel = new JSONObject();
+    private JSONObject channelConfig = null;
 
     public SurveyStartResponse(String error) {
         this.error = error;
     }
 
-    public SurveyStartResponse(String _surveyId, String _channelId, JSONObject survey, JSONObject embed, JSONObject channel) {
+    public SurveyStartResponse(String _surveyId, String _channelId, JSONObject survey, JSONObject channel) {
         this.surveyId = _surveyId;
         this.channelId = _channelId;
         this.survey = survey;
-        this.embed = embed;
         this.channel = channel;
+        if (channel.has("configure")) {
+            try {
+                this.channelConfig = new JSONObject(channel.optString("configure", "{}"));
+            } catch (JSONException e) {
+                Log.e("surveySDK", "unexpected survey channel config");
+            }
+        }
     }
 
     public static SurveyStartResponse fromJson(JSONObject surveyJson) {
         String surveyId = surveyJson.optString("id");
-        JSONObject embed = surveyJson.optJSONObject("embed");
         JSONObject channel = surveyJson.optJSONObject("channel");
         String channelId = channel.optString("id", null);
-        return new SurveyStartResponse(surveyId, channelId,  surveyJson, embed, channel);
+        return new SurveyStartResponse(surveyId, channelId, surveyJson, channel);
     }
 
     public String getSurveyId() {
@@ -48,8 +56,8 @@ public class SurveyStartResponse {
         return channel;
     }
 
-    public JSONObject getEmbed() {
-        return embed;
+    public JSONObject getChannelConfig() {
+        return channelConfig;
     }
 
     public JSONObject getSurvey() {
