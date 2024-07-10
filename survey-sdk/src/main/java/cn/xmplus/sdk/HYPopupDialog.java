@@ -88,7 +88,8 @@ public class HYPopupDialog extends Dialog {
         getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
-        this.setCanceledOnTouchOutside(true);
+        boolean clickDismiss = options.optBoolean("clickDismiss", false);
+        this.setCanceledOnTouchOutside(clickDismiss);
 
         // 弹窗场景下，圆角根据垂直对齐方式设置
         embedVerticalAlign = config.optString("embedVerticalAlign", "CENTER");

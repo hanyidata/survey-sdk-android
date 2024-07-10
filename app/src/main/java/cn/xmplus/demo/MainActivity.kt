@@ -23,7 +23,6 @@ class MainActivity : AppCompatActivity() {
     private var bord: Boolean = false;
     private var debug: Boolean = true;
     private var halfscreen: Boolean = false;
-    private var clickDismiss: Boolean = false;
     private var delay: Int = 1000;
     private var accessCode: String = "";
     private var euid: String = "";
@@ -72,7 +71,6 @@ class MainActivity : AppCompatActivity() {
 
         var options = JSONObject();
         options.put("lang", lang);
-        options.put("clickDismiss", clickDismiss);
         options.put("debug", debug);
         options.put("bord", bord);
 //        options.put("delay", delay);
@@ -142,7 +140,7 @@ class MainActivity : AppCompatActivity() {
 
         var options = JSONObject();
         options.put("lang", lang);
-        options.put("clickDismiss", clickDismiss);
+        options.put("clickDismiss", findViewById<CheckBox>(R.id.checkBoxLynkco).isChecked);
         options.put("debug", debug);
         options.put("bord", bord);
 //        options.put("delay", delay);
@@ -284,9 +282,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getProject(): String? {
-        if (findViewById<CheckBox>(R.id.checkBoxLynkco).isChecked) {
-            return "lynkco";
-        }
+//        if (findViewById<CheckBox>(R.id.checkBoxLynkco).isChecked) {
+//            return "lynkco";
+//        }
         return null;
     }
 
