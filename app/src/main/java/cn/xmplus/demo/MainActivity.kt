@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
     private var halfscreen: Boolean = false;
     private var delay: Int = 1000;
     private var accessCode: String = "";
-    private var euid: String = "";
+    private var euid: String = "w1";
 //    private var accessCode: String = "1128430492441440256";
 
     // JLTEST
@@ -43,11 +43,11 @@ class MainActivity : AppCompatActivity() {
 //    private var server: String = "https://mktcs.lynkco.com/api/survey";
 
     // TEST
-    private var surveyId: String = "6598041734402048";
-    private var channelId: String = "6598043194937344";
+    private var surveyId: String = "6610662533816320";
+    private var channelId: String = "6610669974509568";
 //    private var sendId: String = "BddfddRImjktRzRk";
-    private var sendId: String = "hqNksTz9VnqOSqR2";
-    private var server: String = "https://test.xmplus.cn/api/survey";
+    private var sendId: String = "";
+    private var server: String = "https://www.xmplus.cn/api/survey";
 
     fun handleCloseDialog(view: View)  {
         HYPopupDialog.close();
