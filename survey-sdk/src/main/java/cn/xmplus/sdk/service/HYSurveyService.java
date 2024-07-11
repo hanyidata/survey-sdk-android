@@ -94,16 +94,21 @@ public class HYSurveyService extends AsyncTask<SurveyStartRequest, Void, SurveyS
             JSONObject json = null;
             JSONObject deepData = null;
 
-            // Read the response
-            try (BufferedReader in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), "utf-8"))) {
-                StringBuilder response = new StringBuilder();
-                String responseLine;
-                while ((responseLine = in.readLine()) != null) {
-                    response.append(responseLine.trim());
-                }
-                json = new JSONObject(response.toString());
-                deepData = json.optJSONObject("data");
+            BufferedReader in;
+            if (statusCode == 200) {
+                in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+            } else {
+                in = new BufferedReader(new InputStreamReader(urlConnection.getErrorStream()));
             }
+
+            // Read the response
+            StringBuilder response = new StringBuilder();
+            String responseLine;
+            while ((responseLine = in.readLine()) != null) {
+                response.append(responseLine.trim());
+            }
+            json = new JSONObject(response.toString());
+            deepData = json.optJSONObject("data");
             if (json == null) {
                 return new SurveyStartResponse("系统错误");
             }
