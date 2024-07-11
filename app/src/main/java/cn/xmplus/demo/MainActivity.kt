@@ -3,7 +3,6 @@ package cn.xmplus.demo
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.DialogInterface
-import android.graphics.Color
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
@@ -24,8 +23,8 @@ class MainActivity : AppCompatActivity() {
     private var debug: Boolean = true;
     private var halfscreen: Boolean = false;
     private var delay: Int = 1000;
-    private var accessCode: String = "";
-    private var euid: String = "";
+//    private var accessCode: String = "";
+//    private var euid: String = "";
 //    private var accessCode: String = "1128430492441440256";
 
     // JLTEST
@@ -43,8 +42,8 @@ class MainActivity : AppCompatActivity() {
 //    private var server: String = "https://mktcs.lynkco.com/api/survey";
 
     // TEST
-    private var surveyId: String = "6495158537216000";
-    private var channelId: String = "6495159554990080";
+    private var surveyId: String = "6513703146869760";
+    private var channelId: String = "6513759119861760";
 //    private var sendId: String = "BddfddRImjktRzRk";
     private var sendId: String = "";
     private var server: String = "https://www.xmplus.cn/api/survey";
@@ -53,21 +52,25 @@ class MainActivity : AppCompatActivity() {
         HYPopupDialog.close();
     }
 
+    fun getParam(): JSONObject {
+        var text: String = findViewById<EditText>(R.id.editTextEUID).text.toString();
+        if (text.isEmpty()) {
+            return JSONObject();
+        }
+        return JSONObject(text)
+    }
+
     fun handleClickEmbed(view: View) {
 
         var sid: String = findViewById<EditText>(R.id.editTextSurveyId).text.toString();
         var cid: String = findViewById<EditText>(R.id.editTextChannelId).text.toString();
         var ser: String = getServer();
-        var code: String = findViewById<EditText>(R.id.editTextAccessCode).text.toString();
-        var euid: String = findViewById<EditText>(R.id.editTextEUID).text.toString();
+//        var code: String = findViewById<EditText>(R.id.editTextParams).text.toString();
+//        var euid: String = findViewById<EditText>(R.id.editTextEUID).text.toString();
         var sdid: String = findViewById<EditText>(R.id.editTextSendId).text.toString();
         var lang: String = findViewById<EditText>(R.id.editTextLang).text.toString();
 
-        var parameters = JSONObject();
-        parameters.put("accessCode", code);
-        if (euid.isNotEmpty()) {
-            parameters.put("externalUserId", euid);
-        }
+        var parameters = getParam();
 
         var options = JSONObject();
         options.put("language", lang);
@@ -127,16 +130,17 @@ class MainActivity : AppCompatActivity() {
         var sid: String = findViewById<EditText>(R.id.editTextSurveyId).text.toString();
         var cid: String = findViewById<EditText>(R.id.editTextChannelId).text.toString();
         var ser: String = getServer();
-        var code: String = findViewById<EditText>(R.id.editTextAccessCode).text.toString();
-        var euid: String = findViewById<EditText>(R.id.editTextEUID).text.toString();
+//        var code: String = findViewById<EditText>(R.id.editTextParams).text.toString();
+//        var euid: String = findViewById<EditText>(R.id.editTextEUID).text.toString();
         var sdid: String = findViewById<EditText>(R.id.editTextSendId).text.toString();
         var lang: String = findViewById<EditText>(R.id.editTextLang).text.toString();
 
-        var parameters = JSONObject();
-        parameters.put("accessCode", code);
-        if (euid.isNotEmpty()) {
-            parameters.put("externalUserId", euid);
-        }
+        var parameters = getParam();
+
+//        var customizeParameters = JSONObject();
+//        customizeParameters.put("cancelTime", "07/11");
+//        customizeParameters.put("orderAmount", "￥100");
+//        parameters.put("parameters", customizeParameters);
 
         var options = JSONObject();
         options.put("language", lang);
@@ -253,9 +257,9 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<EditText>(R.id.editTextSurveyId).setText(surveyId);
         findViewById<EditText>(R.id.editTextChannelId).setText(channelId);
-        findViewById<EditText>(R.id.editTextAccessCode).setText(accessCode);
+//        findViewById<EditText>(R.id.editTextParams).setText(accessCode);
         findViewById<CheckBox>(R.id.checkBoxHalfScreen).isChecked = halfscreen;
-        findViewById<EditText>(R.id.editTextEUID).setText(euid);
+//        findViewById<EditText>(R.id.editTextEUID).setText(euid);
         findViewById<EditText>(R.id.editTextSendId).setText(sendId);
 
 
