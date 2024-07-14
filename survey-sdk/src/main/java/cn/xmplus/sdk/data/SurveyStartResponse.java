@@ -12,6 +12,7 @@ public class SurveyStartResponse {
     private String surveyId;
     private String error;
     private String channelId;
+    private String clientId;
     private JSONObject survey = new JSONObject();
     private JSONObject channel = new JSONObject();
     private JSONObject channelConfig = null;
@@ -20,9 +21,10 @@ public class SurveyStartResponse {
         this.error = error;
     }
 
-    public SurveyStartResponse(String _surveyId, String _channelId, JSONObject survey, JSONObject channel) {
+    public SurveyStartResponse(String _surveyId, String _channelId, String _clientId, JSONObject survey, JSONObject channel) {
         this.surveyId = _surveyId;
         this.channelId = _channelId;
+        this.clientId = _clientId;
         this.survey = survey;
         this.channel = channel;
         if (channel.has("configure")) {
@@ -34,11 +36,11 @@ public class SurveyStartResponse {
         }
     }
 
-    public static SurveyStartResponse fromJson(JSONObject surveyJson) {
+    public static SurveyStartResponse fromJson(String clientId, JSONObject surveyJson) {
         String surveyId = surveyJson.optString("id");
         JSONObject channel = surveyJson.optJSONObject("channel");
         String channelId = channel.optString("id", null);
-        return new SurveyStartResponse(surveyId, channelId, surveyJson, channel);
+        return new SurveyStartResponse(surveyId, channelId, clientId, surveyJson, channel);
     }
 
     public String getSurveyId() {
@@ -54,6 +56,10 @@ public class SurveyStartResponse {
 
     public JSONObject getChannel() {
         return channel;
+    }
+
+    public String getClientId() {
+        return clientId;
     }
 
     public JSONObject getChannelConfig() {

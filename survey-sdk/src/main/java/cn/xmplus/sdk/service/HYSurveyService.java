@@ -69,6 +69,7 @@ public class HYSurveyService extends AsyncTask<SurveyStartRequest, Void, SurveyS
 
         data.put("clientId", clientId);
         data.put("collectorMethod", "APP");
+        Log.d("surveySDK", String.format("union start %s", clientId));
 
         HttpURLConnection urlConnection = null;
         try {
@@ -117,7 +118,7 @@ public class HYSurveyService extends AsyncTask<SurveyStartRequest, Void, SurveyS
                 return new SurveyStartResponse("开启免打扰配置，该问卷无法打开");
             }
             if (deepData != null) {
-                return SurveyStartResponse.fromJson(deepData);
+                return SurveyStartResponse.fromJson(clientId, deepData);
             } else {
                 return new SurveyStartResponse("系统错误");
             }

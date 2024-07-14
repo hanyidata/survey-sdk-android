@@ -20,12 +20,12 @@ class MainActivity : AppCompatActivity() {
 
     private var survey: HYSurveyView? = null;
     private var padding: Int = 0;
-    private var bord: Boolean = false;
+    private var bord: Boolean = true;
     private var debug: Boolean = true;
     private var halfscreen: Boolean = false;
     private var delay: Int = 1000;
     private var accessCode: String = "";
-    private var euid: String = "w1";
+    private var euid: String = "";
 //    private var accessCode: String = "1128430492441440256";
 
     // JLTEST
@@ -43,11 +43,11 @@ class MainActivity : AppCompatActivity() {
 //    private var server: String = "https://mktcs.lynkco.com/api/survey";
 
     // TEST
-    private var surveyId: String = "6610662533816320";
-    private var channelId: String = "6610669974509568";
+    private var surveyId: String = "6625464840488960";
+    private var channelId: String = "6625466922633216";
 //    private var sendId: String = "BddfddRImjktRzRk";
     private var sendId: String = "";
-    private var server: String = "https://www.xmplus.cn/api/survey";
+    private var server: String = "https://test.xmplus.cn/api/survey";
 
     fun handleCloseDialog(view: View)  {
         HYPopupDialog.close();
@@ -192,6 +192,7 @@ class MainActivity : AppCompatActivity() {
     fun onLoad(param: Any?) {
         Log.d("surveyExample", "onLoad")
     }
+
 
     fun onCancel(param: Any?) {
         var container:LinearLayout = findViewById(R.id.container)

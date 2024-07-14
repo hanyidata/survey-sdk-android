@@ -3,11 +3,15 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Path;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.View;
 import android.webkit.WebView;
 
 public class HYRoundWebView extends WebView {
     private float topRadius;
     private float bottomRadius;
+//    private OnScrollChangeListener onScrollChangeListener;
+
     public HYRoundWebView(Context context) {
         super(context);
     }
@@ -24,6 +28,12 @@ public class HYRoundWebView extends WebView {
         this.topRadius = topRadius;
         this.bottomRadius = bottomRadius;
         invalidate();
+    }
+
+    @Override
+    protected void onScrollChanged(int l, int t, int oldl, int oldt) {
+        super.onScrollChanged(l, t, oldl, oldt);
+        Log.d("surveySDK", "onScrollChanged");
     }
 
     @Override

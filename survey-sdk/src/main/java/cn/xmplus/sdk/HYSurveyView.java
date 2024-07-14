@@ -2,6 +2,7 @@ package cn.xmplus.sdk;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Build;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -37,6 +38,7 @@ public class HYSurveyView extends LinearLayout {
     private final JSONObject options;
     private JSONObject config = new JSONObject();
     private JSONObject surveyJson = null;
+    private String clientId = null;
 
     private Boolean finished = false;
     private Integer previousHeight = 0;
@@ -70,17 +72,18 @@ public class HYSurveyView extends LinearLayout {
     private long lastClickTime = 0;
 
     public HYSurveyView(Context context, String surveyId, String channelId, JSONObject parameters, JSONObject options) {
-        this(context, surveyId, channelId, parameters, options, new JSONObject(), null);
+        this(context, surveyId, channelId, parameters, options, new JSONObject(), null, null);
     }
     public HYSurveyView(Context context, String surveyId, String channelId, JSONObject parameters, JSONObject options, JSONObject config) {
-        this(context, surveyId, channelId, parameters, options, new JSONObject(), null);
+        this(context, surveyId, channelId, parameters, options, new JSONObject(), null, null);
     }
 
-    public HYSurveyView(Context context, String surveyId, String channelId, JSONObject parameters, JSONObject options, JSONObject config, JSONObject surveyJson) {
+    public HYSurveyView(Context context, String surveyId, String channelId, JSONObject parameters, JSONObject options, JSONObject config, JSONObject surveyJson, String clientId) {
         super(context);
 
         this.surveyId = surveyId;
         this.surveyJson = surveyJson;
+        this.clientId = clientId;
         this.channelId = channelId;
         this.parameters = parameters;
         this.options = options;
@@ -123,7 +126,7 @@ public class HYSurveyView extends LinearLayout {
                 String sid = response.getSurveyId();
                 String cid = response.getChannelId();
                 JSONObject survey = response.getSurvey();
-                HYSurveyView view = new HYSurveyView(context, sid, cid, parameters, options, options, survey);
+                HYSurveyView view = new HYSurveyView(context, sid, cid, parameters, options, options, survey, response.getClientId());
                 onReady.accept(view);
             } else {
                 Log.e("surveySDK", String.format("survey popup failed %s", response.getError()));
@@ -155,7 +158,7 @@ public class HYSurveyView extends LinearLayout {
                 String sid = response.getSurveyId();
                 String cid = response.getChannelId();
                 JSONObject survey = response.getSurvey();
-                HYSurveyView view = new HYSurveyView(context, sid, cid, parameters, options, options, survey);
+                HYSurveyView view = new HYSurveyView(context, sid, cid, parameters, options, options, survey, response.getClientId());
                 onReady.accept(view);
             } else {
                 Log.e("surveySDK", String.format("survey popup failed %s", response.getError()));
@@ -220,6 +223,10 @@ public class HYSurveyView extends LinearLayout {
             applyConfig();
         }
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            webView.setWebContentsDebuggingEnabled(true);
+        }
+
         webView.loadUrl("file:///android_asset/index.html#pages/bridge");
         this.addView(webView);
 
@@ -240,6 +247,21 @@ public class HYSurveyView extends LinearLayout {
     public String getBuild() {
         String build = "";
         return build;
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+
+        Log.d("surveySDK", "detached survey view");
+        if (webView != null) {
+            webView.stopLoading();
+            webView.setWebChromeClient(null);
+            webView.setWebViewClient(null);
+            webView.removeAllViews();
+            webView.destroy();
+            webView = null;
+        }
     }
 
     public void show() {
@@ -323,7 +345,9 @@ public class HYSurveyView extends LinearLayout {
                                 data.put("server", server);
                                 data.put("parameters", parameters);
                                 data.put("borderRadiusMode", borderRadiusMode);
-
+                                if (clientId != null) {
+                                    data.put("clientId", clientId);
+                                }
                                 Log.v("surveySDK", data.toString());
                                 if (surveyJson != null) {
                                     data.put("survey", surveyJson);

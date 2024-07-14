@@ -28,6 +28,7 @@ import cn.xmplus.sdk.service.HYSurveyService;
 public class HYPopupDialog extends Dialog {
     private String surveyId;
     private String channelId;
+    private String clientId;
     private final JSONObject parameters;
     private JSONObject options;
 
@@ -71,11 +72,12 @@ public class HYPopupDialog extends Dialog {
      * @param onSubmit
      * @param onLoad
      */
-    public HYPopupDialog(Context context, String surveyId, String channelId, JSONObject surveyJson, JSONObject parameters, JSONObject options, JSONObject config, SurveyFunction onCancel, SurveyFunction onSubmit, SurveyFunction onLoad)  {
+    public HYPopupDialog(Context context, String surveyId, String channelId, String clientId, JSONObject surveyJson, JSONObject parameters, JSONObject options, JSONObject config, SurveyFunction onCancel, SurveyFunction onSubmit, SurveyFunction onLoad)  {
         super(context);
         this.context = context;
         this.surveyId = surveyId;
         this.channelId = channelId;
+        this.clientId = clientId;
         this.parameters = parameters;
         this.options = options;
         this.config = config;
@@ -205,8 +207,6 @@ public class HYPopupDialog extends Dialog {
         _makeDialog(view, view.getContext(), "", "", sendId, parameters, options, onCancel, onSubmit, onError, onLoad);
     }
 
-
-
     /**
      * internal make dialog
      * @param view
@@ -242,7 +242,7 @@ public class HYPopupDialog extends Dialog {
                 String cid = response.getChannelId();
                 JSONObject config = response.getChannelConfig();
                 JSONObject survey = response.getSurvey();
-                HYPopupDialog._showDialog(context, sid, cid, survey, parameters, mergeOption, config, onCancel, onSubmit, onLoad, onError);
+                HYPopupDialog._showDialog(context, sid, cid, response.getClientId(), survey, parameters, mergeOption, config, onCancel, onSubmit, onLoad, onError);
             } else {
                 Log.e("surveySDK", String.format("survey popup failed %s", response.getError()));
                 if (onError != null) {
@@ -252,7 +252,7 @@ public class HYPopupDialog extends Dialog {
         }).execute(request);
     }
 
-    private static void _showDialog(Context context, String surveyId, String channelId, JSONObject survey, JSONObject parameters, JSONObject options, JSONObject config, SurveyFunction onCancel, SurveyFunction onSubmit, SurveyFunction onLoad, SurveyFunction onError) {
+    private static void _showDialog(Context context, String surveyId, String channelId, String clientId, JSONObject survey, JSONObject parameters, JSONObject options, JSONObject config, SurveyFunction onCancel, SurveyFunction onSubmit, SurveyFunction onLoad, SurveyFunction onError) {
         if (!HYPopupDialog.canPopup()) {
             Log.e("surveySDK", "survey skip popup");
             if (onError != null) {
@@ -260,7 +260,7 @@ public class HYPopupDialog extends Dialog {
             }
             return;
         }
-        HYPopupDialog._lastInstance = new HYPopupDialog(context, surveyId, channelId, survey, parameters, options, config, onCancel, onSubmit, onLoad);
+        HYPopupDialog._lastInstance = new HYPopupDialog(context, surveyId, channelId, clientId, survey, parameters, options, config, onCancel, onSubmit, onLoad);
         HYPopupDialog._lastInstance.show();
     }
 
@@ -345,7 +345,7 @@ public class HYPopupDialog extends Dialog {
         }
 
         // survey
-        this.survey = new HYSurveyView(context, this.surveyId, this.channelId, this.parameters, this.options, this.config, this.surveyJson);
+        this.survey = new HYSurveyView(context, this.surveyId, this.channelId, this.parameters, this.options, this.config, this.surveyJson, this.clientId);
         this.survey.setOnCancel((Object param) -> {
             if (this.onCancel != null) {
                 this.onCancel.accept(null);
@@ -389,11 +389,13 @@ public class HYPopupDialog extends Dialog {
                 newHeight = embedHeight;
                 break;
         }
+//        contentView.setLayoutParams(new FrameLayout.LayoutParams(newWidth, newHeight));
         scrollView.setLayoutParams(new FrameLayout.LayoutParams(newWidth, newHeight));
         WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
         layoutParams.copyFrom(getWindow().getAttributes());
         layoutParams.width = newWidth;
         layoutParams.height = newHeight;
         getWindow().setAttributes(layoutParams);
+
     }
 }
