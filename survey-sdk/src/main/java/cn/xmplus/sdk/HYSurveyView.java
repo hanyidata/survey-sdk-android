@@ -15,6 +15,7 @@ import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import org.json.JSONException;
@@ -92,6 +93,10 @@ public class HYSurveyView extends LinearLayout {
         this.options = options;
         this.config = config;
 
+        DisplayMetrics displayMetrics = this.getContext().getResources().getDisplayMetrics();
+        int screenWidth = displayMetrics.widthPixels;
+        int screenHeight = displayMetrics.heightPixels;
+
         this.debug = options.optBoolean("debug", false);
         this.bord = options.optBoolean("bord", false);
         this.isDialogMode = options.optBoolean("isDialogMode", false);
@@ -99,14 +104,11 @@ public class HYSurveyView extends LinearLayout {
         this.halfscreen = options.optBoolean("halfscreen", false);
         this.project = options.optString("project", null);
         this.server = options.optString("server", "production");
-        this.borderRadiusMode = options.optString("borderRadiusMode", "CENTER");
+
+        this.borderRadiusMode = config.optString("borderRadiusMode", "CENTER");
+        this.appPaddingWidth = Util.parsePx(context, config.optString("appPaddingWidth", "0px"), screenWidth);
 
         setGravity(Gravity.TOP);
-        if (!isDialogMode) {
-            setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, 0));
-        } else {
-            setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-        }
 
         this.setup();
     }
@@ -133,7 +135,7 @@ public class HYSurveyView extends LinearLayout {
                 String sid = response.getSurveyId();
                 String cid = response.getChannelId();
                 JSONObject survey = response.getSurvey();
-                HYSurveyView view = new HYSurveyView(context, sid, cid, parameters, options, options, survey, response.getClientId());
+                HYSurveyView view = new HYSurveyView(context, sid, cid, parameters, options, response.getChannelConfig(), survey, response.getClientId());
                 onReady.accept(view);
             } else {
                 Log.e("surveySDK", String.format("survey popup failed %s", response.getError()));
@@ -197,8 +199,17 @@ public class HYSurveyView extends LinearLayout {
      * setup webview
      */
     private void setup() {
+        if (!isDialogMode) {
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT);
+            layoutParams.setMargins(this.appPaddingWidth, 0, this.appPaddingWidth, 0); // 左、上、右、下边距
+            this.setLayoutParams(layoutParams);
+        } else {
+            setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+        }
+
         webView = new WebView(this.getContext());
-//        webView = new HYRoundWebView(this.getContext());
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
         webView.getSettings().setDomStorageEnabled(true);
@@ -398,6 +409,10 @@ public class HYSurveyView extends LinearLayout {
                             appPaddingWidth = Util.parsePx(getContext(), mergedConfig.optString("appPaddingWidth", "0px"), screenWidth);
                             String embedVerticalAlign = mergedConfig.optString("embedVerticalAlign", "CENTER");
 
+                            if (!isDialogMode) {
+                                // 如果非弹窗，这里要调整宽度
+//                                setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT - appPaddingWidth * 2, ViewGroup.LayoutParams.WRAP_CONTENT));
+                            }
                             GradientDrawable drawable = new GradientDrawable();
                             drawable.setShape(GradientDrawable.RECTANGLE);
                             drawable.setColor(Color.WHITE); // 设置背景颜色
@@ -448,11 +463,14 @@ public class HYSurveyView extends LinearLayout {
                                 int dp = value.getInt("height");
                                 int px = Util.pxFromDp(getContext(), dp);
                                 int height = px;
+                                int sw = displayMetrics.widthPixels;
+
                                 if (previousHeight != height) {
                                     Log.v("surveySDK", "change height to " + height);
                                     if (!isDialogMode) {
-                                        webView.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height));
-                                        container.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height));
+                                        ViewGroup.LayoutParams layout = container.getLayoutParams();
+                                        layout.height = height;
+                                        container.setLayoutParams(layout);
                                     }
                                     if (onSize != null) {
                                         onSize.accept(px);
