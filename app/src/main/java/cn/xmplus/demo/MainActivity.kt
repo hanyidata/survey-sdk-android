@@ -3,7 +3,6 @@ package cn.xmplus.demo
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.DialogInterface
-import android.graphics.Color
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
@@ -181,9 +180,13 @@ class MainActivity : AppCompatActivity() {
                     Log.d("surveyExample", "onLoad")
                 }
             );
+
+//            HYPopupTestDialog.makeDialog(this);
         }
 
     }
+
+
 
     fun onSubmit(param: Any?) {
         alert("已经提交")

@@ -36,7 +36,7 @@ public class HYPopupDialog extends Dialog {
     private JSONObject config;
     private JSONObject surveyJson;
 
-    private ScrollView scrollView;
+//    private ScrollView scrollView;
     private LinearLayout contentView;
     private int contentHeight = 0;
     private Context context;
@@ -313,22 +313,16 @@ public class HYPopupDialog extends Dialog {
         appPaddingWidth = Util.parsePx(context, config.optString("appPaddingWidth", "0px"), screenWidth);
         embedHeight = Util.parsePx(context, config.optString("embedHeight", "0px"), screenHeight);
 
-        GradientDrawable gradientDrawable = new GradientDrawable();
-        if (!embedBackGround) {
-            getWindow().setDimAmount(0f);
-        }
-
-        // content view
-        scrollView = new ScrollView(context);
-        scrollView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-
         contentView = new LinearLayout(context);
-        if (options.optBoolean("bord", false)) {
-            gradientDrawable.setStroke(5, Color.RED);
-            contentView.setPadding(10, 10, 10, 10);
-        }
-        scrollView.addView(contentView);
+        contentView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
+        if (!embedBackGround) {
+            Window window = getWindow();
+            if (window != null) {
+                // 获取Dialog的Window对象，并设置dimAmount为0，完全去除背景暗化效果
+                window.setDimAmount(0f);
+            }
+        }
         switch (embedVerticalAlign) {
             case "CENTER":
                 getWindow().setGravity(Gravity.CENTER);
@@ -370,7 +364,7 @@ public class HYPopupDialog extends Dialog {
             }
         });
         contentView.addView(this.survey);
-        setContentView(scrollView, new FrameLayout.LayoutParams(screenWidth - appPaddingWidth * 2, ViewGroup.LayoutParams.WRAP_CONTENT));
+        setContentView(contentView, new FrameLayout.LayoutParams(screenWidth - appPaddingWidth * 2, ViewGroup.LayoutParams.WRAP_CONTENT));
 
     }
 
@@ -380,6 +374,7 @@ public class HYPopupDialog extends Dialog {
         int newWidth = screenWidth - appPaddingWidth * 2;
         int newHeight = (int) Math.min(this.contentHeight, displayMetrics.heightPixels);
 //        int newHeight = this.contentHeight;
+        newHeight = displayMetrics.heightPixels / 2;
         Log.d("surveySDK", "update height " + newHeight);
         switch (embedHeightMode) {
             case "AUTO":
@@ -390,12 +385,19 @@ public class HYPopupDialog extends Dialog {
                 break;
         }
 //        contentView.setLayoutParams(new FrameLayout.LayoutParams(newWidth, newHeight));
-        scrollView.setLayoutParams(new FrameLayout.LayoutParams(newWidth, newHeight));
-        WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
-        layoutParams.copyFrom(getWindow().getAttributes());
-        layoutParams.width = newWidth;
-        layoutParams.height = newHeight;
-        getWindow().setAttributes(layoutParams);
+//        scrollView.setLayoutParams(new FrameLayout.LayoutParams(newWidth, newHeight));
+//        WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
+//        layoutParams.copyFrom(getWindow().getAttributes());
+//        layoutParams.width = newWidth;
+//        layoutParams.height = newHeight;
+//        getWindow().setAttributes(layoutParams);
+
+        ViewGroup.LayoutParams layoutParamsA = contentView.getLayoutParams();
+        layoutParamsA.height = newHeight;
+        contentView.setLayoutParams(layoutParamsA);
+
+        // 请求重新布局
+        contentView.requestLayout();
 
     }
 }

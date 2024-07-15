@@ -1,9 +1,20 @@
 package cn.xmplus.sdk;
 
 import android.content.Context;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.webkit.ValueCallback;
+import android.widget.LinearLayout;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;
+import java.util.Iterator;
+import java.util.Locale;
 import java.util.regex.*;
 
 public class Util {

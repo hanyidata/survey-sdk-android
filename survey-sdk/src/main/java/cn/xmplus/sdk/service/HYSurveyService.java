@@ -76,6 +76,8 @@ public class HYSurveyService extends AsyncTask<SurveyStartRequest, Void, SurveyS
             URL url = new URL(_url);
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setDoOutput(true);
+            urlConnection.setReadTimeout(10000);
+            urlConnection.setConnectTimeout(10000);
             urlConnection.setRequestMethod("POST");
             urlConnection.setRequestProperty("Content-Type", "application/json; utf-8");
             urlConnection.setRequestProperty("Accept", "application/json");

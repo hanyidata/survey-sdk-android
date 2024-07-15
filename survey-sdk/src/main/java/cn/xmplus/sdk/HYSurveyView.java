@@ -2,6 +2,7 @@ package cn.xmplus.sdk;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -13,6 +14,7 @@ import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.LinearLayout;
 
 import org.json.JSONException;
@@ -31,7 +33,8 @@ import cn.xmplus.sdk.service.HYSurveyService;
  * Survey View
  */
 public class HYSurveyView extends LinearLayout {
-    private HYRoundWebView webView;
+//    private HYRoundWebView webView;
+    private WebView webView;
     private final String surveyId;
     private final String channelId;
     private final JSONObject parameters;
@@ -99,7 +102,11 @@ public class HYSurveyView extends LinearLayout {
         this.borderRadiusMode = options.optString("borderRadiusMode", "CENTER");
 
         setGravity(Gravity.TOP);
-        setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, 0));
+        if (!isDialogMode) {
+            setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, 0));
+        } else {
+            setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        }
 
         this.setup();
     }
@@ -190,8 +197,8 @@ public class HYSurveyView extends LinearLayout {
      * setup webview
      */
     private void setup() {
-//        webView = new WebView(this.getContext());
-        webView = new HYRoundWebView(this.getContext());
+        webView = new WebView(this.getContext());
+//        webView = new HYRoundWebView(this.getContext());
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
         webView.getSettings().setDomStorageEnabled(true);
@@ -391,21 +398,45 @@ public class HYSurveyView extends LinearLayout {
                             appPaddingWidth = Util.parsePx(getContext(), mergedConfig.optString("appPaddingWidth", "0px"), screenWidth);
                             String embedVerticalAlign = mergedConfig.optString("embedVerticalAlign", "CENTER");
 
+                            GradientDrawable drawable = new GradientDrawable();
+                            drawable.setShape(GradientDrawable.RECTANGLE);
+                            drawable.setColor(Color.WHITE); // 设置背景颜色
+                            float[] radii = new float[8];
+                            radii[0] = appBorderRadiusPx; // Top left radius
+                            radii[1] = appBorderRadiusPx; // Top left radius
+                            radii[2] = appBorderRadiusPx; // Top right radius
+                            radii[3] = appBorderRadiusPx; // Top right radius
+                            radii[4] = appBorderRadiusPx; // Bottom right radius
+                            radii[5] = appBorderRadiusPx; // Bottom right radius
+                            radii[6] = appBorderRadiusPx; // Bottom left radius
+                            radii[7] = appBorderRadiusPx; // Bottom left radius
                             if (isDialogMode) {
                                 switch (embedVerticalAlign) {
-                                    case "CENTER":
-                                        webView.setCornerRadius(appBorderRadiusPx, appBorderRadiusPx);
-                                        break;
                                     case "TOP":
-                                        webView.setCornerRadius(0, appBorderRadiusPx);
+                                        radii[0] = 0; // Top left radius
+                                        radii[1] = 0; // Top left radius
+                                        radii[2] = 0; // Top right radius
+                                        radii[3] = 0; // Top right radius
+                                        radii[4] = appBorderRadiusPx; // Bottom right radius
+                                        radii[5] = appBorderRadiusPx; // Bottom right radius
+                                        radii[6] = appBorderRadiusPx; // Bottom left radius
+                                        radii[7] = appBorderRadiusPx; // Bottom left radius
                                         break;
                                     case "BOTTOM":
-                                        webView.setCornerRadius(appBorderRadiusPx, 0);
+                                        // 设置只有顶部左右两角是圆角
+                                        radii[0] = appBorderRadiusPx; // Top left radius
+                                        radii[1] = appBorderRadiusPx; // Top left radius
+                                        radii[2] = appBorderRadiusPx; // Top right radius
+                                        radii[3] = appBorderRadiusPx; // Top right radius
+                                        radii[4] = 0; // Bottom right radius
+                                        radii[5] = 0; // Bottom right radius
+                                        radii[6] = 0; // Bottom left radius
+                                        radii[7] = 0; // Bottom left radius
                                         break;
                                 }
-                            } else {
-                                webView.setCornerRadius(appBorderRadiusPx, appBorderRadiusPx);
                             }
+                            drawable.setCornerRadii(radii);
+                            setBackground(drawable);
 
                             if (onLoad != null) {
                                 onLoad.accept(mergedConfig);
@@ -418,8 +449,10 @@ public class HYSurveyView extends LinearLayout {
                                 int height = px;
                                 if (previousHeight != height) {
                                     Log.v("surveySDK", "change height to " + height);
-                                    webView.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height));
-                                    container.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height));
+                                    if (!isDialogMode) {
+                                        webView.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height));
+                                        container.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height));
+                                    }
                                     if (onSize != null) {
                                         onSize.accept(px);
                                     }
