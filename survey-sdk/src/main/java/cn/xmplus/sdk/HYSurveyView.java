@@ -437,6 +437,7 @@ public class HYSurveyView extends LinearLayout {
                             }
                             drawable.setCornerRadii(radii);
                             setBackground(drawable);
+                            setClipToOutline(true);
 
                             if (onLoad != null) {
                                 onLoad.accept(mergedConfig);
