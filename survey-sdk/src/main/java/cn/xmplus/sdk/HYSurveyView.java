@@ -167,7 +167,7 @@ public class HYSurveyView extends LinearLayout {
                 String sid = response.getSurveyId();
                 String cid = response.getChannelId();
                 JSONObject survey = response.getSurvey();
-                HYSurveyView view = new HYSurveyView(context, sid, cid, parameters, options, options, survey, response.getClientId());
+                HYSurveyView view = new HYSurveyView(context, sid, cid, parameters, options, response.getChannelConfig(), survey, response.getClientId());
                 onReady.accept(view);
             } else {
                 Log.e("surveySDK", String.format("survey popup failed %s", response.getError()));

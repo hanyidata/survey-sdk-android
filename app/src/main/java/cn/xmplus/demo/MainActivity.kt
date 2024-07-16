@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
     private var surveyId: String = "6625464840488960";
     private var channelId: String = "6625466922633216";
 //    private var sendId: String = "BddfddRImjktRzRk";
-    private var sendId: String = "";
+    private var sendId: String = "5TesHfArNnmu5pPn";
     private var server: String = "https://test.xmplus.cn/api/survey";
 
     fun handleCloseDialog(view: View)  {
