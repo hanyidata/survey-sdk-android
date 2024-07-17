@@ -181,20 +181,20 @@ class MainActivity : AppCompatActivity() {
                 }
             );
 
-            HYPopupDialog.makeDialog(
-                root, sid, cid, parameters, options,
-                {
-                    onCancel(null);
-                },
-                {
-                    onSubmit(null);
-                },
-                {
-                    Log.d("surveyExample ", "发生错误 $it")
-                }, {
-                    Log.d("surveyExample", "onLoad")
-                }
-            );
+//            HYPopupDialog.makeDialog(
+//                root, sid, cid, parameters, options,
+//                {
+//                    onCancel(null);
+//                },
+//                {
+//                    onSubmit(null);
+//                },
+//                {
+//                    Log.d("surveyExample ", "发生错误 $it")
+//                }, {
+//                    Log.d("surveyExample", "onLoad")
+//                }
+//            );
 
         }
 
