@@ -92,6 +92,7 @@ public class HYPopupDialog extends Dialog {
 
         boolean clickDismiss = options.optBoolean("clickDismiss", false);
         this.setCanceledOnTouchOutside(clickDismiss);
+        this.setCancelable(clickDismiss);
 
         // 弹窗场景下，圆角根据垂直对齐方式设置
         embedVerticalAlign = config.optString("embedVerticalAlign", "CENTER");
@@ -99,6 +100,12 @@ public class HYPopupDialog extends Dialog {
             this.options.put("borderRadiusMode", embedVerticalAlign);
         } catch (JSONException e) {
         }
+
+        // 设置 OnDismissListener 处理取消事件
+        setOnDismissListener(dialog -> {
+            HYPopupDialog._lastInstance = null;
+            HYPopupDialog._close = false;
+        });
     }
 
 
@@ -230,8 +237,14 @@ public class HYPopupDialog extends Dialog {
             Log.d("surveySDK", e.getMessage());
         }
 
+        if (HYPopupDialog._lastInstance != null) {
+            if (onError != null) {
+                onError.accept("skip popup already have dialog");
+            }
+            return;
+        }
+
         HYPopupDialog._trackingView = view;
-        HYPopupDialog._lastInstance = null;
         HYPopupDialog._close = false;
 
         // sid + channel id
@@ -275,6 +288,7 @@ public class HYPopupDialog extends Dialog {
             } catch (Exception ex) {
                 Log.e("surveySDK", String.format("survey pop close failed %s", ex.getMessage()));
             }
+            HYPopupDialog._lastInstance = null;
         }
     }
 
@@ -285,7 +299,7 @@ public class HYPopupDialog extends Dialog {
      * @return
      */
     private static  boolean canPopup() {
-        if (HYPopupDialog._close) {
+        if (HYPopupDialog._lastInstance != null || HYPopupDialog._close) {
             return false;
         }
 
@@ -316,13 +330,12 @@ public class HYPopupDialog extends Dialog {
         contentView = new LinearLayout(context);
         contentView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
-        if (!embedBackGround) {
-            Window window = getWindow();
-            if (window != null) {
-                // 获取Dialog的Window对象，并设置dimAmount为0，完全去除背景暗化效果
-                window.setDimAmount(0f);
-            }
+        Window window = getWindow();
+        if (window != null) {
+            // 获取Dialog的Window对象，并设置dimAmount为0，完全去除背景暗化效果
+            window.setDimAmount(0f);
         }
+
         switch (embedVerticalAlign) {
             case "CENTER":
                 getWindow().setGravity(Gravity.CENTER);
@@ -335,6 +348,14 @@ public class HYPopupDialog extends Dialog {
             case "BOTTOM":
                 getWindow().setGravity(Gravity.BOTTOM);
                 contentView.setGravity(Gravity.BOTTOM);
+                if (window != null) {
+                    // 设置从底部弹出动画
+                    window.setWindowAnimations(android.R.style.Animation_Dialog);
+                    WindowManager.LayoutParams layoutParams = window.getAttributes();
+                    layoutParams.gravity = Gravity.BOTTOM;
+                    layoutParams.y = 0;
+                    window.setAttributes(layoutParams);
+                }
                 break;
         }
 
@@ -344,10 +365,10 @@ public class HYPopupDialog extends Dialog {
             if (this.onCancel != null) {
                 this.onCancel.accept(null);
             }
-            this.dismiss();
+            this.close();
         });
         this.survey.setOnClose((Object param) -> {
-            this.dismiss();
+            this.close();
         });
         this.survey.setOnSubmit((Object param) -> {
             if (this.onSubmit != null) {
@@ -359,13 +380,30 @@ public class HYPopupDialog extends Dialog {
             this.updateLayout();
         });
         this.survey.setOnLoad((Object param) -> {
+            Log.d("surveySDK", "popup dialog received onLoad");
+            contentView.post(() -> {
+//                contentView.setVisibility(View.VISIBLE);
+                if (this.embedBackGround) {
+                    if (getWindow() != null) {
+                        // 获取Dialog的Window对象，并设置dimAmount为0，完全去除背景暗化效果
+                        getWindow().setDimAmount(0.6f);
+                    }
+                }
+                ViewGroup.LayoutParams layout = contentView.getLayoutParams();
+                layout.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                contentView.setLayoutParams(layout);
+                contentView.requestLayout();
+
+            });
+
             if (this.onLoad != null) {
                 this.onLoad.accept(param);
             }
         });
         contentView.addView(this.survey);
-        setContentView(contentView, new FrameLayout.LayoutParams(screenWidth - appPaddingWidth * 2, ViewGroup.LayoutParams.WRAP_CONTENT));
-
+//        contentView.setVisibility(View.INVISIBLE);
+//        setContentView(contentView, new FrameLayout.LayoutParams(screenWidth - appPaddingWidth * 2, ViewGroup.LayoutParams.WRAP_CONTENT));
+        setContentView(contentView, new FrameLayout.LayoutParams(screenWidth - appPaddingWidth * 2, 0));
     }
 
     private void updateLayout() {
@@ -398,6 +436,6 @@ public class HYPopupDialog extends Dialog {
 
         // 请求重新布局
         contentView.requestLayout();
-
+        contentView.invalidate();
     }
 }

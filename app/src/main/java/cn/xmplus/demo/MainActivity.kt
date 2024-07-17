@@ -175,13 +175,27 @@ class MainActivity : AppCompatActivity() {
                     onSubmit(null);
                 },
                 {
-                    alert("发生错误 $it");
+                    Log.d("surveyExample ", "发生错误 $it")
                 }, {
                     Log.d("surveyExample", "onLoad")
                 }
             );
 
-//            HYPopupTestDialog.makeDialog(this);
+            HYPopupDialog.makeDialog(
+                root, sid, cid, parameters, options,
+                {
+                    onCancel(null);
+                },
+                {
+                    onSubmit(null);
+                },
+                {
+                    Log.d("surveyExample ", "发生错误 $it")
+                }, {
+                    Log.d("surveyExample", "onLoad")
+                }
+            );
+
         }
 
     }
