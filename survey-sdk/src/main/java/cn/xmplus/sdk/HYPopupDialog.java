@@ -40,16 +40,13 @@ public class HYPopupDialog extends Dialog {
     private JSONObject config;
     private JSONObject surveyJson;
 
-//    private ScrollView scrollView;
     private LinearLayout contentView;
     private int contentHeight = 0;
     private Context context;
     private SurveyFunction onCancel = null;
     private SurveyFunction onSubmit = null;
     private SurveyFunction onLoad = null;
-
     private int appPaddingWidth = 0;
-    private int appBorderRadiusPx = 0;
     private int embedHeight = 0;
     private String embedVerticalAlign = "CENTER";
     private String embedHeightMode = "AUTO";
