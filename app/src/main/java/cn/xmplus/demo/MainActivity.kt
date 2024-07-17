@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
     // TEST
     private var surveyId: String = "6625464840488960";
     private var channelId: String = "6625466922633216";
-    private var sendId: String = "5TesHfArNnmu5pPn";
+    private var sendId: String = "";
     private var server: String = "https://test.xmplus.cn/api/survey";
 
     override fun onConfigurationChanged(newConfig: Configuration) {

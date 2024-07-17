@@ -100,13 +100,6 @@ public class HYPopupDialog extends Dialog {
         this.setCanceledOnTouchOutside(clickDismiss);
         this.setCancelable(clickDismiss);
 
-        // 弹窗场景下，圆角根据垂直对齐方式设置
-        embedVerticalAlign = config.optString("embedVerticalAlign", "CENTER");
-        try {
-            this.options.put("borderRadiusMode", embedVerticalAlign);
-        } catch (JSONException e) {
-        }
-
         // 设置 OnDismissListener 处理取消事件
         setOnDismissListener(dialog -> {
             HYPopupDialog._lastInstance = null;
@@ -436,20 +429,14 @@ public class HYPopupDialog extends Dialog {
     }
 
     public void adjustContentViewWidth() {
-        DisplayMetrics displayMetrics = this.getContext().getResources().getDisplayMetrics();
-        int screenWidth = displayMetrics.widthPixels;
-        ViewGroup.LayoutParams layout = contentView.getLayoutParams();
-        layout.width = screenWidth - appPaddingWidth * 2;
-        contentView.setLayoutParams(layout);
+        updateLayout();
     }
 
     private void updateLayout() {
         DisplayMetrics displayMetrics = this.getContext().getResources().getDisplayMetrics();
         int screenWidth = displayMetrics.widthPixels;
-        int newWidth = screenWidth - appPaddingWidth * 2;
+        embedHeight = Util.parsePx(context, config.optString("embedHeight", "0px"), displayMetrics.heightPixels);
         int newHeight = (int) Math.min(this.contentHeight, displayMetrics.heightPixels);
-//        int newHeight = this.contentHeight;
-        newHeight = displayMetrics.heightPixels / 2;
         Log.d("surveySDK", "update height " + newHeight);
         switch (embedHeightMode) {
             case "AUTO":
@@ -459,17 +446,11 @@ public class HYPopupDialog extends Dialog {
                 newHeight = embedHeight;
                 break;
         }
-//        contentView.setLayoutParams(new FrameLayout.LayoutParams(newWidth, newHeight));
-//        scrollView.setLayoutParams(new FrameLayout.LayoutParams(newWidth, newHeight));
-//        WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
-//        layoutParams.copyFrom(getWindow().getAttributes());
-//        layoutParams.width = newWidth;
-//        layoutParams.height = newHeight;
-//        getWindow().setAttributes(layoutParams);
 
-        ViewGroup.LayoutParams layoutParamsA = contentView.getLayoutParams();
-        layoutParamsA.height = newHeight;
-        contentView.setLayoutParams(layoutParamsA);
+        ViewGroup.LayoutParams layout = contentView.getLayoutParams();
+        layout.height = newHeight;
+        layout.width = screenWidth - appPaddingWidth * 2;
+        contentView.setLayoutParams(layout);
 
         // 请求重新布局
         contentView.requestLayout();
