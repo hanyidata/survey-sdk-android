@@ -13,6 +13,7 @@
         android:theme="@style/Theme.MyApplication"
         tools:targetApi="28">
         <activity
+            android:configChanges="orientation|screenSize"
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>

@@ -3,6 +3,7 @@ package cn.xmplus.demo
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.DialogInterface
+import android.content.res.Configuration
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
@@ -25,28 +26,23 @@ class MainActivity : AppCompatActivity() {
     private var delay: Int = 1000;
     private var accessCode: String = "";
     private var euid: String = "";
-//    private var accessCode: String = "1128430492441440256";
-
-    // JLTEST
-//    private var surveyId: String = "4445329530320896";
-//    private var channelId: String = "4446931357162496";
-//    private var server: String = "https://jltest.xmplus.cn/api/survey";
-
-//    // UAT
-//    private var surveyId: String = "4475002070663168";
-//    private var channelId: String = "4475389028433920";
-//    private var server: String = "https://mktcs-uat.lynkco-test.com/api/survey";
-
-//    private var surveyId: String = "4538358709728256";
-//    private var channelId: String = "4538360831580160";
-//    private var server: String = "https://mktcs.lynkco.com/api/survey";
 
     // TEST
     private var surveyId: String = "6625464840488960";
     private var channelId: String = "6625466922633216";
-//    private var sendId: String = "BddfddRImjktRzRk";
     private var sendId: String = "5TesHfArNnmu5pPn";
     private var server: String = "https://test.xmplus.cn/api/survey";
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        Log.d("demo", "onConfigurationChanged")
+        super.onConfigurationChanged(newConfig)
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            // 横屏
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            // 竖屏
+        }
+        // 处理屏幕方向变化的逻辑
+    }
 
     fun handleCloseDialog(view: View)  {
         HYPopupDialog.close();
@@ -85,7 +81,7 @@ class MainActivity : AppCompatActivity() {
         if (findViewById<CheckBox>(R.id.checkBoxHalfScreen).isChecked) {
             container.layoutParams = LinearLayout.LayoutParams(screenWidth / 2, 0);
         } else {
-            container.layoutParams = LinearLayout.LayoutParams(screenWidth, 0);
+            container.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0);
         }
 
         if (sdid.length > 0) {

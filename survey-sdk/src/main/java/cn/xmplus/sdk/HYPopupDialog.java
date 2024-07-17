@@ -1,7 +1,11 @@
 package cn.xmplus.sdk;
 
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
@@ -60,6 +64,8 @@ public class HYPopupDialog extends Dialog {
     // 标记最近一次的tracking view
     static View _trackingView = null;
 
+    private BroadcastReceiver configurationChangeReceiver;
+
     /**
      * 根据sid cid弹出问卷
      * @param context
@@ -106,9 +112,9 @@ public class HYPopupDialog extends Dialog {
             HYPopupDialog._lastInstance = null;
             HYPopupDialog._close = false;
         });
+
+        initConfigurationChangeReceiver();
     }
-
-
 
     /**
      * Make Dialog by sid and cid
@@ -404,6 +410,37 @@ public class HYPopupDialog extends Dialog {
 //        contentView.setVisibility(View.INVISIBLE);
 //        setContentView(contentView, new FrameLayout.LayoutParams(screenWidth - appPaddingWidth * 2, ViewGroup.LayoutParams.WRAP_CONTENT));
         setContentView(contentView, new FrameLayout.LayoutParams(screenWidth - appPaddingWidth * 2, 0));
+    }
+
+    @Override
+    public void dismiss() {
+        super.dismiss();
+        if (configurationChangeReceiver != null) {
+            context.unregisterReceiver(configurationChangeReceiver);
+        }
+    }
+
+    private void initConfigurationChangeReceiver() {
+        configurationChangeReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getAction().equals(Intent.ACTION_CONFIGURATION_CHANGED)) {
+                    adjustContentViewWidth();
+                }
+            }
+        };
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_CONFIGURATION_CHANGED);
+        this.getContext().registerReceiver(configurationChangeReceiver, filter);
+    }
+
+    public void adjustContentViewWidth() {
+        DisplayMetrics displayMetrics = this.getContext().getResources().getDisplayMetrics();
+        int screenWidth = displayMetrics.widthPixels;
+        ViewGroup.LayoutParams layout = contentView.getLayoutParams();
+        layout.width = screenWidth - appPaddingWidth * 2;
+        contentView.setLayoutParams(layout);
     }
 
     private void updateLayout() {
