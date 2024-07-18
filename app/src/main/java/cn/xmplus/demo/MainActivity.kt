@@ -28,8 +28,8 @@ class MainActivity : AppCompatActivity() {
     private var euid: String = "";
 
     // TEST
-    private var surveyId: String = "6625464840488960";
-    private var channelId: String = "6625466922633216";
+    private var surveyId: String = "6616146990215168";
+    private var channelId: String = "6616147424260096";
     private var sendId: String = "";
     private var server: String = "https://test.xmplus.cn/api/survey";
 
