@@ -319,7 +319,6 @@ public class HYPopupDialog extends Dialog {
         embedVerticalAlign = config.optString("embedVerticalAlign", "CENTER");
         embedHeightMode = config.optString("embedHeightMode", "AUTO");
         embedBackGround = config.optBoolean("embedBackGround", false);
-        appBorderRadiusPx = Util.parsePx(context, config.optString("appBorderRadius", "0px"), screenWidth);
         appPaddingWidth = Util.parsePx(context, config.optString("appPaddingWidth", "0px"), screenWidth);
         embedHeight = Util.parsePx(context, config.optString("embedHeight", "0px"), screenHeight);
 
@@ -397,8 +396,6 @@ public class HYPopupDialog extends Dialog {
             }
         });
         contentView.addView(this.survey);
-//        contentView.setVisibility(View.INVISIBLE);
-//        setContentView(contentView, new FrameLayout.LayoutParams(screenWidth - appPaddingWidth * 2, ViewGroup.LayoutParams.WRAP_CONTENT));
         setContentView(contentView, new FrameLayout.LayoutParams(screenWidth - appPaddingWidth * 2, 0));
     }
 
