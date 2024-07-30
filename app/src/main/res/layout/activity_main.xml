@@ -9,7 +9,7 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -63,7 +63,7 @@
                     android:layout_weight="1"
                     android:ems="10"
                     android:inputType="text"
-                    android:text="en" />
+                    android:text="zh-cn" />
             </LinearLayout>
 
             <LinearLayout
@@ -140,7 +140,7 @@
 
                     <CheckBox
                         android:id="@+id/checkBoxTEST"
-                        android:layout_width="100dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:checked="false"
@@ -152,13 +152,37 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:checked="true"
-                        android:editable="true"
                         android:enabled="true"
                         android:text="PROD" />
+                    <CheckBox
+                        android:id="@+id/checkBoxJLT"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:checked="false"
+                        android:enabled="true"
+                        android:text="JLT" />
+                    <CheckBox
+                        android:id="@+id/checkBoxJLU"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:checked="false"
+                        android:enabled="true"
+                        android:text="JLU" />
+                    <CheckBox
+                        android:id="@+id/checkBoxJLP"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:checked="false"
+                        android:enabled="true"
+                        android:text="JLP" />
 
                 </LinearLayout>
 
             </LinearLayout>
+
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -193,7 +217,7 @@
 
                 <EditText
                     android:id="@+id/editTextTextOpt"
-                    android:layout_width="120dp"
+                    android:layout_width="60dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:ems="10"
@@ -209,7 +233,15 @@
                     android:text="HalfScreen" />
 
                 <CheckBox
-                    android:id="@+id/checkBoxLynkco"
+                    android:id="@+id/checkBoxDismiss"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:checked="false"
+                    android:text="Dismiss" />
+
+                <CheckBox
+                    android:id="@+id/checkBoxProjectLynkco"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"

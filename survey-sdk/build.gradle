@@ -4,7 +4,7 @@ plugins {
     id 'maven-publish'
 }
 
-version '0.3.1023'
+version '0.4.6'
 
 task generateSourcesJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs

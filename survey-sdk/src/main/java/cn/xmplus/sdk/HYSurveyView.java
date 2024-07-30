@@ -1,15 +1,19 @@
 package cn.xmplus.sdk;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
+import android.graphics.Outline;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
-import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewOutlineProvider;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.ConsoleMessage;
 import android.webkit.JavascriptInterface;
@@ -17,6 +21,7 @@ import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import org.json.JSONException;
@@ -26,26 +31,34 @@ import java.util.Iterator;
 import java.util.Locale;
 
 import cn.xmplus.sdk.callback.SurveyFunction;
-import cn.xmplus.sdk.service.HYSurveySendService;
+import cn.xmplus.sdk.data.SurveyStartRequest;
+import cn.xmplus.sdk.data.SurveyStartResponse;
 import cn.xmplus.sdk.service.HYSurveyService;
+
+
+
 
 
 /**
  * Survey View
  */
 public class HYSurveyView extends LinearLayout {
-    private HYRoundWebView webView;
+//    private HYRoundWebView webView;
+    private WebView webView;
     private final String surveyId;
     private final String channelId;
     private final JSONObject parameters;
     private final JSONObject options;
     private JSONObject config = new JSONObject();
+    private JSONObject surveyJson = null;
+    private String clientId = null;
 
     private Boolean finished = false;
     private Integer previousHeight = 0;
     private Boolean halfscreen = false;
     private String project = null;
     private Boolean closed = false;
+    private int backgroundColor = Color.WHITE;
 
     private final Boolean debug;
     private final Boolean bord;
@@ -73,16 +86,26 @@ public class HYSurveyView extends LinearLayout {
     private long lastClickTime = 0;
 
     public HYSurveyView(Context context, String surveyId, String channelId, JSONObject parameters, JSONObject options) {
-        this(context, surveyId, channelId, parameters, options, new JSONObject());
+        this(context, surveyId, channelId, parameters, options, new JSONObject(), null, null);
     }
     public HYSurveyView(Context context, String surveyId, String channelId, JSONObject parameters, JSONObject options, JSONObject config) {
+        this(context, surveyId, channelId, parameters, options, new JSONObject(), null, null);
+    }
+
+    public HYSurveyView(Context context, String surveyId, String channelId, JSONObject parameters, JSONObject options, JSONObject config, JSONObject surveyJson, String clientId) {
         super(context);
 
         this.surveyId = surveyId;
+        this.surveyJson = surveyJson;
+        this.clientId = clientId;
         this.channelId = channelId;
         this.parameters = parameters;
         this.options = options;
         this.config = config;
+
+        DisplayMetrics displayMetrics = this.getContext().getResources().getDisplayMetrics();
+        int screenWidth = displayMetrics.widthPixels;
+        int screenHeight = displayMetrics.heightPixels;
 
         this.debug = options.optBoolean("debug", false);
         this.bord = options.optBoolean("bord", false);
@@ -91,10 +114,11 @@ public class HYSurveyView extends LinearLayout {
         this.halfscreen = options.optBoolean("halfscreen", false);
         this.project = options.optString("project", null);
         this.server = options.optString("server", "production");
-        this.borderRadiusMode = options.optString("borderRadiusMode", "CENTER");
+
+        this.borderRadiusMode = config.optString("borderRadiusMode", "CENTER");
+        this.appPaddingWidth = Util.parsePx(context, config.optString("appPaddingWidth", "0px"), screenWidth);
 
         setGravity(Gravity.TOP);
-        setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, 0));
 
         this.setup();
     }
@@ -114,20 +138,22 @@ public class HYSurveyView extends LinearLayout {
             return;
         }
         String server = options.optString("server", "https://www.xmplus.cn/api/survey");
-        String accessCode = parameters.optString("accessCode", "");
-        String externalUserId = parameters.optString("externalUserId", "");
 
-        new HYSurveyService((String sid, String cid, JSONObject config, String error) -> {
-            if (config != null) {
-                HYSurveyView view = new HYSurveyView(context, surveyId, channelId, parameters, options);
+        SurveyStartRequest request = new SurveyStartRequest(server, surveyId, channelId, null, parameters);
+        new HYSurveyService((SurveyStartResponse response) -> {
+            if (response.getError() == null) {
+                String sid = response.getSurveyId();
+                String cid = response.getChannelId();
+                JSONObject survey = response.getSurvey();
+                HYSurveyView view = new HYSurveyView(context, sid, cid, parameters, options, response.getChannelConfig(), survey, response.getClientId());
                 onReady.accept(view);
             } else {
-                Log.e("surveySDK", String.format("survey popup failed %s", error));
+                Log.e("surveySDK", String.format("survey popup failed %s", response.getError()));
                 if (onError != null) {
-                    onError.accept(error);
+                    onError.accept(response.getError());
                 }
             }
-        }).execute(server, surveyId, channelId, accessCode, externalUserId);
+        }).execute(request);
     }
 
     /**
@@ -145,20 +171,21 @@ public class HYSurveyView extends LinearLayout {
             return;
         }
         String server = options.optString("server", "https://www.xmplus.cn/api/survey");
-        String accessCode = parameters.optString("accessCode", "");
-        String externalUserId = parameters.optString("externalUserId", "");
-
-        new HYSurveySendService((String sid, String cid, JSONObject config, String error) -> {
-            if (config != null) {
-                HYSurveyView view = new HYSurveyView(context, sid, cid, parameters, options);
+        SurveyStartRequest request = new SurveyStartRequest(server, null, null, sendId, parameters);
+        new HYSurveyService((SurveyStartResponse response) -> {
+            if (response.getError() == null) {
+                String sid = response.getSurveyId();
+                String cid = response.getChannelId();
+                JSONObject survey = response.getSurvey();
+                HYSurveyView view = new HYSurveyView(context, sid, cid, parameters, options, response.getChannelConfig(), survey, response.getClientId());
                 onReady.accept(view);
             } else {
-                Log.e("surveySDK", String.format("survey popup failed %s", error));
+                Log.e("surveySDK", String.format("survey popup failed %s", response.getError()));
                 if (onError != null) {
-                    onError.accept(error);
+                    onError.accept(response.getError());
                 }
             }
-        }).execute(server, sendId, accessCode, externalUserId);
+        }).execute(request);
     }
 
     public void setOnSubmit(SurveyFunction callback) {
@@ -182,8 +209,28 @@ public class HYSurveyView extends LinearLayout {
      * setup webview
      */
     private void setup() {
-//        webView = new WebView(this.getContext());
-        webView = new HYRoundWebView(this.getContext());
+        if (!isDialogMode) {
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT);
+            layoutParams.setMargins(this.appPaddingWidth, 0, this.appPaddingWidth, 0); // 左、上、右、下边距
+            this.setLayoutParams(layoutParams);
+        } else {
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.MATCH_PARENT);
+            setLayoutParams(layoutParams);
+        }
+
+        if (surveyJson != null && surveyJson.has("style")) {
+            JSONObject style = surveyJson.optJSONObject("style");
+            if (style != null && style.has("backgroundColor")) {
+                String color = style.optString("backgroundColor");
+                backgroundColor = Util.colorFromHex(color);
+            }
+        }
+
+        webView = new WebView(this.getContext());
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
         webView.getSettings().setDomStorageEnabled(true);
@@ -210,9 +257,12 @@ public class HYSurveyView extends LinearLayout {
         });
         webView.setBackgroundColor(Color.TRANSPARENT);
 
-
         if (config.length() > 0) {
             applyConfig();
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            webView.setWebContentsDebuggingEnabled(true);
         }
 
         webView.loadUrl("file:///android_asset/index.html#pages/bridge");
@@ -235,6 +285,21 @@ public class HYSurveyView extends LinearLayout {
     public String getBuild() {
         String build = "";
         return build;
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+
+        Log.d("surveySDK", "detached survey view");
+        if (webView != null) {
+            webView.stopLoading();
+            webView.setWebChromeClient(null);
+            webView.setWebViewClient(null);
+            webView.removeAllViews();
+            webView.destroy();
+            webView = null;
+        }
     }
 
     public void show() {
@@ -318,7 +383,13 @@ public class HYSurveyView extends LinearLayout {
                                 data.put("server", server);
                                 data.put("parameters", parameters);
                                 data.put("borderRadiusMode", borderRadiusMode);
+                                if (clientId != null) {
+                                    data.put("clientId", clientId);
+                                }
                                 Log.v("surveySDK", data.toString());
+                                if (surveyJson != null) {
+                                    data.put("survey", surveyJson);
+                                }
                                 String script = String.format("document.dispatchEvent(new CustomEvent('init', { detail: %s}))", data);
                                 webView.evaluateJavascript(script, new ValueCallback<String>() {
                                     @Override
@@ -358,21 +429,53 @@ public class HYSurveyView extends LinearLayout {
                             appPaddingWidth = Util.parsePx(getContext(), mergedConfig.optString("appPaddingWidth", "0px"), screenWidth);
                             String embedVerticalAlign = mergedConfig.optString("embedVerticalAlign", "CENTER");
 
+                            if (!isDialogMode) {
+                                // 如果非弹窗，这里要调整宽度
+//                                setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT - appPaddingWidth * 2, ViewGroup.LayoutParams.WRAP_CONTENT));
+                            }
+                            GradientDrawable drawable = new GradientDrawable();
+                            drawable.setShape(GradientDrawable.RECTANGLE);
+                            drawable.setColor(backgroundColor); // 设置背景颜色
+                            float[] radii = new float[8];
+                            int mode = CustomOutlineProvider.BOTH;
+                            radii[0] = appBorderRadiusPx; // Top left radius
+                            radii[1] = appBorderRadiusPx; // Top left radius
+                            radii[2] = appBorderRadiusPx; // Top right radius
+                            radii[3] = appBorderRadiusPx; // Top right radius
+                            radii[4] = appBorderRadiusPx; // Bottom right radius
+                            radii[5] = appBorderRadiusPx; // Bottom right radius
+                            radii[6] = appBorderRadiusPx; // Bottom left radius
+                            radii[7] = appBorderRadiusPx; // Bottom left radius
                             if (isDialogMode) {
                                 switch (embedVerticalAlign) {
-                                    case "CENTER":
-                                        webView.setCornerRadius(appBorderRadiusPx, appBorderRadiusPx);
-                                        break;
                                     case "TOP":
-                                        webView.setCornerRadius(0, appBorderRadiusPx);
+                                        radii[0] = 0; // Top left radius
+                                        radii[1] = 0; // Top left radius
+                                        radii[2] = 0; // Top right radius
+                                        radii[3] = 0; // Top right radius
+                                        radii[4] = appBorderRadiusPx; // Bottom right radius
+                                        radii[5] = appBorderRadiusPx; // Bottom right radius
+                                        radii[6] = appBorderRadiusPx; // Bottom left radius
+                                        radii[7] = appBorderRadiusPx; // Bottom left radius
+                                        mode = CustomOutlineProvider.BOTTOM_ONLY;
                                         break;
                                     case "BOTTOM":
-                                        webView.setCornerRadius(appBorderRadiusPx, 0);
+                                        // 设置只有顶部左右两角是圆角
+                                        radii[0] = appBorderRadiusPx; // Top left radius
+                                        radii[1] = appBorderRadiusPx; // Top left radius
+                                        radii[2] = appBorderRadiusPx; // Top right radius
+                                        radii[3] = appBorderRadiusPx; // Top right radius
+                                        radii[4] = 0; // Bottom right radius
+                                        radii[5] = 0; // Bottom right radius
+                                        radii[6] = 0; // Bottom left radius
+                                        radii[7] = 0; // Bottom left radius
+                                        mode = CustomOutlineProvider.TOP_ONLY;
                                         break;
                                 }
-                            } else {
-                                webView.setCornerRadius(appBorderRadiusPx, appBorderRadiusPx);
                             }
+                            drawable.setCornerRadii(radii);
+                            webView.setBackground(drawable);
+                            webView.setOutlineProvider(new CustomOutlineProvider(appBorderRadiusPx, mode));
 
                             if (onLoad != null) {
                                 onLoad.accept(mergedConfig);
@@ -383,10 +486,15 @@ public class HYSurveyView extends LinearLayout {
                                 int dp = value.getInt("height");
                                 int px = Util.pxFromDp(getContext(), dp);
                                 int height = px;
+                                int sw = displayMetrics.widthPixels;
+
                                 if (previousHeight != height) {
                                     Log.v("surveySDK", "change height to " + height);
-                                    webView.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height));
-                                    container.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height));
+                                    if (!isDialogMode) {
+                                        ViewGroup.LayoutParams layout = container.getLayoutParams();
+                                        layout.height = height;
+                                        container.setLayoutParams(layout);
+                                    }
                                     if (onSize != null) {
                                         onSize.accept(px);
                                     }

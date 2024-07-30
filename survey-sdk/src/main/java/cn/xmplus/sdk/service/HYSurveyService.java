@@ -3,64 +3,138 @@ package cn.xmplus.sdk.service;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.UUID;
 
 import cn.xmplus.sdk.callback.SurveyTaskCallback;
+import cn.xmplus.sdk.data.SurveyStartRequest;
+import cn.xmplus.sdk.data.SurveyStartResponse;
 
-import java.util.Arrays;
-import java.util.List;
 
 /**
- * Survey Service to fetch config
+ * Survey Service to union start
  */
+public class HYSurveyService extends AsyncTask<SurveyStartRequest, Void, SurveyStartResponse> {
+    protected SurveyTaskCallback taskCallback;
+    protected List<String> parameters = new ArrayList<>();
+    static List<String> systemParametersWhiteList = Arrays.asList("externalUserId", "departmentCode", "externalCompanyId", "customerName", "customerGender");
 
-
-public class HYSurveyService extends HYSurveyBaseService<SurveyTaskCallback> {
-
-    public  HYSurveyService(SurveyTaskCallback callback) {
-        super(callback);
+    public HYSurveyService(SurveyTaskCallback callback) {
+        this.taskCallback = callback;
     }
 
     @Override
-    protected String getUrl(String... strings) {
-        String server = strings[0];
-        String surveyId = strings[1];
-        String channelId = strings[2];
-        String accessCode = strings[3];
-        String externalUserId =  strings.length > 3 ? strings[4] : "";
-        String _url = String.format("%s/surveys/%s/embed?channelId=%s&accessCode=%s&externalUserId=%s", server, surveyId, channelId, accessCode, externalUserId);
-        return _url;
-    }
+    protected SurveyStartResponse doInBackground(SurveyStartRequest... params) {
+        SurveyStartRequest param = params[0];
+        String clientId = UUID.randomUUID().toString();
 
-    @Override
-    protected void onPostExecute(List<Object> result) {
-        if (this.parameters.size() <= 3 || result == null || result.size() != 2) {
-            taskCallback.onConfigReady(null, null, null, "系统错误");
-            return;
-        }
-        String surveyId = this.parameters.get(1);
-        String channelId = this.parameters.get(2);
-        JSONObject config = (JSONObject) result.get(0);
-        String error = (String) result.get(1);
-        if (config != null) {
-            if (config.optString("channelStatus").equals("PAUSE") || config.optString("surveyStatus").equals("STOPPED")) {
-                Log.w("surveySDK", "survey stop or system issue");
-                taskCallback.onConfigReady(surveyId, channelId, null,"问卷停用");
-            } else if (config.optBoolean("doNotDisturb")) {
-                Log.w("surveySDK", "survey 免打扰屏蔽");
-                taskCallback.onConfigReady(surveyId, channelId, null,"免打扰屏蔽");
-            } else {
-                taskCallback.onConfigReady(surveyId, channelId, config, null);
-            }
+        String _url = String.format("%s/surveys/union-start", param.getServer());
+        HashMap<String, Object> data = new HashMap<>();
+        // 优先使用sendId
+        if (param.getSendId() != null && !param.getSendId().isEmpty()) {
+            data.put("sendToken", param.getSendId());
         } else {
-            taskCallback.onConfigReady(surveyId, channelId, null, error);
+            if (param.getSurveyId() != null && !param.getSurveyId().isEmpty()) {
+                data.put("surveyId", param.getSurveyId());
+            }
+            if (param.getChannelId() != null && !param.getChannelId().isEmpty()) {
+                data.put("channelId", param.getChannelId());
+            }
         }
+
+        // 处理系统变量
+        if (param.getParameters() != null) {
+            Iterator<String> keys = param.getParameters().keys();
+            while (keys.hasNext()) {
+                String key = keys.next();
+                if (systemParametersWhiteList.contains(key)) {
+                    data.put(key, param.getParameters().opt(key));
+                }
+            };
+            if (param.getParameters().has("parameters")) {
+                data.put("parameters", param.getParameters().opt("parameters"));
+            }
+        }
+
+        data.put("clientId", clientId);
+        data.put("collectorMethod", "APP");
+        Log.d("surveySDK", String.format("union start %s %s", _url, clientId));
+
+        HttpURLConnection urlConnection = null;
+        try {
+            URL url = new URL(_url);
+            urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setDoOutput(true);
+            urlConnection.setReadTimeout(10000);
+            urlConnection.setConnectTimeout(10000);
+            urlConnection.setRequestMethod("POST");
+            urlConnection.setRequestProperty("Content-Type", "application/json; utf-8");
+            urlConnection.setRequestProperty("Accept", "application/json");
+
+            // Write the JSON data to the output stream
+            try (BufferedOutputStream out = new BufferedOutputStream(urlConnection.getOutputStream())) {
+                JSONObject jsonInput = new JSONObject(data);
+                String jsonInputString = jsonInput.toString();
+                // Write the JSON data to the output stream
+                byte[] input = jsonInputString.getBytes("utf-8");
+                Log.d("surveySDK", String.format("doInBackground: post data %s %s", _url, jsonInputString));
+                out.write(input, 0, input.length);
+                out.flush();
+            }
+
+            int statusCode = urlConnection.getResponseCode();
+            JSONObject json = null;
+            JSONObject deepData = null;
+
+            BufferedReader in;
+            if (statusCode == 200) {
+                in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+            } else {
+                in = new BufferedReader(new InputStreamReader(urlConnection.getErrorStream()));
+            }
+
+            // Read the response
+            StringBuilder response = new StringBuilder();
+            String responseLine;
+            while ((responseLine = in.readLine()) != null) {
+                response.append(responseLine.trim());
+            }
+            json = new JSONObject(response.toString());
+            deepData = json.optJSONObject("data");
+            if (json == null) {
+                return new SurveyStartResponse("系统错误");
+            }
+            boolean doNotDisturb = deepData.optBoolean("doNotDisturb", false);
+            if (doNotDisturb) {
+                return new SurveyStartResponse("开启免打扰配置，该问卷无法打开");
+            }
+            if (deepData != null) {
+                return SurveyStartResponse.fromJson(clientId, deepData);
+            } else {
+                return new SurveyStartResponse("系统错误");
+            }
+        } catch (Exception e) {
+            return new SurveyStartResponse("网络错误");
+        } finally {
+            if (urlConnection != null) {
+                urlConnection.disconnect();
+            }
+        }
+    }
+
+    @Override
+    protected void onPostExecute(SurveyStartResponse response) {
+        taskCallback.onSurveyReady(response);
     }
 }
