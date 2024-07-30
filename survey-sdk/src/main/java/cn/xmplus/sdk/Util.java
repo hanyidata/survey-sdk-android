@@ -1,20 +1,11 @@
 package cn.xmplus.sdk;
 
 import android.content.Context;
-import android.util.DisplayMetrics;
+import android.graphics.Color;
 import android.util.Log;
-import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
-import android.webkit.ValueCallback;
-import android.widget.LinearLayout;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;
-import java.util.Iterator;
-import java.util.Locale;
 import java.util.regex.*;
 
 public class Util {
@@ -49,5 +40,36 @@ public class Util {
             return 0;
         }
         return 0;
+    }
+
+    public static int colorFromHex(String hex) {
+        hex = hex.replace("#", "").trim();
+        int r, g, b, a;
+
+        if (hex.length() == 3) {
+            r = Integer.parseInt(hex.substring(0, 1) + hex.substring(0, 1), 16);
+            g = Integer.parseInt(hex.substring(1, 2) + hex.substring(1, 2), 16);
+            b = Integer.parseInt(hex.substring(2, 3) + hex.substring(2, 3), 16);
+            a = 255;
+        } else if (hex.length() == 6) {
+            r = Integer.parseInt(hex.substring(0, 2), 16);
+            g = Integer.parseInt(hex.substring(2, 4), 16);
+            b = Integer.parseInt(hex.substring(4, 6), 16);
+            a = 255;
+        } else if (hex.length() == 7) {
+            r = Integer.parseInt(hex.substring(0, 2), 16);
+            g = Integer.parseInt(hex.substring(2, 4), 16);
+            b = Integer.parseInt(hex.substring(4, 6), 16);
+            a = Integer.parseInt(hex.substring(6, 7) + hex.substring(6, 7), 16);
+        } else if (hex.length() == 8) {
+            r = Integer.parseInt(hex.substring(0, 2), 16);
+            g = Integer.parseInt(hex.substring(2, 4), 16);
+            b = Integer.parseInt(hex.substring(4, 6), 16);
+            a = Integer.parseInt(hex.substring(6, 8), 16);
+        } else {
+            Log.d("surveySDK", "colorFromHex: invalid");
+            return Color.WHITE;
+        }
+        return Color.argb(a, r, g, b);
     }
 }

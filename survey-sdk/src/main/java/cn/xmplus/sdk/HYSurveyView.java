@@ -5,12 +5,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
+import android.graphics.Outline;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewOutlineProvider;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.ConsoleMessage;
 import android.webkit.JavascriptInterface;
@@ -33,6 +36,9 @@ import cn.xmplus.sdk.data.SurveyStartResponse;
 import cn.xmplus.sdk.service.HYSurveyService;
 
 
+
+
+
 /**
  * Survey View
  */
@@ -52,6 +58,7 @@ public class HYSurveyView extends LinearLayout {
     private Boolean halfscreen = false;
     private String project = null;
     private Boolean closed = false;
+    private int backgroundColor = Color.WHITE;
 
     private final Boolean debug;
     private final Boolean bord;
@@ -209,7 +216,18 @@ public class HYSurveyView extends LinearLayout {
             layoutParams.setMargins(this.appPaddingWidth, 0, this.appPaddingWidth, 0); // 左、上、右、下边距
             this.setLayoutParams(layoutParams);
         } else {
-            setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.MATCH_PARENT);
+            setLayoutParams(layoutParams);
+        }
+
+        if (surveyJson != null && surveyJson.has("style")) {
+            JSONObject style = surveyJson.optJSONObject("style");
+            if (style != null && style.has("backgroundColor")) {
+                String color = style.optString("backgroundColor");
+                backgroundColor = Util.colorFromHex(color);
+            }
         }
 
         webView = new WebView(this.getContext());
@@ -238,7 +256,6 @@ public class HYSurveyView extends LinearLayout {
             }
         });
         webView.setBackgroundColor(Color.TRANSPARENT);
-
 
         if (config.length() > 0) {
             applyConfig();
@@ -418,8 +435,9 @@ public class HYSurveyView extends LinearLayout {
                             }
                             GradientDrawable drawable = new GradientDrawable();
                             drawable.setShape(GradientDrawable.RECTANGLE);
-                            drawable.setColor(Color.WHITE); // 设置背景颜色
+                            drawable.setColor(backgroundColor); // 设置背景颜色
                             float[] radii = new float[8];
+                            int mode = CustomOutlineProvider.BOTH;
                             radii[0] = appBorderRadiusPx; // Top left radius
                             radii[1] = appBorderRadiusPx; // Top left radius
                             radii[2] = appBorderRadiusPx; // Top right radius
@@ -439,6 +457,7 @@ public class HYSurveyView extends LinearLayout {
                                         radii[5] = appBorderRadiusPx; // Bottom right radius
                                         radii[6] = appBorderRadiusPx; // Bottom left radius
                                         radii[7] = appBorderRadiusPx; // Bottom left radius
+                                        mode = CustomOutlineProvider.BOTTOM_ONLY;
                                         break;
                                     case "BOTTOM":
                                         // 设置只有顶部左右两角是圆角
@@ -450,12 +469,13 @@ public class HYSurveyView extends LinearLayout {
                                         radii[5] = 0; // Bottom right radius
                                         radii[6] = 0; // Bottom left radius
                                         radii[7] = 0; // Bottom left radius
+                                        mode = CustomOutlineProvider.TOP_ONLY;
                                         break;
                                 }
                             }
                             drawable.setCornerRadii(radii);
-                            setBackground(drawable);
-                            setClipToOutline(true);
+                            webView.setBackground(drawable);
+                            webView.setOutlineProvider(new CustomOutlineProvider(appBorderRadiusPx, mode));
 
                             if (onLoad != null) {
                                 onLoad.accept(mergedConfig);

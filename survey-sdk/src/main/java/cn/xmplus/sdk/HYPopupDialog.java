@@ -92,6 +92,7 @@ public class HYPopupDialog extends Dialog {
         // global config
         getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        getWindow().setClipToOutline(true);
 
         boolean clickDismiss = options.optBoolean("clickDismiss", false);
         this.setCanceledOnTouchOutside(clickDismiss);
