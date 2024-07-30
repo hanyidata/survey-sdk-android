@@ -8,14 +8,11 @@ import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
-import android.widget.CheckBox
-import android.widget.EditText
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import cn.xmplus.sdk.HYGlobalConfig
 import cn.xmplus.sdk.HYPopupDialog
 import cn.xmplus.sdk.HYSurveyView
-import com.google.android.material.textfield.TextInputEditText
 import org.json.JSONObject
 
 class MainActivity : AppCompatActivity() {
@@ -50,13 +47,13 @@ class MainActivity : AppCompatActivity() {
     private var euid: String = "";
 
     // TEST
-    private var surveyId: String = "6717756797742080";
-    private var channelId: String = "6717757330615296";
+    private var surveyId: String = "6717535662748672";
+    private var channelId: String = "6717537091236864";
     private var sendId: String = "";
-    private var serverId: Int = R.id.checkBoxPROD
+    private var serverId: Int = R.id.checkBoxJLU
     val SERVERMAP: Map<Int, String> = mapOf(
         R.id.checkBoxJLT to "https://jltest.xmplus.cn/api/survey",
-        R.id.checkBoxJLU to "https://mktcs-uat.lynkco-test.com/api/survey ",
+        R.id.checkBoxJLU to "https://mktcs-uat.lynkco-test.com/api/survey",
         R.id.checkBoxJLP to "https://mktcs.lynkco.com/api/survey",
         R.id.checkBoxTEST to "https://test.xmplus.cn/api/survey",
         R.id.checkBoxPROD to "https://www.xmplus.cn/api/survey"
@@ -289,6 +286,8 @@ class MainActivity : AppCompatActivity() {
         findViewById<CheckBox>(R.id.checkBoxJLT).setOnClickListener { onCheckboxClick(it) };
         findViewById<CheckBox>(R.id.checkBoxJLU).setOnClickListener { onCheckboxClick(it) };
         findViewById<CheckBox>(R.id.checkBoxJLP).setOnClickListener { onCheckboxClick(it) };
+
+        findViewById<CheckBox>(R.id.checkBoxForceAuth).setOnCheckedChangeListener { compoundButton: CompoundButton, b: Boolean -> (onAuthCheckboxClick(compoundButton, b)) };
     }
 
     private fun getServer(): String {
@@ -314,5 +313,18 @@ class MainActivity : AppCompatActivity() {
         Log.d("example", "checkbox");
         serverId = view!!.id;
         excludeServerCheckbox(view!!.id)
+    }
+
+    private fun onAuthCheckboxClick(view: CompoundButton?, checked: Boolean) {
+        var param = getParam();
+        if (checked) {
+            if (param != null && param.has("accessCode")) {
+                HYGlobalConfig.setup(getServer(), param.getString("accessCode"), checked);
+            } else {
+                alert("missing access code")
+            }
+        } else {
+            HYGlobalConfig.resetAuthCache()
+        }
     }
 }

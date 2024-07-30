@@ -230,7 +230,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:checked="false"
-                    android:text="HalfScreen" />
+                    android:text="Half" />
 
                 <CheckBox
                     android:id="@+id/checkBoxDismiss"
@@ -247,6 +247,14 @@
                     android:layout_weight="1"
                     android:checked="false"
                     android:text="Lynkco" />
+
+                <CheckBox
+                    android:id="@+id/checkBoxForceAuth"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:checked="false"
+                    android:text="Auth" />
             </LinearLayout>
 
             <Button

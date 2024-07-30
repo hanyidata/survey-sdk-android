@@ -137,7 +137,14 @@ public class HYSurveyView extends LinearLayout {
             Log.e("surveySDK", "onReady not setup");
             return;
         }
-        String server = options.optString("server", "https://www.xmplus.cn/api/survey");
+
+        if (!HYGlobalConfig.check()) {
+            Log.d("surveySDK", "access code is not ready or invalid");
+            onError.accept("access code is not ready or invalid");
+            return;
+        }
+
+        String server = options.optString("server", HYGlobalConfig.getServer());
 
         SurveyStartRequest request = new SurveyStartRequest(server, surveyId, channelId, null, parameters);
         new HYSurveyService((SurveyStartResponse response) -> {
@@ -170,7 +177,12 @@ public class HYSurveyView extends LinearLayout {
             Log.e("surveySDK", "onReady not setup");
             return;
         }
-        String server = options.optString("server", "https://www.xmplus.cn/api/survey");
+        String server = options.optString("server", HYGlobalConfig.getServer());
+        if (!HYGlobalConfig.check()) {
+            Log.d("surveySDK", "access code is not ready or invalid");
+            onError.accept("access code is not ready or invalid");
+            return;
+        }
         SurveyStartRequest request = new SurveyStartRequest(server, null, null, sendId, parameters);
         new HYSurveyService((SurveyStartResponse response) -> {
             if (response.getError() == null) {
