@@ -10,7 +10,7 @@ public class HYGlobalConfig {
     private static int readTimeout = 5000;
 
     private static String server = "https://www.xmplus.cn/api/survey";
-    private static String project = "";
+    private static String project = "lynkco"; // 领克项目专属
 
     private static boolean authRequired = false;
     private static boolean verified = false;
