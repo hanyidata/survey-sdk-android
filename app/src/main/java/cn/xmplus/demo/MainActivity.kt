@@ -276,6 +276,8 @@ class MainActivity : AppCompatActivity() {
         findViewById<CheckBox>(serverId).isChecked = true;
         excludeServerCheckbox(serverId);
 
+        findViewById<CheckBox>(R.id.checkBoxProjectLynkco).isChecked = HYGlobalConfig.getProject() == "lynkco";
+
         findViewById<EditText>(R.id.editTextSurveyId).setText(surveyId);
         findViewById<EditText>(R.id.editTextChannelId).setText(channelId);
         findViewById<CheckBox>(R.id.checkBoxHalfScreen).isChecked = halfscreen;

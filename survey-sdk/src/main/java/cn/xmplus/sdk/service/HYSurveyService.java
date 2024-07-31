@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
+import cn.xmplus.sdk.HYGlobalConfig;
 import cn.xmplus.sdk.callback.SurveyTaskCallback;
 import cn.xmplus.sdk.data.SurveyStartRequest;
 import cn.xmplus.sdk.data.SurveyStartResponse;
@@ -41,6 +42,15 @@ public class HYSurveyService extends AsyncTask<SurveyStartRequest, Void, SurveyS
 
         String _url = String.format("%s/surveys/union-start", param.getServer());
         HashMap<String, Object> data = new HashMap<>();
+        String accessCode = param.getParameters().optString("accessCode", HYGlobalConfig.getAccessCode());
+
+        // accessCode 优先使用参数，fallback到全局
+        if (accessCode != null && !accessCode.isEmpty()) {
+            HashMap<String, Object> additionData = new HashMap<>();
+            additionData.put("accessCode", accessCode);
+            data.put("additionData", additionData);
+        }
+
         // 优先使用sendId
         if (param.getSendId() != null && !param.getSendId().isEmpty()) {
             data.put("sendToken", param.getSendId());
