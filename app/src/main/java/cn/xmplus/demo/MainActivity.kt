@@ -45,7 +45,8 @@ class MainActivity : AppCompatActivity() {
 //    private var sendId: String = "BddfddRImjktRzRk";
     private var accessCode: String = "";
     private var euid: String = "";
-
+//    private var parameter: String = "{\"accessCode\": \"1267914574543888384\"}"
+    private var parameter: String = ""
     // TEST
     private var surveyId: String = "6717535662748672";
     private var channelId: String = "6717537091236864";
@@ -159,7 +160,6 @@ class MainActivity : AppCompatActivity() {
         options.put("server", ser);
         options.put("delay", delay);
         options.put("halfscreen", findViewById<CheckBox>(R.id.checkBoxHalfScreen).isChecked);
-        options.put("project", getProject());
         return options;
     }
 
@@ -281,6 +281,8 @@ class MainActivity : AppCompatActivity() {
         findViewById<CheckBox>(R.id.checkBoxHalfScreen).isChecked = halfscreen;
         findViewById<EditText>(R.id.editTextSendId).setText(sendId);
 
+        findViewById<EditText>(R.id.editTextEUID).setText(parameter);
+
         findViewById<CheckBox>(R.id.checkBoxTEST).setOnClickListener { onCheckboxClick(it) };
         findViewById<CheckBox>(R.id.checkBoxPROD).setOnClickListener { onCheckboxClick(it) };
         findViewById<CheckBox>(R.id.checkBoxJLT).setOnClickListener { onCheckboxClick(it) };
@@ -288,17 +290,13 @@ class MainActivity : AppCompatActivity() {
         findViewById<CheckBox>(R.id.checkBoxJLP).setOnClickListener { onCheckboxClick(it) };
 
         findViewById<CheckBox>(R.id.checkBoxForceAuth).setOnCheckedChangeListener { compoundButton: CompoundButton, b: Boolean -> (onAuthCheckboxClick(compoundButton, b)) };
+
+        findViewById<CheckBox>(R.id.checkBoxProjectLynkco).setOnCheckedChangeListener { compoundButton: CompoundButton, b: Boolean -> (onProjectCheck(compoundButton, b)) };
+
     }
 
     private fun getServer(): String {
         return SERVERMAP[serverId]!!
-    }
-
-    private fun getProject(): String? {
-        if (findViewById<CheckBox>(R.id.checkBoxProjectLynkco).isChecked) {
-            return "lynkco";
-        }
-        return null;
     }
 
     private fun excludeServerCheckbox(excludeId: Int) {
@@ -313,6 +311,13 @@ class MainActivity : AppCompatActivity() {
         Log.d("example", "checkbox");
         serverId = view!!.id;
         excludeServerCheckbox(view!!.id)
+    }
+    private fun onProjectCheck(view: CompoundButton?, checked: Boolean) {
+        var project = "";
+        if (checked) {
+            project = "lynkco"
+        }
+        HYGlobalConfig.setProject(project);
     }
 
     private fun onAuthCheckboxClick(view: CompoundButton?, checked: Boolean) {
