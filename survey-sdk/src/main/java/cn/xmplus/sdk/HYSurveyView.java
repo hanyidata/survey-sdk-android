@@ -232,7 +232,8 @@ public class HYSurveyView extends LinearLayout {
             setLayoutParams(layoutParams);
         }
 
-        if (surveyJson != null && surveyJson.has("style")) {
+        Boolean showBackground = surveyJson.optBoolean("showBackground", false);
+        if (showBackground && surveyJson != null && surveyJson.has("style")) {
             JSONObject style = surveyJson.optJSONObject("style");
             if (style != null && style.has("backgroundColor")) {
                 String color = style.optString("backgroundColor");

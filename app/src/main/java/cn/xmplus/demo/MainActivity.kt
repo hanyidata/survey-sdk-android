@@ -48,10 +48,10 @@ class MainActivity : AppCompatActivity() {
 //    private var parameter: String = "{\"accessCode\": \"1267914574543888384\"}"
     private var parameter: String = ""
     // TEST
-    private var surveyId: String = "6717535662748672";
-    private var channelId: String = "6717537091236864";
+    private var surveyId: String = "6829192408645632";
+    private var channelId: String = "6829192963801088";
     private var sendId: String = "";
-    private var serverId: Int = R.id.checkBoxJLU
+    private var serverId: Int = R.id.checkBoxPROD
     val SERVERMAP: Map<Int, String> = mapOf(
         R.id.checkBoxJLT to "https://jltest.xmplus.cn/api/survey",
         R.id.checkBoxJLU to "https://mktcs-uat.lynkco-test.com/api/survey",
