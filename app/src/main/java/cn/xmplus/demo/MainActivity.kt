@@ -45,11 +45,11 @@ class MainActivity : AppCompatActivity() {
 //    private var sendId: String = "BddfddRImjktRzRk";
     private var accessCode: String = "";
     private var euid: String = "";
-//    private var parameter: String = "{\"accessCode\": \"1267914574543888384\"}"
-    private var parameter: String = ""
+//    private var parameter: String = ""
+    private var parameter: String = "{\"externalUserId\":\"152205\",\"parameters\":{\"cancelTime\":\"2014年2月1日\",\"orderNo\":\"888888888\",\"orderPrice\":\"1,500\"}}"
     // TEST
-    private var surveyId: String = "6829192408645632";
-    private var channelId: String = "6829192963801088";
+    private var surveyId: String = "6834803023996928";
+    private var channelId: String = "6834805666862080";
     private var sendId: String = "";
     private var serverId: Int = R.id.checkBoxPROD
     val SERVERMAP: Map<Int, String> = mapOf(
@@ -200,6 +200,7 @@ class MainActivity : AppCompatActivity() {
                     onSubmit(null);
                 },
                 {
+                    alert("发生错误 $it");
                     Log.d("surveyExample ", "发生错误 $it")
                 }, {
                     Log.d("surveyExample", "onLoad")

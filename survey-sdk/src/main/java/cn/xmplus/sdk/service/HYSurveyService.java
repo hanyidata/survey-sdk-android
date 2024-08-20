@@ -125,14 +125,12 @@ public class HYSurveyService extends AsyncTask<SurveyStartRequest, Void, SurveyS
             if (json == null) {
                 return new SurveyStartResponse("系统错误");
             }
-            boolean doNotDisturb = deepData.optBoolean("doNotDisturb", false);
-            if (doNotDisturb) {
-                return new SurveyStartResponse("开启免打扰配置，该问卷无法打开");
-            }
             if (deepData != null) {
                 return SurveyStartResponse.fromJson(clientId, deepData);
             } else {
-                return new SurveyStartResponse("系统错误");
+                String message = json.optString("message", "系统错误");
+                Log.d("surveySDK", String.format("union start failed %s", message));
+                return new SurveyStartResponse(message);
             }
         } catch (Exception e) {
             return new SurveyStartResponse("网络错误");
