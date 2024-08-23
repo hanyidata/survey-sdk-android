@@ -368,7 +368,10 @@ public class HYSurveyView extends LinearLayout {
                 @Override
                 public void run() {
                     DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
-
+                    if (webView == null) {
+                        Log.v("surveySDK", "webview missing, skip the post msg process");
+                        return;
+                    }
                     switch (type) {
                         case "init":
                             JSONObject data = new JSONObject();
