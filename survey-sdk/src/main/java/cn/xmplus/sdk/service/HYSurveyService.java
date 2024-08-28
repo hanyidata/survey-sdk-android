@@ -133,6 +133,8 @@ public class HYSurveyService extends AsyncTask<SurveyStartRequest, Void, SurveyS
                 return new SurveyStartResponse(message);
             }
         } catch (Exception e) {
+            Log.d("surveySDK", String.format("union start system failed %s", e.getMessage()));
+            e.printStackTrace();
             return new SurveyStartResponse("网络错误");
         } finally {
             if (urlConnection != null) {

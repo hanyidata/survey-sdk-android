@@ -3,6 +3,7 @@ package cn.xmplus.demo
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.DialogInterface
+import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.util.DisplayMetrics
@@ -45,11 +46,11 @@ class MainActivity : AppCompatActivity() {
 //    private var sendId: String = "BddfddRImjktRzRk";
     private var accessCode: String = "";
     private var euid: String = "";
-//    private var parameter: String = ""
-    private var parameter: String = "{\"externalUserId\":\"152205\",\"parameters\":{\"cancelTime\":\"2014年2月1日\",\"orderNo\":\"888888888\",\"orderPrice\":\"1,500\"}}"
+    private var parameter: String = ""
+//    private var parameter: String = "{\"externalUserId\":\"152205\",\"parameters\":{\"cancelTime\":\"2014年2月1日\",\"orderNo\":\"888888888\",\"orderPrice\":\"1,500\"}}"
     // TEST
-    private var surveyId: String = "6834803023996928";
-    private var channelId: String = "6834805666862080";
+    private var surveyId: String = "6829192408645632";
+    private var channelId: String = "6880930353772544";
     private var sendId: String = "";
     private var serverId: Int = R.id.checkBoxPROD
     val SERVERMAP: Map<Int, String> = mapOf(
@@ -71,10 +72,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun handleCloseDialog(view: View)  {
-        HYPopupDialog.close();
+//        HYPopupDialog.close();
+        // 创建Intent并启动ProductListActivity
+        SurveyOptions.sid = findViewById<EditText>(R.id.editTextSurveyId).text.toString();
+        SurveyOptions.cid = findViewById<EditText>(R.id.editTextChannelId).text.toString();
+        SurveyOptions.sdid = findViewById<EditText>(R.id.editTextSendId).text.toString();
+        SurveyOptions.options = buildOptions();
+        SurveyOptions.parameters = getParam();
+
+        val intent = Intent(this, DemoListActivity::class.java)
+        startActivity(intent)
     }
 
-    fun getParam(): JSONObject? {
+    fun getParam(): JSONObject {
         var text: String = findViewById<EditText>(R.id.editTextEUID).text.toString();
         if (text.isEmpty()) {
             return JSONObject();
@@ -83,7 +93,7 @@ class MainActivity : AppCompatActivity() {
             return JSONObject(text)
         } catch (ex: java.lang.Exception) {
             alert("invalid json params")
-            return null
+            return JSONObject();
         }
     }
 
