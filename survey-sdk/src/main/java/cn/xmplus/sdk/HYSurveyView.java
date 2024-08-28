@@ -298,20 +298,19 @@ public class HYSurveyView extends LinearLayout {
         return build;
     }
 
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-
-        Log.d("surveySDK", "detached survey view");
-        if (webView != null) {
-            webView.stopLoading();
-            webView.setWebChromeClient(null);
-            webView.setWebViewClient(null);
-            webView.removeAllViews();
-            webView.destroy();
-            webView = null;
-        }
-    }
+//    @Override
+//    protected void onDetachedFromWindow() {
+//        super.onDetachedFromWindow();
+//        Log.d("surveySDK", "detached survey view");
+////        if (webView != null) {
+////            webView.stopLoading();
+////            webView.setWebChromeClient(null);
+////            webView.setWebViewClient(null);
+////            webView.removeAllViews();
+////            webView.destroy();
+////            webView = null;
+////        }
+//    }
 
     public void show() {
         if (this.finished) {

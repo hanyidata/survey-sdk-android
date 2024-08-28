@@ -92,7 +92,7 @@ class DemoListActivity : AppCompatActivity() {
 
     private fun initProducts() {
         // 初始化 10 条商品数据
-        for (i in 1..10) {
+        for (i in 1..30) {
             products.add("Product $i")
         }
         adapter.notifyDataSetChanged()
@@ -107,7 +107,7 @@ class DemoListActivity : AppCompatActivity() {
         Handler(Looper.getMainLooper()).postDelayed({
             products.clear()
 
-            for (i in 1..10) {
+            for (i in 1..30) {
                 products.add("New Product $i")
             }
 
@@ -172,6 +172,7 @@ class DemoListActivity : AppCompatActivity() {
         }
 
         class CustomViewHolder(private val container: FrameLayout) : RecyclerView.ViewHolder(container) {
+            private var isComponentLoaded = false // 添加标志位
 
             fun alert(context: Context, message: String) {
                 val builder: AlertDialog.Builder = AlertDialog.Builder(context)
@@ -186,6 +187,8 @@ class DemoListActivity : AppCompatActivity() {
 
             fun loadThirdPartyComponent() {
                 // 异步加载第三方组件
+                if (isComponentLoaded) return // 如果组件已加载，则不再重复加载
+
                 HYSurveyView.makeViewAsync(container.context, SurveyOptions.sid, SurveyOptions.cid, SurveyOptions.parameters, SurveyOptions.options,
                     {
                         // onReady
@@ -201,6 +204,7 @@ class DemoListActivity : AppCompatActivity() {
                             container.removeView(survey);
                         }
                         container.addView(survey);
+                        isComponentLoaded = true;
                     },
                     {
                         // onError
