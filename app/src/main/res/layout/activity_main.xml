@@ -241,14 +241,6 @@
                     android:text="Dismiss" />
 
                 <CheckBox
-                    android:id="@+id/checkBoxProjectLynkco"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:checked="false"
-                    android:text="Lynkco" />
-
-                <CheckBox
                     android:id="@+id/checkBoxForceAuth"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

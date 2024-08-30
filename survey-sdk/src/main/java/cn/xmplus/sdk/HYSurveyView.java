@@ -394,9 +394,6 @@ public class HYSurveyView extends LinearLayout {
                                 data.put("server", server);
                                 data.put("parameters", parameters);
                                 data.put("borderRadiusMode", borderRadiusMode);
-                                if (!HYGlobalConfig.getProject().isEmpty()) {
-                                    data.put("project", HYGlobalConfig.getProject());
-                                }
                                 if (clientId != null) {
                                     data.put("clientId", clientId);
                                 }

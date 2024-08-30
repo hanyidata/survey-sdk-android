@@ -10,7 +10,6 @@ public class HYGlobalConfig {
     private static int readTimeout = 5000;
 
     private static String server = "https://www.xmplus.cn/api/survey";
-    private static String project = "";
 
     private static boolean authRequired = false;
     private static boolean verified = false;
@@ -20,7 +19,6 @@ public class HYGlobalConfig {
     }
 
     public static String getServer() { return server; }
-    public static String getProject() { return project; }
 
     public static int getConnectionTimeout() { return connectionTimeout; }
     public static int getReadTimeout() { return readTimeout; }
@@ -34,14 +32,6 @@ public class HYGlobalConfig {
      */
     public static void setup(String _server) {
         server = _server;
-    }
-
-    /**
-     * global server project
-     * @param _project
-     */
-    public static void setProject(String _project) {
-        project = _project;
     }
 
     /**

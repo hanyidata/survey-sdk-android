@@ -51,8 +51,9 @@ class MainActivity : AppCompatActivity() {
     // TEST
     private var surveyId: String = "6829192408645632";
     private var channelId: String = "6880930353772544";
-    private var sendId: String = "";
-    private var serverId: Int = R.id.checkBoxPROD
+    private var sendId: String = "HYZf9a0usOFYVVWq";
+//    private var sendId: String = "";
+    private var serverId: Int = R.id.checkBoxJLU
     val SERVERMAP: Map<Int, String> = mapOf(
         R.id.checkBoxJLT to "https://jltest.xmplus.cn/api/survey",
         R.id.checkBoxJLU to "https://mktcs-uat.lynkco-test.com/api/survey",
@@ -287,8 +288,6 @@ class MainActivity : AppCompatActivity() {
         findViewById<CheckBox>(serverId).isChecked = true;
         excludeServerCheckbox(serverId);
 
-        findViewById<CheckBox>(R.id.checkBoxProjectLynkco).isChecked = HYGlobalConfig.getProject() == "lynkco";
-
         findViewById<EditText>(R.id.editTextSurveyId).setText(surveyId);
         findViewById<EditText>(R.id.editTextChannelId).setText(channelId);
         findViewById<CheckBox>(R.id.checkBoxHalfScreen).isChecked = halfscreen;
@@ -303,9 +302,6 @@ class MainActivity : AppCompatActivity() {
         findViewById<CheckBox>(R.id.checkBoxJLP).setOnClickListener { onCheckboxClick(it) };
 
         findViewById<CheckBox>(R.id.checkBoxForceAuth).setOnCheckedChangeListener { compoundButton: CompoundButton, b: Boolean -> (onAuthCheckboxClick(compoundButton, b)) };
-
-        findViewById<CheckBox>(R.id.checkBoxProjectLynkco).setOnCheckedChangeListener { compoundButton: CompoundButton, b: Boolean -> (onProjectCheck(compoundButton, b)) };
-
     }
 
     private fun getServer(): String {
@@ -324,13 +320,6 @@ class MainActivity : AppCompatActivity() {
         Log.d("example", "checkbox");
         serverId = view!!.id;
         excludeServerCheckbox(view!!.id)
-    }
-    private fun onProjectCheck(view: CompoundButton?, checked: Boolean) {
-        var project = "";
-        if (checked) {
-            project = "lynkco"
-        }
-        HYGlobalConfig.setProject(project);
     }
 
     private fun onAuthCheckboxClick(view: CompoundButton?, checked: Boolean) {
