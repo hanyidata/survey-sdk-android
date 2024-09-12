@@ -60,6 +60,7 @@ public class HYSurveyView extends LinearLayout {
     private int backgroundColor = Color.WHITE;
 
     private final Boolean debug;
+    private  Boolean showClose = true;
     private final Boolean bord;
     public Boolean isDialogMode = false;
 
@@ -112,6 +113,7 @@ public class HYSurveyView extends LinearLayout {
         this.delay = options.optInt("delay", 1000);
         this.halfscreen = options.optBoolean("halfscreen", false);
         this.server = options.optString("server", "production");
+        this.showClose = options.optBoolean("showClose", true);
 
         this.borderRadiusMode = config.optString("borderRadiusMode", "CENTER");
         this.appPaddingWidth = Util.parsePx(context, config.optString("appPaddingWidth", "0px"), screenWidth);
@@ -390,6 +392,7 @@ public class HYSurveyView extends LinearLayout {
                                 data.put("delay", delay);
                                 data.put("language", languageTag);
                                 data.put("halfscreen", halfscreen);
+                                data.put("showClose", showClose);
                                 data.put("showType", isDialogMode ? "dialog" : "embedded");
                                 data.put("server", server);
                                 data.put("parameters", parameters);

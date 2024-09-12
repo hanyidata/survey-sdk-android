@@ -46,12 +46,15 @@ class MainActivity : AppCompatActivity() {
 //    private var sendId: String = "BddfddRImjktRzRk";
     private var accessCode: String = "";
     private var euid: String = "";
-    private var parameter: String = ""
+    private var orgCode: String = "lynkco_cem";
+    private var parameter: String = "{\"accessCode\": \"1283808987516932096\"}"
 //    private var parameter: String = "{\"externalUserId\":\"152205\",\"parameters\":{\"cancelTime\":\"2014年2月1日\",\"orderNo\":\"888888888\",\"orderPrice\":\"1,500\"}}"
     // TEST
-    private var surveyId: String = "6829192408645632";
-    private var channelId: String = "6880930353772544";
-    private var sendId: String = "HYZf9a0usOFYVVWq";
+    private var surveyId: String = "5464915992601600";
+    private var channelId: String = "5464928863544320";
+    private var sendId: String = "";
+
+//    id=5464915992601600&cid=5464928863544320 UAT
 //    private var sendId: String = "";
     private var serverId: Int = R.id.checkBoxJLU
     val SERVERMAP: Map<Int, String> = mapOf(
@@ -81,7 +84,7 @@ class MainActivity : AppCompatActivity() {
         SurveyOptions.options = buildOptions();
         SurveyOptions.parameters = getParam();
 
-        val intent = Intent(this, DemoListActivity::class.java)
+//        val intent = Intent(this, DemoListActivity::class.java)
         startActivity(intent)
     }
 
@@ -164,6 +167,7 @@ class MainActivity : AppCompatActivity() {
         options.put("language", lang);
         options.put("lang", lang);
         options.put("clickDismiss", findViewById<CheckBox>(R.id.checkBoxDismiss).isChecked);
+        options.put("showClose", findViewById<CheckBox>(R.id.checkBoxShowClose).isChecked);
         options.put("debug", debug);
         options.put("bord", bord);
 //        options.put("delay", delay);
@@ -293,6 +297,8 @@ class MainActivity : AppCompatActivity() {
         findViewById<CheckBox>(R.id.checkBoxHalfScreen).isChecked = halfscreen;
         findViewById<EditText>(R.id.editTextSendId).setText(sendId);
 
+        findViewById<EditText>(R.id.editTextOrgCode).setText(orgCode);
+
         findViewById<EditText>(R.id.editTextEUID).setText(parameter);
 
         findViewById<CheckBox>(R.id.checkBoxTEST).setOnClickListener { onCheckboxClick(it) };
@@ -326,7 +332,8 @@ class MainActivity : AppCompatActivity() {
         var param = getParam();
         if (checked) {
             if (param != null && param.has("accessCode")) {
-                HYGlobalConfig.setup(getServer(), param.getString("accessCode"), checked);
+                var orgCode = findViewById<EditText>(R.id.editTextOrgCode).text.toString();
+                HYGlobalConfig.setup(getServer(),  orgCode, param.getString("accessCode"), checked);
             } else {
                 alert("missing access code")
             }

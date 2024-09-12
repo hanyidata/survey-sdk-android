@@ -3,7 +3,9 @@ plugins {
     id 'maven-publish'
 }
 
-version '0.4.13'
+// 定义版本号
+def sdkVersion = '0.4.14'  // 将版本号存储在变量中
+version = sdkVersion  // 将版本号应用到项目版本
 
 task generateSourcesJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
@@ -22,6 +24,9 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
+
+        // 将版本号作为BuildConfig的字段导出
+        buildConfigField "String", "SDK_VERSION", "\"${sdkVersion}\""
     }
 
     buildTypes {

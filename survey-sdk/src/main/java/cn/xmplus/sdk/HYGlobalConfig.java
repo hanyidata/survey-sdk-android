@@ -6,6 +6,7 @@ import cn.xmplus.sdk.service.HYSurveyConfigService;
 
 public class HYGlobalConfig {
     private static String accessCode;
+    private static String orgCode;
     private static int connectionTimeout = 5000;
     private static int readTimeout = 5000;
 
@@ -19,6 +20,7 @@ public class HYGlobalConfig {
     }
 
     public static String getServer() { return server; }
+    public static String getOrgCode() { return orgCode; }
 
     public static int getConnectionTimeout() { return connectionTimeout; }
     public static int getReadTimeout() { return readTimeout; }
@@ -32,6 +34,10 @@ public class HYGlobalConfig {
      */
     public static void setup(String _server) {
         server = _server;
+    }
+    public static void setup(String _server, String _orgCode) {
+        server = _server;
+        orgCode = _orgCode;
     }
 
     /**
@@ -52,6 +58,18 @@ public class HYGlobalConfig {
                 verified = pass;
             }).execute(server, accessCode);
         }
+    }
+
+    /**
+     * global auth config
+     * @param _server, the server url
+     * @param _orgCode, the orgCode
+     * @param _access_code, the third party access code pass global
+     * @param _auth_required, true means survey will require access code, survey will not be displayed until setup a valid code
+     */
+    public static void setup(String _server, String _orgCode, String _access_code, boolean _auth_required) {
+        orgCode = _orgCode;
+        setup(_server, _access_code, _auth_required);
     }
 
     /**

@@ -33,6 +33,9 @@ public class HYSurveyConfigService extends AsyncTask<String, Void, List<Object>>
 
         try {
             String _url = String.format("%s/surveys/init-access-code/%s", server, accessCode);
+            if (!HYGlobalConfig.getOrgCode().isEmpty()) {
+                _url = String.format("%s/surveys/init-access-code/%s/%s", server, HYGlobalConfig.getOrgCode(), accessCode);
+            }
             URL url = new URL(_url);
             Log.d("surveySDK", String.format("pre check access code for %s", _url));
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
@@ -61,6 +64,7 @@ public class HYSurveyConfigService extends AsyncTask<String, Void, List<Object>>
             urlConnection.disconnect();
             JSONObject response = new JSONObject(str);
             int code = response.getInt("code");
+            Log.d("surveySDK", String.format("pre check result %s", response.toString()));
             if (code == 200) {
                 boolean passed = response.optBoolean("data", false);
                 return Arrays.asList(passed, null);
@@ -79,6 +83,15 @@ public class HYSurveyConfigService extends AsyncTask<String, Void, List<Object>>
             taskCallback.onAuthChecked(false, "系统错误");
             return;
         }
-        taskCallback.onAuthChecked((Boolean) result.get(0), (String) result.get(1));
+        // 检查 result.get(0) 是否为 null，并且是否是 Boolean 类型
+        Boolean authResult = (result.get(0) instanceof Boolean) ? (Boolean) result.get(0) : null;
+        String message = (String) result.get(1);
+
+        if (authResult == null) {
+            taskCallback.onAuthChecked(false, "认证失败");
+            return;
+        }
+
+        taskCallback.onAuthChecked(authResult, message);
     }
 }
