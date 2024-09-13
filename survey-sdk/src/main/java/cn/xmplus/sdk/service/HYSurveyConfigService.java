@@ -33,8 +33,9 @@ public class HYSurveyConfigService extends AsyncTask<String, Void, List<Object>>
 
         try {
             String _url = String.format("%s/surveys/init-access-code/%s", server, accessCode);
-            if (!HYGlobalConfig.getOrgCode().isEmpty()) {
-                _url = String.format("%s/surveys/init-access-code/%s/%s", server, HYGlobalConfig.getOrgCode(), accessCode);
+            String orgCode = HYGlobalConfig.getOrgCode();
+            if (orgCode != null && !orgCode.isEmpty()) {
+                _url = String.format("%s/surveys/init-access-code/%s/%s", server, orgCode, accessCode);
             }
             URL url = new URL(_url);
             Log.d("surveySDK", String.format("pre check access code for %s", _url));
