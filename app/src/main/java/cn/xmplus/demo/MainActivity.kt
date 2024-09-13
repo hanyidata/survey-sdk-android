@@ -47,11 +47,11 @@ class MainActivity : AppCompatActivity() {
     private var accessCode: String = "";
     private var euid: String = "";
     private var orgCode: String = "galaxy_cem";
-    private var parameter: String = "{\"accessCode\": \"0ec717e4767846568c817bdcd2452393\"}"
+    private var parameter: String = "{\"accessCode\": \"0c82732dfc7f4135b74508aafa5e7f54\"}"
 //    private var parameter: String = "{\"externalUserId\":\"152205\",\"parameters\":{\"cancelTime\":\"2014年2月1日\",\"orderNo\":\"888888888\",\"orderPrice\":\"1,500\"}}"
     // TEST
-    private var surveyId: String = "5464915992601600";
-    private var channelId: String = "5464928863544320";
+    private var surveyId: String = "6971104871254016";
+    private var channelId: String = "6971108721428480";
     private var sendId: String = "";
 
 //    id=5464915992601600&cid=5464928863544320 UAT
