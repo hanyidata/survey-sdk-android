@@ -112,7 +112,7 @@ public class HYSurveyView extends LinearLayout {
         this.isDialogMode = options.optBoolean("isDialogMode", false);
         this.delay = options.optInt("delay", 1000);
         this.halfscreen = options.optBoolean("halfscreen", false);
-        this.server = options.optString("server", "production");
+        this.server = options.optString("server", HYGlobalConfig.getServer());
         this.showClose = options.optBoolean("showClose", true);
 
         this.borderRadiusMode = config.optString("borderRadiusMode", "CENTER");

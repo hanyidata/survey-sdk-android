@@ -47,11 +47,13 @@ class MainActivity : AppCompatActivity() {
     private var accessCode: String = "";
     private var euid: String = "";
     private var orgCode: String = "galaxy_cem";
-    private var parameter: String = "{\"accessCode\": \"0c82732dfc7f4135b74508aafa5e7f54\"}"
+//    private var parameter: String = "{\"accessCode\": \"0c82732dfc7f4135b74508aafa5e7f54\"}"
 //    private var parameter: String = "{\"externalUserId\":\"152205\",\"parameters\":{\"cancelTime\":\"2014年2月1日\",\"orderNo\":\"888888888\",\"orderPrice\":\"1,500\"}}"
     // TEST
-    private var surveyId: String = "6971104871254016";
-    private var channelId: String = "6971108721428480";
+private var parameter: String = ""
+
+    private var surveyId: String = "6949244674686976";
+    private var channelId: String = "6949245294067712";
     private var sendId: String = "";
 
 //    id=5464915992601600&cid=5464928863544320 UAT
@@ -172,7 +174,7 @@ class MainActivity : AppCompatActivity() {
         options.put("bord", bord);
 //        options.put("delay", delay);
         options.put("padding", padding);
-        options.put("server", ser);
+//        options.put("server", ser);
         options.put("delay", delay);
         options.put("halfscreen", findViewById<CheckBox>(R.id.checkBoxHalfScreen).isChecked);
         return options;
@@ -288,6 +290,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        HYGlobalConfig.setup(getServer());
 
         findViewById<CheckBox>(serverId).isChecked = true;
         excludeServerCheckbox(serverId);
