@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity() {
     private var accessCode: String = "";
     private var euid: String = "";
     private var orgCode: String = "galaxy_cem";
-    private var parameter: String = "{\"accessCode\": \"f79a109c362145f08d4ed81d4ed0863b\"}"
+    private var parameter: String = "{\"accessCode\": \"0ec717e4767846568c817bdcd2452393\"}"
 //    private var parameter: String = "{\"externalUserId\":\"152205\",\"parameters\":{\"cancelTime\":\"2014年2月1日\",\"orderNo\":\"888888888\",\"orderPrice\":\"1,500\"}}"
     // TEST
     private var surveyId: String = "5464915992601600";
