@@ -4,7 +4,7 @@ plugins {
 }
 
 // 定义版本号
-def sdkVersion = '0.4.16'  // 将版本号存储在变量中
+def sdkVersion = '0.4.17'  // 将版本号存储在变量中
 version = sdkVersion  // 将版本号应用到项目版本
 
 task generateSourcesJar(type: Jar) {
