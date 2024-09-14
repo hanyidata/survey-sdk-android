@@ -44,8 +44,8 @@ public class HYSurveyService extends AsyncTask<SurveyStartRequest, Void, SurveyS
         HashMap<String, Object> data = new HashMap<>();
         String accessCode = param.getParameters().optString("accessCode", HYGlobalConfig.getAccessCode());
 
-        // accessCode 优先使用参数，fallback到全局, 如果和全局一样忽律二次传入避免再次发生服务调用
-        if (accessCode != null && !accessCode.isEmpty() && !accessCode.equals(HYGlobalConfig.getAccessCode())) {
+        // accessCode 优先使用参数，fallback到全局, 只有当设置后才会填充这个数据
+        if (accessCode != null && !accessCode.isEmpty()) {
             HashMap<String, Object> additionData = new HashMap<>();
             additionData.put("accessCode", accessCode);
             data.put("additionData", additionData);
