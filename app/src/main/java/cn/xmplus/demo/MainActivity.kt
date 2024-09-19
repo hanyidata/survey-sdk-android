@@ -48,13 +48,13 @@ class MainActivity : AppCompatActivity() {
     private var euid: String = "";
     private var orgCode: String = "lynkco_cem";
 //    lynkco_cem galaxy_cem
-    private var parameter: String = "{\"accessCode\": \"1284536534859235328\"}"
-//    private var parameter: String = "{\"externalUserId\":\"152205\",\"parameters\":{\"cancelTime\":\"2014年2月1日\",\"orderNo\":\"888888888\",\"orderPrice\":\"1,500\"}}"
+//    private var parameter: String = "{\"accessCode\": \"1284536534859235328\"}"
+    private var parameter: String = "{\"externalUserId\":\"152205\",\"parameters\":{\"cancelTime\":\"2014年2月1日\",\"orderNo\":\"888888888\",\"orderPrice\":\"1,500\"}}"
     // TEST
 //private var parameter: String = ""
 
-    private var surveyId: String = "6891706321459200";
-    private var channelId: String = "6977724700887040";
+    private var surveyId: String = "6960496112091136";
+    private var channelId: String = "6960496869556224";
     private var sendId: String = "";
 
 //    id=5464915992601600&cid=5464928863544320 UAT
@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity() {
     private var serverId: Int = R.id.checkBoxJLU
     val SERVERMAP: Map<Int, String> = mapOf(
         R.id.checkBoxJLT to "https://jltest.xmplus.cn/api/survey",
-        R.id.checkBoxJLU to "https://mktcs-uat.lynkco-test.com/api/survey",
+        R.id.checkBoxJLU to "https://galaxy-h5-test.geely-test.com/api/survey",
         R.id.checkBoxJLP to "https://mktcs.lynkco.com/api/survey",
         R.id.checkBoxTEST to "https://test.xmplus.cn/api/survey",
         R.id.checkBoxPROD to "https://www.xmplus.cn/api/survey"
@@ -263,7 +263,7 @@ class MainActivity : AppCompatActivity() {
 
     fun onSize(param: Any?) {
 //        alert("高度变化");
-        Log.d("surveyExample", "onSize")
+        Log.d("surveyExample", "onSize $param")
         var container:LinearLayout = findViewById(R.id.container)
         container.layoutParams.height = (param as Int);
         println(param);
