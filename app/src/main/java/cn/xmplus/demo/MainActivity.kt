@@ -30,8 +30,8 @@ class MainActivity : AppCompatActivity() {
 //    private var parameter: String = ""
     private var parameter: String = "{\"externalUserId\": \"w\"}"
 
-    private var surveyId: String = "6960496112091136";
-    private var channelId: String = "6960496869556224";
+    private var surveyId: String = "7004772304559104";
+    private var channelId: String = "7004776769920000";
     private var sendId: String = "";
 
     var ServerInfoList = listOf<ServerInfo>(
@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
         ServerInfo("lynkco_prd", "https://mktcs.lynkco.com/api/survey", "lynkco_cem"),
     )
 
-    val defaultServer = "galaxy_uat" // 你可以根据业务逻辑定义默认值
+    val defaultServer = "lynkco_uat" // 你可以根据业务逻辑定义默认值
     private var selectedServer: ServerInfo =
         ServerInfoList.find { x -> x.name == defaultServer }!!;
 

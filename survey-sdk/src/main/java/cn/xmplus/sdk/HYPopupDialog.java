@@ -335,7 +335,7 @@ public class HYPopupDialog extends Dialog {
         embedHeight = Util.parsePx(context, config.optString("embedHeight", "0px"), screenHeight);
 
         contentView = new LinearLayout(context);
-        contentView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        contentView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0));
 
         Window window = getWindow();
         if (window != null) {
@@ -397,7 +397,6 @@ public class HYPopupDialog extends Dialog {
                     }
                 }
                 ViewGroup.LayoutParams layout = contentView.getLayoutParams();
-                layout.height = ViewGroup.LayoutParams.WRAP_CONTENT;
                 contentView.setLayoutParams(layout);
                 contentView.requestLayout();
 
