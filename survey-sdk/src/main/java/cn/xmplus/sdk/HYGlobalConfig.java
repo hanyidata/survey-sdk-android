@@ -22,6 +22,8 @@ public class HYGlobalConfig {
     public static String getServer() { return server; }
     public static String getOrgCode() { return orgCode; }
 
+    public static boolean isAuthRequired() { return authRequired; }
+
     public static int getConnectionTimeout() { return connectionTimeout; }
     public static int getReadTimeout() { return readTimeout; }
 

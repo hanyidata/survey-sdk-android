@@ -229,10 +229,14 @@ public class HYPopupDialog extends Dialog {
         String server = options.optString("server", HYGlobalConfig.getServer());
         JSONObject mergeOption = options;
 
-        if (!HYGlobalConfig.check()) {
-            Log.d("surveySDK", "access code is not ready or invalid");
-            onError.accept("access code is not ready or invalid");
-            return;
+        String userId = parameters.optString("externalUserId", "");
+        // userid设置情况下可以bypass auth check, 向下兼容
+        if (HYGlobalConfig.isAuthRequired() && !userId.isEmpty()) {
+            if (!HYGlobalConfig.check()) {
+                Log.d("surveySDK", "access code is not ready or invalid");
+                onError.accept("access code is not ready or invalid");
+                return;
+            }
         }
 
         try {

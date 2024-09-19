@@ -138,10 +138,14 @@ public class HYSurveyView extends LinearLayout {
             return;
         }
 
-        if (!HYGlobalConfig.check()) {
-            Log.d("surveySDK", "access code is not ready or invalid");
-            onError.accept("access code is not ready or invalid");
-            return;
+        String userId = parameters.optString("externalUserId", "");
+        // userid设置情况下可以bypass auth check, 向下兼容
+        if (HYGlobalConfig.isAuthRequired() && !userId.isEmpty()) {
+            if (!HYGlobalConfig.check()) {
+                Log.d("surveySDK", "access code is not ready or invalid");
+                onError.accept("access code is not ready or invalid");
+                return;
+            }
         }
 
         String server = options.optString("server", HYGlobalConfig.getServer());
@@ -178,11 +182,16 @@ public class HYSurveyView extends LinearLayout {
             return;
         }
         String server = options.optString("server", HYGlobalConfig.getServer());
-        if (!HYGlobalConfig.check()) {
-            Log.d("surveySDK", "access code is not ready or invalid");
-            onError.accept("access code is not ready or invalid");
-            return;
+        String userId = parameters.optString("externalUserId", "");
+        // userid设置情况下可以bypass auth check, 向下兼容
+        if (HYGlobalConfig.isAuthRequired() && !userId.isEmpty()) {
+            if (!HYGlobalConfig.check()) {
+                Log.d("surveySDK", "access code is not ready or invalid");
+                onError.accept("access code is not ready or invalid");
+                return;
+            }
         }
+
         SurveyStartRequest request = new SurveyStartRequest(server, null, null, sendId, parameters);
         new HYSurveyService((SurveyStartResponse response) -> {
             if (response.getError() == null) {

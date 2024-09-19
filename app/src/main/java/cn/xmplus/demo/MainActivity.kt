@@ -3,7 +3,6 @@ package cn.xmplus.demo
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.DialogInterface
-import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.util.DisplayMetrics
@@ -17,6 +16,7 @@ import cn.xmplus.sdk.HYSurveyView
 import org.json.JSONObject
 
 class MainActivity : AppCompatActivity() {
+    data class ServerInfo(val name: String, val url: String, val orgCode: String)
 
     private var survey: HYSurveyView? = null;
     private var padding: Int = 0;
@@ -24,49 +24,29 @@ class MainActivity : AppCompatActivity() {
     private var debug: Boolean = true;
     private var halfscreen: Boolean = false;
     private var delay: Int = 1000;
-//    private var accessCode: String = "";
-//    private var euid: String = "";
-//    private var accessCode: String = "1128430492441440256";
-
-    // JLTEST
-//    private var surveyId: String = "4445329530320896";
-//    private var channelId: String = "4446931357162496";
-//    private var server: String = "https://jltest.xmplus.cn/api/survey";
-
-//    // UAT
-//    private var surveyId: String = "4475002070663168";
-//    private var channelId: String = "4475389028433920";
-//    private var server: String = "https://mktcs-uat.lynkco-test.com/api/survey";
-
-//    private var surveyId: String = "4538358709728256";
-//    private var channelId: String = "4538360831580160";
-//    private var server: String = "https://mktcs.lynkco.com/api/survey";
-
-    // TEST
-//    private var sendId: String = "BddfddRImjktRzRk";
-    private var accessCode: String = "";
-    private var euid: String = "";
-    private var orgCode: String = "lynkco_cem";
-//    lynkco_cem galaxy_cem
 //    private var parameter: String = "{\"accessCode\": \"1284536534859235328\"}"
-    private var parameter: String = "{\"externalUserId\":\"152205\",\"parameters\":{\"cancelTime\":\"2014年2月1日\",\"orderNo\":\"888888888\",\"orderPrice\":\"1,500\"}}"
+//    private var parameter: String = "{\"externalUserId\":\"152205\",\"parameters\":{\"cancelTime\":\"2014年2月1日\",\"orderNo\":\"888888888\",\"orderPrice\":\"1,500\"}}"
     // TEST
-//private var parameter: String = ""
+//    private var parameter: String = ""
+    private var parameter: String = "{\"externalUserId\": \"w\"}"
 
     private var surveyId: String = "6960496112091136";
     private var channelId: String = "6960496869556224";
     private var sendId: String = "";
 
-//    id=5464915992601600&cid=5464928863544320 UAT
-//    private var sendId: String = "";
-    private var serverId: Int = R.id.checkBoxJLU
-    val SERVERMAP: Map<Int, String> = mapOf(
-        R.id.checkBoxJLT to "https://jltest.xmplus.cn/api/survey",
-        R.id.checkBoxJLU to "https://galaxy-h5-test.geely-test.com/api/survey",
-        R.id.checkBoxJLP to "https://mktcs.lynkco.com/api/survey",
-        R.id.checkBoxTEST to "https://test.xmplus.cn/api/survey",
-        R.id.checkBoxPROD to "https://www.xmplus.cn/api/survey"
+    var ServerInfoList = listOf<ServerInfo>(
+        ServerInfo("xmp_www", "https://www.xmplus.cn/api/survey", ""),
+        ServerInfo("xmp_test", "https://test.xmplus.cn/api/survey", ""),
+        ServerInfo("galaxy_uat", "https://galaxy-h5-test.geely-test.com/api/survey", "galaxy_cem"),
+        ServerInfo("galaxy_prd", "https://galaxy-h5.geely.com/api/survey", "galaxy_cem"),
+        ServerInfo("lynkco_uat", "https://mktcs-uat.lynkco-test.com/api/survey", "lynkco_cem"),
+        ServerInfo("lynkco_prd", "https://mktcs.lynkco.com/api/survey", "lynkco_cem"),
     )
+
+    val defaultServer = "galaxy_uat" // 你可以根据业务逻辑定义默认值
+    private var selectedServer: ServerInfo =
+        ServerInfoList.find { x -> x.name == defaultServer }!!;
+
     override fun onConfigurationChanged(newConfig: Configuration) {
         Log.d("demo", "onConfigurationChanged")
         super.onConfigurationChanged(newConfig)
@@ -87,7 +67,6 @@ class MainActivity : AppCompatActivity() {
         SurveyOptions.options = buildOptions();
         SurveyOptions.parameters = getParam();
 
-//        val intent = Intent(this, DemoListActivity::class.java)
         startActivity(intent)
     }
 
@@ -108,11 +87,7 @@ class MainActivity : AppCompatActivity() {
 
         var sid: String = findViewById<EditText>(R.id.editTextSurveyId).text.toString();
         var cid: String = findViewById<EditText>(R.id.editTextChannelId).text.toString();
-        var ser: String = getServer();
-//        var code: String = findViewById<EditText>(R.id.editTextParams).text.toString();
-//        var euid: String = findViewById<EditText>(R.id.editTextEUID).text.toString();
         var sdid: String = findViewById<EditText>(R.id.editTextSendId).text.toString();
-        var lang: String = findViewById<EditText>(R.id.editTextLang).text.toString();
 
         var parameters = getParam();
         var options = buildOptions();
@@ -163,9 +138,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun buildOptions(): JSONObject {
-        var ser: String = getServer();
         var lang: String = findViewById<EditText>(R.id.editTextLang).text.toString();
-
         var options = JSONObject();
         options.put("language", lang);
         options.put("lang", lang);
@@ -225,21 +198,6 @@ class MainActivity : AppCompatActivity() {
                 }
             );
 
-//            HYPopupDialog.makeDialog(
-//                root, sid, cid, parameters, options,
-//                {
-//                    onCancel(null);
-//                },
-//                {
-//                    onSubmit(null);
-//                },
-//                {
-//                    Log.d("surveyExample ", "发生错误 $it")
-//                }, {
-//                    Log.d("surveyExample", "onLoad")
-//                }
-//            );
-
         }
 
     }
@@ -253,7 +211,6 @@ class MainActivity : AppCompatActivity() {
     fun onLoad(param: Any?) {
         Log.d("surveyExample", "onLoad")
     }
-
 
     fun onCancel(param: Any?) {
         var container:LinearLayout = findViewById(R.id.container)
@@ -291,54 +248,59 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        title = String.format("SurveySDK (%s)", cn.xmplus.sdk.BuildConfig.SDK_VERSION)
 
-        HYGlobalConfig.setup(getServer());
-
-        findViewById<CheckBox>(serverId).isChecked = true;
-        excludeServerCheckbox(serverId);
+        Log.d("ServerInfo", "Selected: ${selectedServer.name}, URL: ${selectedServer.url}  org: ${selectedServer.orgCode}")
+        HYGlobalConfig.setup(selectedServer.url);
 
         findViewById<EditText>(R.id.editTextSurveyId).setText(surveyId);
         findViewById<EditText>(R.id.editTextChannelId).setText(channelId);
         findViewById<CheckBox>(R.id.checkBoxHalfScreen).isChecked = halfscreen;
         findViewById<EditText>(R.id.editTextSendId).setText(sendId);
 
-        findViewById<EditText>(R.id.editTextOrgCode).setText(orgCode);
+//        findViewById<EditText>(R.id.editTextOrgCode).setText(orgCode);
 
         findViewById<EditText>(R.id.editTextEUID).setText(parameter);
 
-        findViewById<CheckBox>(R.id.checkBoxTEST).setOnClickListener { onCheckboxClick(it) };
-        findViewById<CheckBox>(R.id.checkBoxPROD).setOnClickListener { onCheckboxClick(it) };
-        findViewById<CheckBox>(R.id.checkBoxJLT).setOnClickListener { onCheckboxClick(it) };
-        findViewById<CheckBox>(R.id.checkBoxJLU).setOnClickListener { onCheckboxClick(it) };
-        findViewById<CheckBox>(R.id.checkBoxJLP).setOnClickListener { onCheckboxClick(it) };
 
-        findViewById<CheckBox>(R.id.checkBoxForceAuth).setOnCheckedChangeListener { compoundButton: CompoundButton, b: Boolean -> (onAuthCheckboxClick(compoundButton, b)) };
-    }
+        val spinner: Spinner = findViewById(R.id.serverList)
 
-    private fun getServer(): String {
-        return SERVERMAP[serverId]!!
-    }
+        // 手动创建选项列表
+        val options = listOf("TEST", "PROD", "JLT")
 
-    private fun excludeServerCheckbox(excludeId: Int) {
-        var ids = arrayOf(R.id.checkBoxTEST, R.id.checkBoxPROD, R.id.checkBoxJLP, R.id.checkBoxJLT, R.id.checkBoxJLU)
-        for (id in ids) {
-            if (id != excludeId) {
-                findViewById<CheckBox>(id).isChecked = false;
+        // 创建 ArrayAdapter 并设置给 Spinner
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, ServerInfoList.map { it.name })
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner.adapter = adapter
+
+        // 找到默认服务器在列表中的索引
+        val defaultPosition = ServerInfoList.indexOfFirst { it.name == defaultServer }
+        // 设置默认选中的服务器
+        if (defaultPosition != -1) {
+            spinner.setSelection(defaultPosition)
+        }
+
+        // 设置选择监听器
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                selectedServer = ServerInfoList[position]
+                // 处理选中的服务器，例如显示服务器信息
+                Log.d("ServerInfo", "Selected: ${selectedServer.name}, URL: ${selectedServer.url}  org: ${selectedServer.orgCode}")
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {
+                // 未选择时的处理
             }
         }
-    }
-    private fun onCheckboxClick(view: View?) {
-        Log.d("example", "checkbox");
-        serverId = view!!.id;
-        excludeServerCheckbox(view!!.id)
+
+        findViewById<CheckBox>(R.id.checkBoxForceAuth).setOnCheckedChangeListener { compoundButton: CompoundButton, b: Boolean -> (onAuthCheckboxClick(compoundButton, b)) };
     }
 
     private fun onAuthCheckboxClick(view: CompoundButton?, checked: Boolean) {
         var param = getParam();
         if (checked) {
             if (param != null && param.has("accessCode")) {
-                var orgCode = findViewById<EditText>(R.id.editTextOrgCode).text.toString();
-                HYGlobalConfig.setup(getServer(),  orgCode, param.getString("accessCode"), checked);
+                HYGlobalConfig.setup(selectedServer.url,  selectedServer.orgCode, param.getString("accessCode"), checked);
             } else {
                 alert("missing access code")
             }

@@ -28,6 +28,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:ems="10"
+                    android:enabled="false"
                     android:inputType="text"
                     android:text="SENDID" />
 
@@ -53,6 +54,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:ems="10"
+                    android:enabled="false"
                     android:inputType="text"
                     android:text="LANG" />
 
@@ -79,6 +81,7 @@
                     android:layout_weight="1"
                     android:ems="10"
                     android:inputType="textPersonName"
+                    android:enabled="false"
                     android:text="SID" />
 
                 <EditText
@@ -103,6 +106,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:ems="10"
+                    android:enabled="false"
                     android:inputType="textPersonName"
                     android:text="CID" />
 
@@ -129,6 +133,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:ems="10"
+                    android:enabled="false"
                     android:inputType="textPersonName"
                     android:text="SERVER" />
 
@@ -136,76 +141,17 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
+
                     android:orientation="horizontal">
+                    <Spinner
+                        android:id="@+id/serverList"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
 
-                    <CheckBox
-                        android:id="@+id/checkBoxTEST"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:checked="false"
-                        android:text="TEST" />
-
-                    <CheckBox
-                        android:id="@+id/checkBoxPROD"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:checked="true"
-                        android:enabled="true"
-                        android:text="PROD" />
-                    <CheckBox
-                        android:id="@+id/checkBoxJLT"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:checked="false"
-                        android:enabled="true"
-                        android:text="JLT" />
-                    <CheckBox
-                        android:id="@+id/checkBoxJLU"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:checked="false"
-                        android:enabled="true"
-                        android:text="JLU" />
-                    <CheckBox
-                        android:id="@+id/checkBoxJLP"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:checked="false"
-                        android:enabled="true"
-                        android:text="JLP" />
 
                 </LinearLayout>
 
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="horizontal">
-
-                <EditText
-                    android:id="@+id/editTextTextOrgCodeLabel"
-                    android:layout_width="150dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:ems="10"
-                    android:inputType="text"
-                    android:text="Org" />
-
-                <EditText
-                    android:id="@+id/editTextOrgCode"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:ems="10"
-                    android:inputType="text"
-                    android:text="lynkco_cem" />
             </LinearLayout>
 
             <LinearLayout
@@ -220,6 +166,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:ems="10"
+                    android:enabled="false"
                     android:inputType="textPersonName"
                     android:text="PARAM" />
 
@@ -245,6 +192,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:ems="10"
+                    android:enabled="false"
                     android:inputType="textPersonName"
                     android:text="Opt" />
 
